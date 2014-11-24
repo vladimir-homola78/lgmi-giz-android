@@ -18,6 +18,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+/* following 2 only needed for logging stacktrace in ScanPictureTask - debugging */
+import java.io.PrintWriter;
+import java.io.StringWriter;
+/* end temp import */
 import java.util.List;
 
 /**
@@ -427,6 +431,12 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                     String msg;
                     if(e!=null && e.getMessage()!=null){
                         msg = "ScanPictureTask: " + e.getMessage();
+                        if(e.getMessage().equals("No authentication challenges found")){ //wierdness!
+                            StringWriter sw = new StringWriter();
+                            e.printStackTrace(new PrintWriter(sw));
+                            String stackTraceAsString = sw.toString();
+                            Log.d("ScanPictureTask", "Stacktrace: "+stackTraceAsString);
+                        }
                     }
                     else {
                         msg="[unknown in ScanPictureTask]";
