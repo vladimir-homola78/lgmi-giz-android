@@ -11,12 +11,7 @@ Build is against SDK API 21 (Android 5).
 ## See Also ##
 
 [Activity Lifecycle](http://developer.android.com/reference/android/app/Activity.html)
+
 [Supporting muliple scrren size](http://developer.android.com/guide/practices/screens_support.html)
+
 [Graphics Pipeline](https://source.android.com/devices/graphics.html)
-
-
-
-
-
-
-
