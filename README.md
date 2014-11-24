@@ -8,6 +8,14 @@ I'm developing for Android version 4.0.3 (aka Ice Cream Sandwich), which is API 
 
 Build is against SDK API 21 (Android 5).
 
+## Known Issues/Limitations ##
+
+As well as internet connection, the device requires a **back facing** camera to work.  If it has just a front-facing camera, the app won't work (or at least can't scan).
+
+Accessing the camera hardware is tricky and error-prone, with obscure edge cases.
+
+There's a huge variance of device of display size and resolution, and camera mode and resolutions.  Covering every possible combination is non-trivial.  A **lot** of testing is required on various devices.
+
 ## See Also ##
 
 [Activity Lifecycle](http://developer.android.com/reference/android/app/Activity.html)
