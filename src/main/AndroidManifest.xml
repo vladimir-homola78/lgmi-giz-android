@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ibrow.de.giz.siegelklarheit"
+    android:versionCode="2"
+    android:versionName="0.2 Pre-Alpha" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="21"
+     />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!--- <android:uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+
+    <!-- following needed for disk cache -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:name="com.ibrow.de.giz.siegelklarheit.SiegelklarheitApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.ScanActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.DetailsActivity"
+            android:label="[Details]"
+            android:theme="@style/AppTheme"
+        >
+        </activity>
+        <!-- android:parentActivityName="com.ibrow.de.giz.siegelklarheit.ScanActivity" -->
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.MultipleResultsActivity"
+            android:label="@string/title_multipleresults"
+            android:theme="@style/AppTheme"
+        >
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.SearchActivity"
+            android:label="@string/title_activity_search"
+            android:theme="@style/AppTheme"
+            >
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.InfosActivity"
+            android:theme="@style/AppTheme"
+            android:label="@string/title_infos"
+            >
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.ImprintActivity"
+            android:label="@string/title_imprint"
+            android:theme="@style/AppTheme"
+            >
+        </activity>
+    </application>
+
+</manifest>
