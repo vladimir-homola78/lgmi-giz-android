@@ -108,13 +108,17 @@ final class LogoHelper {
                 try {
                     out = new FileOutputStream(filepath);
                     image.compress(Bitmap.CompressFormat.PNG, 100, out);
-                } finally {
+                }
+                catch (Exception e) {
+                    Log.e("LOGOHELPER", e.getMessage() );
+                }
+                finally {
                     try {
                         if (out != null) {
                             out.close();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e("LOGOHELPER", e.getMessage());
                     }
                 }
             }
@@ -137,6 +141,18 @@ final class LogoHelper {
                         context.getExternalCacheDir().getPath() : context.getCacheDir().getPath();
 
         DiskCachePath =  new File(cachePath + File.separator + CACHE_NAME);
-        DiskCachePathInitialised = true;
+        if(! DiskCachePath.exists() ){
+            try{
+                if( DiskCachePath.mkdir() ){
+                    DiskCachePathInitialised = true;
+                }
+            }
+            catch (Exception e){
+                Log.e("LOGOHELPER", "Error creating cache path: "+e.getMessage());
+            }
+        }
+        else {
+            DiskCachePathInitialised = true;
+        }
     }
 }
