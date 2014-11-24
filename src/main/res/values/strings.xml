@@ -13,7 +13,7 @@
 
     <string name="title_imprint">Impressum</string>
     <string name="title_infos">Weitere Infos</string>
-    <string name="multipleresults">Scan-Ergebnis</string>
+    <string name="title_multipleresults">Scan-Ergebnis</string>
     <string name="title_activity_search">Alle Siegel</string>
 
 
