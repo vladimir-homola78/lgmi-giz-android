@@ -16,11 +16,14 @@ import android.util.Log;
  */
 abstract class LogoLoaderTask extends AsyncTask<Siegel,Bitmap, Void>{
 
+    protected int index=-1;
+
     protected Void doInBackground(Siegel... siegels){
         int count = siegels.length;
         for (int i = 0; i < count; i++) {
             try {
                 Bitmap image = LogoHelper.getImage(siegels[i]);
+                index = i;
                 publishProgress(image);
             }
             catch (Exception e){

@@ -1,0 +1,11 @@
+#######
+25.11
+Yesterday I did mostly product-management stuff (git, issues, etc.)
+Got the logo image working   (thanks @uber)
+Tested the look-up
+Cleaned code up
+More camera debugging
+
+Holding me up: at the moment nothing
+Today: working on list/all list/product, filter stuff
+

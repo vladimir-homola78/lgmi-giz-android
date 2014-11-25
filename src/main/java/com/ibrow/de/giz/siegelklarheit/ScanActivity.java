@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -43,7 +44,22 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
         setContentView(R.layout.activity_scan);
+
+        View decorView = getWindow().getDecorView();
+        // Hide both the navigation bar and the status bar.
+        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+        // a general rule, you should design your app to hide the status bar whenever you
+        // hide the navigation bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                /*| View.SYSTEM_UI_FLAG_FULLSCREEN*/;
+        decorView.setSystemUiVisibility(uiOptions);
+
+
+
+        //getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
 
         camera = CameraProvider.getCamera();
         if(camera == null) {

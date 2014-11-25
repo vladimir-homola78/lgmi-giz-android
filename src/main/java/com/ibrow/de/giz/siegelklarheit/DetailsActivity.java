@@ -3,6 +3,7 @@ package com.ibrow.de.giz.siegelklarheit;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -26,6 +27,8 @@ public class DetailsActivity extends Activity {
     private static final String DRAWABLE="@drawable/";
     private static final String STRING="@string/";
 
+    protected Drawable blankLogo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,11 +40,14 @@ public class DetailsActivity extends Activity {
         api = app.getAPI();
 
         LogoHelper.initDiskCachePath(this);
+        blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
 
         ShortSiegelInfo siegel_short_info = SiegelklarheitApplication.getLastMatch();
         assert siegel_short_info != null;
 
         setMainDisplay(siegel_short_info);
+        WebView html_view=(WebView) findViewById(R.id.details_webview);
+        //html_view.loadUrl("file:///android_asset/loading.html");
 
         new LoadFullInfoTask(api).execute( new Integer(siegel_short_info.getId()) );
 
@@ -114,12 +120,21 @@ public class DetailsActivity extends Activity {
 
     private class LoadSiegelLogoTask extends LogoLoaderTask{
 
+        private boolean gotImage=false;
+
         @Override
-        protected void onProgressUpdate(Bitmap... progress){
+        protected void onProgressUpdate(Bitmap... progress) {
             ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
             logo_image_view.setImageBitmap(progress[0]);
+            gotImage=true;
         }
 
+        protected void onPostExecute(Void result){
+            if(! gotImage ){
+                ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
+                logo_image_view.setImageDrawable(blankLogo);
+            }
+        }
     }
 
     private class LoadFullInfoTask extends AsyncTask<Integer,Void,SiegelInfo>{
