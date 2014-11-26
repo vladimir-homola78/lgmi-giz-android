@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="96dp"
 
-            android:src="@drawable/blank_label_logo"
-        />
+            android:src="@drawable/loading"
+        /><!-- unfortunately animation not supported -->
 
     </LinearLayout>
 

@@ -6,15 +6,19 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -44,22 +48,23 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
 
         setContentView(R.layout.activity_scan);
 
+        // @todo set this to correct color
+        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
+
+        // need to de the following, even though its in onResume()
+        // before calling connectPreviewFrame()
+        // so view finder calculated correctly
         View decorView = getWindow().getDecorView();
-        // Hide both the navigation bar and the status bar.
-        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
-        // a general rule, you should design your app to hide the status bar whenever you
-        // hide the navigation bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                /*| View.SYSTEM_UI_FLAG_FULLSCREEN*/;
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
-
-
-
-        //getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
 
         camera = CameraProvider.getCamera();
         if(camera == null) {
@@ -146,6 +151,23 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     protected void onResume(){
         Log.d("SCAN", "onResume() called");
         super.onResume();
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        /*
+        * The following hides the stauts bar AND automatically the app navigation bar
+        if (Build.VERSION.SDK_INT >= 16) {
+            int sys_ui_flay_fullscreen = 0;
+            try {
+                sys_ui_flay_fullscreen = ((Integer) View.class.getDeclaredField("SYSTEM_UI_FLAG_FULLSCREEN").get(Integer.class)).intValue();
+            }
+            catch (Exception e){
+                Log.e("SYSTEM_UI_FLAG_FULLSCREEN", e.getMessage());
+            }
+            uiOptions = uiOptions | sys_ui_flay_fullscreen;
+            //uiOptions = uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN  <-- this can't compile against sdk for API 15!
+        }
+        */
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     @Override
@@ -202,21 +224,21 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setCancelable(false);
         builder.setMessage(getString(R.string.no_camera_message) + " (" + error_message + ")");
         builder.setTitle(R.string.no_camera_title);
-        builder.setPositiveButton(R.string.no_camera_retry_btn ,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        camera.initalise();
-                        connectPreviewFrame();
-                        // got camera now, so dismiss dialog
-                        dialog.cancel();
-                    } catch (Exception e) {
-                        Log.d("CAMERA", "Could not get camera: " + e.getMessage());
-                        Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
-                        showCameraErrorDialog(e.getMessage());
+        builder.setPositiveButton(R.string.no_camera_retry_btn,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            camera.initalise();
+                            connectPreviewFrame();
+                            // got camera now, so dismiss dialog
+                            dialog.cancel();
+                        } catch (Exception e) {
+                            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
+                            Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
+                            showCameraErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
+                });
         builder.show();
     }
 
@@ -249,7 +271,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         Toast.makeText(getApplicationContext(), "Got photo!", Toast.LENGTH_SHORT).show();
         //camera.release();
         //camera = null;
-        new ScanPictureTask(image, api, new ProgressDialog(this) ).execute((Void[])null);
+        new ScanPictureTask(image, api, new ProgressDialog(this) ).execute((Void[]) null);
     }
 
     /**
@@ -328,7 +350,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setCancelable(false);
         builder.setMessage(getString(R.string.scan_not_recognised_msg));
         builder.setTitle(R.string.scan_not_recognised_title);
-        builder.setPositiveButton(R.string.scan_not_recognised_tryagain_btn ,
+        builder.setPositiveButton(R.string.scan_not_recognised_tryagain_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         camera.startPreview();
@@ -338,7 +360,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setNegativeButton(R.string.scan_not_recognised_search_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent (context, SearchActivity.class);
+                        Intent intent = new Intent(context, SearchActivity.class);
                         scanButton.setEnabled(true);
                         startActivity(intent);
                     }
