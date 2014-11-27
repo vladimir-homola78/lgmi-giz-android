@@ -129,6 +129,9 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         MessageDigest m =  MessageDigest.getInstance("MD5");
         m.update(str.getBytes(), 0, str.length() );
         String hash = new BigInteger(1, m.digest()).toString(16);
+        while(hash.length()!=32) { //re-add trimmed leading zeros otherwise it won't match
+            hash = "0" + hash;
+        }
         return hash;
     }
 
@@ -353,7 +356,26 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         request.flush();
         request.close();
 
-        if (conn.getResponseCode() != 200) {
+        int response_code=0;
+        try{
+            response_code=conn.getResponseCode();
+            if( response_code == 403 ){
+                Log.e("API", "403 response");
+                Log.e("API", "time: "+timestamp);
+                Log.e("API", "nonce: "+nonce);
+                Log.e("API", "hash: "+hash);
+                Log.e("API", "time now: "+generateTimeStamp());
+            }
+        }
+        catch (Exception e){
+            if(e.getMessage().equals("No authentication challenges found")){
+                Log.e("API", "Bad 401 response");
+                Log.e("API", "time: "+timestamp);
+                Log.e("API", "nonce: "+nonce);
+                Log.e("API", "hash: "+hash);
+            }
+        }
+        if (response_code != 200) {
             throw new Exception("Error, server response: " + conn.getResponseCode());
         }
 

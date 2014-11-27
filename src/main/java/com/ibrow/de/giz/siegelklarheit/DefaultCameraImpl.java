@@ -69,10 +69,15 @@ class DefaultCameraImpl implements CameraInterface {
             int new_zoom = (int) (params.getMaxZoom() * zoomFactor);
             params.setZoom(new_zoom);
             Log.d("CAMERA", "Zoom set to "+new_zoom+" from "+oldZoomLevel);
-            camera.setParameters(params);
         }
         else {
             Log.w("CAMERA", "Camera has no Zoom Support");
+        }
+
+        // stablisation
+        if( params.isVideoStabilizationSupported() ){
+            params.setVideoStabilization(true);
+            Log.d("CAMERA", "Video Stabilization enabled");
         }
 
         // try and set to auto focus
@@ -101,7 +106,6 @@ class DefaultCameraImpl implements CameraInterface {
         }
         if( haveContinuousFocus){
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            camera.setParameters(params);
             hasContinuousFocus = true;
             useAutoFocusCallback = true;
             Log.d("CAMERA", "Have continiuos autofocus");
@@ -109,7 +113,6 @@ class DefaultCameraImpl implements CameraInterface {
         else {
             if( haveAutoFocus ){
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                camera.setParameters(params);
                 useAutoFocusCallback = true;
                 Log.d("CAMERA", "Have normal autofocus");
             }
@@ -117,11 +120,18 @@ class DefaultCameraImpl implements CameraInterface {
                 Log.w("CAMERA", "No auto focus mode");
                 if( haveMacroFocus){
                     params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                    camera.setParameters(params);
                     useAutoFocusCallback = true;
                     Log.d("CAMERA", "Using macro focus mode");
                 }
             }
+        }
+
+        try {
+            camera.setParameters(params);
+        }
+
+        catch( RuntimeException re ){
+            Log.e("CAMERA", "Could not set camera parameters:" + re.getMessage() );
         }
 
         initalised = true;

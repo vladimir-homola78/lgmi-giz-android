@@ -50,6 +50,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
         if (Build.VERSION.SDK_INT < 16) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
@@ -384,8 +385,26 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         int id = item.getItemId();
         Intent intent;
 
+        if(camera != null){
+            if(camera.getIsInitialised()){
+                try{
+                    camera.release();
+                }
+                catch (Exception e){
+                    Log.e("CAMERA", "Could not release camera [menu click]: "+e.getMessage());
+                }
+            }
+            camera = null;
+        }
+
         switch(id){
-            case R.id.action_scan: break; // already scanning
+            case R.id.action_scan:
+                // even though we're already in the scan activity
+                // this menu item is active as a fallback
+                // to restart the activity e.g. camera crashed
+                intent = new Intent (this, ScanActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_search:
                 intent = new Intent (this, SearchActivity.class);
                 startActivity(intent);
