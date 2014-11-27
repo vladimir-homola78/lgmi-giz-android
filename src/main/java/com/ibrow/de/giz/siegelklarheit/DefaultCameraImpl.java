@@ -74,7 +74,18 @@ class DefaultCameraImpl implements CameraInterface {
             Log.w("CAMERA", "Camera has no Zoom Support");
         }
 
-        // stablisation
+        // steady photo mode if supported
+        String old_scene = params.getSceneMode();
+        params.setSceneMode(Camera.Parameters.SCENE_MODE_STEADYPHOTO);
+        if( params.getSceneMode() != null && params.getSceneMode().equals(Camera.Parameters.SCENE_MODE_STEADYPHOTO)){
+            Log.d("CAMERA", "Set scene mode to steadyphoto");
+        }
+        else{
+            params.setSceneMode(old_scene);
+            Log.w("CAMERA", "Could not set scene mode to steadyphoto");
+        }
+
+        // video stablisation where supported
         if( params.isVideoStabilizationSupported() ){
             params.setVideoStabilization(true);
             Log.d("CAMERA", "Video Stabilization enabled");
@@ -108,20 +119,23 @@ class DefaultCameraImpl implements CameraInterface {
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             hasContinuousFocus = true;
             useAutoFocusCallback = true;
-            Log.d("CAMERA", "Have continiuos autofocus");
+            Log.d("CAMERA", "Have continuous auto-focus");
         }
         else {
             if( haveAutoFocus ){
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 useAutoFocusCallback = true;
-                Log.d("CAMERA", "Have normal autofocus");
+                Log.d("CAMERA", "Have normal auto-focus");
             }
             else {
-                Log.w("CAMERA", "No auto focus mode");
+                Log.w("CAMERA", "No auto or continuous focus mode");
                 if( haveMacroFocus){
-                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
                     useAutoFocusCallback = true;
                     Log.d("CAMERA", "Using macro focus mode");
+                }
+                else {
+                    Log.w("CAMERA", "Not possible to use auto-focus callback - no supported modes");
                 }
             }
         }
@@ -129,7 +143,6 @@ class DefaultCameraImpl implements CameraInterface {
         try {
             camera.setParameters(params);
         }
-
         catch( RuntimeException re ){
             Log.e("CAMERA", "Could not set camera parameters:" + re.getMessage() );
         }

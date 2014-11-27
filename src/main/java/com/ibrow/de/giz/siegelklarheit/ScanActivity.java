@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,7 +37,7 @@ import java.util.List;
  *  @author Pete
  *  @todo Clean the code up
  */
-public class ScanActivity extends Activity implements View.OnClickListener, PictureTakenCallback {
+public class ScanActivity extends Activity implements View.OnClickListener, PictureTakenCallback, View.OnTouchListener {
 
 
     private CameraInterface camera;
@@ -209,6 +211,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         preview.addView(previewFrame);
         ViewfinderView finder = new ViewfinderView(this);
         finder.setCamera(camera);
+        finder.setOnTouchListener(this);
         preview.addView(finder);
     }
 
@@ -245,9 +248,17 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     /**
      * Called when the user clicks on the scan now button.
+     *
+     * Calls startScan()
+     *
      * @param v
+     * @see #startScan()
      */
     public void onClick(View v) {
+        startScan();
+    }
+
+    protected void startScan(){
         if(! checkOnline() ){
             return;
         }
@@ -419,6 +430,31 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public boolean onTouch(View v, MotionEvent event){
+        //Log.d("SCAN", "screen touched");
+        if( camera != null && camera.getIsInitialised() ){
+            //Log.d("SCAN","touch, camera ready");
+            int action = event.getActionMasked();
+            //Log.d("SCAN","action is "+action);
+            switch(action) {
+                case MotionEvent.ACTION_UP :
+                    //Log.d("SCAN", "ACTION up at x "+event.getX()+", y "+event.getY() );
+                    int x=(int) event.getX();
+                    int y=(int) event.getY();
+                    Rect finder=camera.getViewFramingRect();
+                    if( (x>finder.left && x<finder.right) && (y>finder.top && y<finder.bottom)  ){
+                        Log.d("SCAN", "Finder touched");
+                        startScan();
+                    }
+                    break;
+
+            }
+
+        }
+        return true;
     }
 
     /* internal classes */
