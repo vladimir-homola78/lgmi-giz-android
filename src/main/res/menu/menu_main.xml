@@ -2,27 +2,27 @@
 
     <item android:id="@+id/action_search" android:title="@string/menu_search"
         android:icon="@drawable/menu_search"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         />
 
     <item android:id="@+id/action_scan" android:title="@string/menu_scan"
         android:icon="@drawable/menu_camera"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
     />
 
     <item android:id="@+id/action_info" android:title="@string/menu_info"
         android:icon="@drawable/menu_info"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         />
 
     <item android:id="@+id/action_imprint" android:title="@string/menu_imprint"
         android:icon="@drawable/menu_legal"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         />
 
     <!--
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" android:showAsAction="never" />
+         android:showAsAction="never" />
     -->
 
 </menu>

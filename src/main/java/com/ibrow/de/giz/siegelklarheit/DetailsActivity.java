@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +41,7 @@ public class DetailsActivity extends Activity {
         LogoHelper.initDiskCachePath(this);
         blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
 
-        ShortSiegelInfo siegel_short_info = SiegelklarheitApplication.getLastMatch();
+        ShortSiegelInfo siegel_short_info = SiegelklarheitApplication.getCurrentSiegel();
         assert siegel_short_info != null;
 
         setMainDisplay(siegel_short_info);

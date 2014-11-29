@@ -53,7 +53,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
             camera.setPreviewFrameSize(this.getWidth(), this.getHeight() );
             camera.startPreview();
         } catch (Exception e) {
-            Log.d("CAMERA", "Error setting camera preview: " + e.getMessage());
+            Log.w("CAMERA", "Error setting camera preview: " + e.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
         try {
             camera.stopPreview();
         } catch (Exception e){
-            Log.d("CAMERA", "Error stopping camera preview: " + e.getMessage());
+            Log.e("CAMERA", "Error stopping camera preview: " + e.getMessage());
         }
 
         camera.setOrientation(activity.getWindowManager().getDefaultDisplay().getRotation());
@@ -83,7 +83,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
             camera.startPreview();
 
         } catch (Exception e){
-            Log.d("CAMERA", "Error starting camera preview: " + e.getMessage());
+            Log.w("CAMERA", "Error starting camera preview: " + e.getMessage());
         }
     }
 }

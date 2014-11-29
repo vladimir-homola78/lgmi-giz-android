@@ -44,6 +44,7 @@ public class SearchActivity extends Activity {
             case R.id.action_scan:
                 intent = new Intent (this, ScanActivity.class);
                 startActivity(intent);
+                break;
             case R.id.action_search:
                // do nothing
                 break;

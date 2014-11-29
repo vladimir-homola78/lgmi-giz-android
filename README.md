@@ -8,6 +8,10 @@ I'm developing for Android version 4.0.3 (aka Ice Cream Sandwich), which is API 
 
 Build is against SDK API 21 (Android 5).
 
+### Dependencies ###
+
+Just the [v4 support library](http://developer.android.com/tools/support-library/features.html#v4), com.android.support:support-v4:21.0.+.  This is needed for the navigation drawer and tour activity.
+
 ## Known Issues/Limitations ##
 
 As well as internet connection, the device requires a **back facing** camera to work.  If it has just a front-facing camera, the app won't work (or at least can't scan).
@@ -15,6 +19,13 @@ As well as internet connection, the device requires a **back facing** camera to 
 Accessing the camera hardware is tricky and error-prone, with obscure edge cases.
 
 There's a huge variance of device of display size and resolution, and camera mode and resolutions.  Covering every possible combination is non-trivial.  A **lot** of testing is required on various devices.
+
+
+## Release ##
+
+Need to run through [ProGuard](http://stackoverflow.com/questions/2446248/remove-all-debug-logging-calls-before-publishing-are-there-tools-to-do-this/2466662#2466662)
+
+Needs signing.
 
 ## See Also ##
 

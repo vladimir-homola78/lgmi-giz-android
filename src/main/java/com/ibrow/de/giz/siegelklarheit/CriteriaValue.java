@@ -16,6 +16,7 @@ public enum CriteriaValue {
     private int id;
 
     public static final String IDENTIFIER_PREFIX="criterion__value_";
+    public static final String IMAGE_IDENTIFIER_PREFIX="criterion_symbol_";
 
     private CriteriaValue(String name, int id){
         this.name = name;
@@ -34,10 +35,10 @@ public enum CriteriaValue {
      * Gets the name identifer suitable for
      * loading an image resource
      *
-     * @return criterion_value_ + internal name
+     * @return criterion__symbol_ + internal name
      */
     public String getNameIdentifierForImage(){
-        return IDENTIFIER_PREFIX+name;
+        return IMAGE_IDENTIFIER_PREFIX+name;
     }
 
     /**

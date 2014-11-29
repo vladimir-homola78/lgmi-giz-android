@@ -13,10 +13,11 @@ public enum CriteriaType {
 
     private String name;
 
-    public static final String IDENTIFIER_PREFIX="criterion__type_";
+    public static final String IDENTIFIER_PREFIX="criterion_type_";
+
 
     private CriteriaType(String name){
-
+        this.name = name;
     }
 
     /**
@@ -26,6 +27,8 @@ public enum CriteriaType {
     public String getInternalName(){
         return name;
     }
+
+
 
     /**
      * Gets the name identifer suitable for

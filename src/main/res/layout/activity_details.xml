@@ -55,12 +55,13 @@
         />
 
         <TextView
+            android:paddingTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="[Unknown]"
             android:id="@+id/rating_symbol_text"
             android:textColor="#ffffff"
-            android:textSize="18dp"
+            android:textSize="16dp"
         />
 
     </LinearLayout>

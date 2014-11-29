@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -23,12 +24,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+//import android.widget.Toast;
 
-/* following 2 only needed for logging stacktrace in ScanPictureTask - debugging */
-import java.io.PrintWriter;
-import java.io.StringWriter;
-/* end temp import */
 import java.util.List;
 
 /**
@@ -42,6 +39,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     private CameraInterface camera;
     private CameraPreviewFrame previewFrame;
+    private ViewfinderView finder;
     private Button scanButton;
 
     private IdentifeyeAPIInterface api;
@@ -84,6 +82,15 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
+
+
+        try{
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            api.setVersionInfo(pInfo.versionName, Build.VERSION.RELEASE);
+        }
+        catch (Exception e){
+            Log.e("SCAN", "Could not set api version info" + e.getMessage());
+        }
 
         scanButton = (Button)findViewById(R.id.button_scan);
         scanButton.setOnClickListener(this);
@@ -138,21 +145,21 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         try {
             camera.initalise();
-            if(previewFrame==null) {
+            //if(previewFrame==null) {
                 connectPreviewFrame();
-            }
-            else {
-                previewFrame.setCamera(camera);
-            }
+            //}
+            //else {
+            //    previewFrame.setCamera(camera);
+            //}
         } catch (Exception e) {
-            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
+            Log.e("CAMERA", "Could not get camera: " + e.getMessage());
             showCameraErrorDialog(e.getMessage());
         }
     }
 
     @Override
     protected void onResume(){
-        Log.d("SCAN", "onResume() called");
+        Log.v("SCAN", "onResume() called");
         super.onResume();
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -171,13 +178,16 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         }
         */
         decorView.setSystemUiVisibility(uiOptions);
+        /*if(this.finder != null){
+            finder.invalidate();
+        }*/
     }
 
     @Override
     protected void onRestart(){
-        Log.d("SCAN", "onRestart() called");
-        reinitialiseCamera();
+        Log.v("SCAN", "onRestart() called");
         super.onRestart();
+        reinitialiseCamera();
     }
 
     @Override
@@ -206,10 +216,12 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.CameraPreviewFrame
      */
     private void connectPreviewFrame(){
+        Log.v("SCAN", "connecting preview frame");
         previewFrame = new CameraPreviewFrame(this, camera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.removeAllViewsInLayout(); // remove old dead children
         preview.addView(previewFrame);
-        ViewfinderView finder = new ViewfinderView(this);
+        finder = new ViewfinderView(this);
         finder.setCamera(camera);
         finder.setOnTouchListener(this);
         preview.addView(finder);
@@ -238,7 +250,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                             dialog.cancel();
                         } catch (Exception e) {
                             Log.d("CAMERA", "Could not get camera: " + e.getMessage());
-                            Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
                             showCameraErrorDialog(e.getMessage());
                         }
                     }
@@ -263,6 +275,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             return;
         }
         scanButton.setEnabled(false);
+        finder.setActive(true);
         camera.takePicture(this);
         //camera.stopPreview(); - not needed, done by camera itself
     }
@@ -280,9 +293,10 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      *
      */
     public void onPictureTaken(byte[] image){
-        Toast.makeText(getApplicationContext(), "Got photo!", Toast.LENGTH_SHORT).show();
+        Log.v("SCAN", "Got photo!");
         //camera.release();
         //camera = null;
+        finder.setActive(false);
         new ScanPictureTask(image, api, new ProgressDialog(this) ).execute((Void[]) null);
     }
 
@@ -330,7 +344,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.ScanActivity.ScanPictureTask
      */
     protected void ProcessScanResult(List<ShortSiegelInfo> results){
-        Toast.makeText(getApplicationContext(), "scan complete", Toast.LENGTH_SHORT).show();
+        Log.v("SCAN", "scan complete");
         int count = results.size();
         if(count == 0){
             showTryAgainDialog();
@@ -341,7 +355,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             ShortSiegelInfo siegel = results.get(0); // get first and only result
             Intent intent = new Intent (this, DetailsActivity.class);
 
-            SiegelklarheitApplication.setLastMatch(siegel);
+            SiegelklarheitApplication.setCurrentSiegel(siegel);
 
             scanButton.setEnabled(true);
             startActivity(intent);
@@ -524,12 +538,6 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                     String msg;
                     if(e!=null && e.getMessage()!=null){
                         msg = "ScanPictureTask: " + e.getMessage();
-                        if(e.getMessage().equals("No authentication challenges found")){ //wierdness!
-                            StringWriter sw = new StringWriter();
-                            e.printStackTrace(new PrintWriter(sw));
-                            String stackTraceAsString = sw.toString();
-                            Log.d("ScanPictureTask", "Stacktrace: "+stackTraceAsString);
-                        }
                     }
                     else {
                         msg="[unknown in ScanPictureTask]";

@@ -176,7 +176,7 @@ class DefaultCameraImpl implements CameraInterface {
         int right=left + viewFinderSize;
         int bottom=top+viewFinderSize;
         viewFraming = new Rect(left, top, right,bottom);
-        Log.d("CAMERA", "Viewfinder size: "+viewFinderSize);
+        Log.v("CAMERA", "Viewfinder size: "+viewFinderSize);
 
         // now calculate the real image square
 
@@ -189,7 +189,7 @@ class DefaultCameraImpl implements CameraInterface {
             ratio = (float) previewSize.height/(float)height;
         }
         image_size = (int) (ratio * viewFinderSize);
-        Log.d("CAMERA", "Crop image size: "+image_size);
+        Log.v("CAMERA", "Crop image size: "+image_size);
 
 
         left=(previewSize.width - image_size ) / 2;

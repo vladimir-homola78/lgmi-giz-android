@@ -44,7 +44,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected Random rnd = new Random();
 
-    protected final static int EXPECTED_CRITERIA_NUMBER=3;
+
 
     private static final String SALT="w1hif53kEr0d4fblaEacBrak2i3s3nas8ielLadge1e86606iCaRast5e592a2smI";
 
@@ -53,6 +53,16 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected static final String CRLF= "\r\n";
     protected static final String DASHDASH = "--";
+
+    protected static String userAgent="Siegelklarheit (Android)";
+
+
+
+    @Override
+    public void setVersionInfo(final String app_version, final String android_version){
+        userAgent="Siegelklarheit/"+app_version+" (Android; Android "+android_version+")";
+        Log.d("API", "User-agent: "+userAgent);
+    }
 
     /**
      * Returns the API endpoint.
@@ -139,7 +149,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
     /**
      * md5(s.n.t)
      *
-     * @param nonce intege from 1-99999 as a string
+     * @param nonce integer from 1-99999 as a string
      * @param timestamp UNIX timestamp as a string
      * @return The md5 hash of secret + nonce + timestamp
      *
@@ -240,7 +250,12 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         }
         else{
             criteria_list = (List) new ArrayList <Criterion>(0);
-            Log.e("API", "Missing criteria attribute :"+item.toString() );
+            if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                Log.v("API", "No criteria for siegel with rating unknown/none");
+            }
+            else {
+                Log.e("API", "Missing criteria attribute :" + item.toString());
+            }
         }
 
         ShortSiegelInfo siegel_info = new ShortSiegelInfo(id, name, logo, rating, criteria_list);
@@ -426,12 +441,22 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         if( criteria!=null){
             criteria_list = parseSiegelCriteria(criteria);
             if(criteria_list.size() != EXPECTED_CRITERIA_NUMBER ){
-                Log.w("API", "Didn't get 3 criteria for siegel: "+json.toString() );
+                if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                    Log.v("API", criteria_list.size()+" criteria for siegel with rating unknown/none");
+                }
+                else {
+                    Log.w("API", "Didn't get 3 criteria for siegel: "+json.toString() );
+                }
             }
         }
         else{
-            criteria_list = (List) new ArrayList <Criterion>(0);
-            Log.e("API", "Missing criteria attribute :"+json.toString() );
+            criteria_list = (List) new ArrayList<Criterion>(0);
+            if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                Log.v("API", "No criteria for siegel with rating unknown/none");
+            }
+            else {
+                Log.e("API", "Missing criteria attribute :" + json.toString());
+            }
         }
 
         String details = json.optString("html");

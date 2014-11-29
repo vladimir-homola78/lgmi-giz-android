@@ -14,19 +14,23 @@ import android.view.View;
  * @author Pete
  * @see ScanActivity#connectPreviewFrame()
  */
-public final class ViewfinderView extends View {
+final class ViewfinderView extends View {
 
     /** Surrounding Transparency color aRGB */
     private static final String MASK_COLOUR="#44ffffff";
     /** Color of the 4 right-angles drwan in the corners of the finder. aRGB */
     private static final String FINDER_COLOUR="#88ffffff";
 
+    /** Color of the 4 right-angles drwan in the corners of the finder when we're taking a photo. aRGB */
+    private static final String FINDER_COLOUR_ACTIVE="#8800ff00";
 
+    protected boolean active=false;
 
     private final Paint paint;
 
     private final int maskColor;
     private final int finderColor;
+    private final int finderActiveColor;
 
     /** Length of the lines for drawing the 4 corners inside the viewfinder.
      * Proportionally calculated based on the size of the viewfinder. */
@@ -78,6 +82,7 @@ public final class ViewfinderView extends View {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         maskColor = Color.parseColor(MASK_COLOUR);
         finderColor = Color.parseColor(FINDER_COLOUR);
+        finderActiveColor = Color.parseColor(FINDER_COLOUR_ACTIVE);
     }
 
 
@@ -90,6 +95,12 @@ public final class ViewfinderView extends View {
      */
     public void setCamera(CameraInterface camera) {
         this.camera = camera;
+    }
+
+
+    public void setActive(boolean active_state){
+        this.active = active_state;
+        invalidate();
     }
 
 
@@ -122,7 +133,13 @@ public final class ViewfinderView extends View {
         canvas.drawRect(frame.right + ONE, frame.top, width, frame.bottom + ONE, paint);
         canvas.drawRect(ZERO, frame.bottom + ONE, width, height, paint);
 
-        paint.setColor( finderColor);
+        if(! active){
+            paint.setColor( finderColor);
+        }
+        else {
+            android.util.Log.d("viewfinder", "active!");
+            paint.setColor( finderActiveColor );
+        }
         paint.setStyle(Paint.Style.STROKE);
 
         if(frame.width() >  MIN_WIDTH_FOR_THICK_STROKE ){
