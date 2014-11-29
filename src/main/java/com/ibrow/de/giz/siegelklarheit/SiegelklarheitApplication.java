@@ -27,6 +27,8 @@ public class SiegelklarheitApplication extends Application {
      */
     private static List<ShortSiegelInfo> LastMultipleMatches;
 
+    private static final LogoHelper logoHelper = new LogoHelper(); // keep logohelper memory cache app wide
+
     public SiegelklarheitApplication() {
         super();
         identifyAPI = new TestIdentifeyeAPI();

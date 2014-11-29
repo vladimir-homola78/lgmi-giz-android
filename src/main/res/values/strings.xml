@@ -57,4 +57,7 @@
     <string name="criterion_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor</string>
 
 
+    <string name="filter_hint">Nach Siegeln suchen</string>
+
+
 </resources>

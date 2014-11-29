@@ -65,4 +65,12 @@ public interface IdentifeyeAPIInterface {
      */
     public void setVersionInfo(String app_version, String android_version);
 
+
+    /**
+     * Returns all siegels.
+     *
+     * @return
+     */
+    public ShortSiegelInfo[] getAll() throws Exception;
+
 }

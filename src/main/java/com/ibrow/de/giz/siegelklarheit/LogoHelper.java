@@ -53,8 +53,9 @@ final class LogoHelper {
         Bitmap image;
         // check memory cache first
         Integer siegel_id = new Integer(siegel.getId());
-        image = MemCache.get( siegel_id );
+        image = (Bitmap) MemCache.get( siegel_id );
         if(image != null){
+            Log.v("LOGOHELPER", "memory cache hit");
             return image;
         }
         // try disk
@@ -64,8 +65,10 @@ final class LogoHelper {
             if( file.exists() ){
                 synchronized (DiskCacheLock){
                     image = BitmapFactory.decodeFile(filepath);
+                    //DiskCacheLock.notifyAll();
                 }
                 MemCache.put(siegel_id, image);
+                Log.v("LOGOHELPER", "disk cache hit");
                 return image;
             }
         }
@@ -75,18 +78,23 @@ final class LogoHelper {
         // pull from web
 
         String logo_url = siegel.getLogoURL();
-        Log.d("LOGOHELPER", "Downloading "+logo_url);
+        Log.v("LOGOHELPER", "Downloading "+logo_url);
         HttpURLConnection conn = null;
         InputStream is = null;
 
         try {
             conn = (HttpURLConnection) (new URL(logo_url)).openConnection();
             conn.connect();
-            if (conn.getResponseCode() != 200) {
+
+            if (conn.getResponseCode() >= 400 ) {
                 throw new Exception("Error, server response: " + conn.getResponseCode());
             }
             is=conn.getInputStream();
             image = BitmapFactory.decodeStream(is);
+        }
+        catch(Exception e){
+            Log.e("LOGOHELPER", e.getMessage() );
+            throw e;
         }
         finally {
             if(is != null){
@@ -97,6 +105,7 @@ final class LogoHelper {
             }
         }
 
+        Log.v("LOGOHELPER", "got image from "+logo_url);
         // store in memory cache for next call
         MemCache.put(siegel_id, image);
 
@@ -121,7 +130,9 @@ final class LogoHelper {
                         Log.e("LOGOHELPER", e.getMessage());
                     }
                 }
+                //DiskCacheLock.notifyAll();
             }
+
         }
 
         return image;

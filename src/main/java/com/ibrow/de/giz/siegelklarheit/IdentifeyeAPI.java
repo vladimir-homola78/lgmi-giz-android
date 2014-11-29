@@ -56,12 +56,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected static String userAgent="Siegelklarheit (Android)";
 
-
+    protected static ShortSiegelInfo[] allSiegels=null;
 
     @Override
     public void setVersionInfo(final String app_version, final String android_version){
         userAgent="Siegelklarheit/"+app_version+" (Android; Android "+android_version+")";
-        Log.d("API", "User-agent: "+userAgent);
     }
 
     /**
@@ -264,7 +263,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             siegel_info.setConfidenceLevel(item.getInt("c") );
         }
         else {
-            Log.d("API", "No confidence level for item : "+item.toString());
+            Log.v("API", "No confidence level for item : "+item.toString());
         }
 
         return siegel_info;
@@ -469,5 +468,29 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details);
 
         return siegel;
+    }
+
+    public ShortSiegelInfo[] getAll() throws Exception{
+        if(allSiegels != null) {
+            return allSiegels;
+        }
+
+
+        JSONArray json;
+        // disk cache todo
+
+
+        // fetch from server
+        json= new JSONArray( makeGetCall( "info" ) );
+
+        int results_size = json.length();
+        allSiegels = new ShortSiegelInfo[results_size];
+
+        for(int i=0; i<results_size; i++){
+            JSONObject item = json.getJSONObject(i);
+            allSiegels[i] = parseSiegel(item);
+        }
+
+        return allSiegels;
     }
 }

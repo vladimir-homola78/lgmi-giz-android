@@ -59,6 +59,7 @@
             android:name="com.ibrow.de.giz.siegelklarheit.SearchActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"
             >
         </activity>
 

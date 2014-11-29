@@ -12,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A an adaptor for list of Siegels, used in list views.
@@ -32,13 +34,8 @@ class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
 
     protected Drawable blankLogo;
 
-/*
+    protected HashMap<ShortSiegelInfo, Bitmap> logos = new HashMap<ShortSiegelInfo, Bitmap>(IdentifeyeAPIInterface.MAX_ENTRIES);
 
-    public SiegelArrayAdapter(Context context, int textViewResourceId, List<ShortSiegelInfo> objects) {
-        super(context, textViewResourceId, objects);
-        this.context = context;
-    }protected final static int EXPECTED_CRITERIA_NUMBER=3;
-*/
     public SiegelArrayAdapter(Context context, ShortSiegelInfo[] values) {
         super(context, R.layout.listitem_siegel, values);
         this.context = context;
@@ -68,8 +65,14 @@ class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
         title_view.setText(siegel.getName());
 
         ImageView logo_image_view = (ImageView) rowView.findViewById(R.id.logo_view);
-        LoadSiegelLogoTask logo_task = new  LoadSiegelLogoTask(logo_image_view);
-        logo_task.execute(siegel);
+        Bitmap image = (Bitmap) logos.get(siegel);
+        if(image != null){
+            logo_image_view.setImageBitmap(image);
+        }
+        else {
+            LoadSiegelLogoTask logo_task = new LoadSiegelLogoTask(logo_image_view, siegel);
+            logo_task.execute(siegel);
+        }
 
         switch (siegel.getRating()) {
             case NONE:
@@ -102,10 +105,6 @@ class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
                         if( c!=null ) {
                             id=i+1;
                             criteria_text = (TextView) rowView.findViewById(resources.getIdentifier("@id/criteria_text_" + id, null, packageName));
-                            android.util.Log.d("SA", "name tag: " + "@string/" + c.getType().getNameIdentifier());
-                            android.util.Log.d("SA", "name id: " + resources.getIdentifier("@string/" + c.getType().getNameIdentifier(), null, packageName));
-                            android.util.Log.d("SA", "name text: " + resources.getText(resources.getIdentifier("@string/" + c.getType().getNameIdentifier(), null, packageName)));
-
                             criteria_text.setText(resources.getText(
                                             resources.getIdentifier("@string/" + c.getType().getNameIdentifier(), null, packageName)
                                     )
@@ -132,15 +131,18 @@ class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
 
         private boolean gotImage=false;
         private final ImageView logoView;
+        private final ShortSiegelInfo siegel;
 
-        LoadSiegelLogoTask(final ImageView logo_view){
+        LoadSiegelLogoTask(final ImageView logo_view, ShortSiegelInfo siegel){
             this.logoView = logo_view;
+            this.siegel = siegel;
         }
 
         @Override
         protected void onProgressUpdate(Bitmap... progress) {
             logoView.setImageBitmap(progress[0]);
             gotImage=true;
+            logos.put(siegel, progress[0]);
         }
 
         protected void onPostExecute(Void result){
