@@ -473,8 +473,12 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             details = "<html><head></head><body><!-- no details --></body></html>";
         }
 
+        String url = json.optString("shared_url");
+        if( url==null || url.isEmpty() ){
+            Log.w("API", "Missing or empty share url :"+json.toString());
+        }
 
-        SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details);
+        SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details, url);
 
         return siegel;
     }

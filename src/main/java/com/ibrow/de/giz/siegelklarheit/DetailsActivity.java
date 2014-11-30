@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import static com.ibrow.de.giz.siegelklarheit.LogoHelper.getFromMemoryCache;
@@ -29,6 +30,9 @@ public class DetailsActivity extends Activity {
     private static final String STRING="@string/";
 
     protected Drawable blankLogo;
+
+    private ShareActionProvider shareActionProvider;
+    private boolean haveShareURL = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,7 @@ public class DetailsActivity extends Activity {
             logo_image_view.setImageBitmap(image);
         }
         else {
-            LoadSiegelLogoTask logo_task = new  LoadSiegelLogoTask();
+            LoadSiegelLogoTask logo_task = new LoadSiegelLogoTask();
             logo_task.execute(siegel);
         }
     }
@@ -87,7 +91,23 @@ public class DetailsActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_details, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.action_share);
+        shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
+        shareActionProvider.
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        shareActionProvider.setShareIntent(intent);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem share = menu.findItem(R.id.action_share);
+        share.setEnabled(haveShareURL);
+        super.onPrepareOptionsMenu(menu);
         return true;
     }
 
@@ -169,6 +189,19 @@ public class DetailsActivity extends Activity {
                 html_view.getSettings().setJavaScriptEnabled(true);
                 html_view.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
                 //Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
+                String url = result.getShareURL();
+                if( ! url.isEmpty() ){
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, result.getName());
+                    intent.putExtra(Intent.EXTRA_TEXT, url);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                    shareActionProvider.setShareIntent(intent);
+                    haveShareURL = true;
+                }
+                else {
+                    invalidateOptionsMenu();
+                }
                 return;
             }
             Log.e("LoadFullInfoTask", "Got null result");
