@@ -14,6 +14,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import static com.ibrow.de.giz.siegelklarheit.LogoHelper.getFromMemoryCache;
+
 /**
  * Shows the details of a Siegel.
  *
@@ -70,11 +72,15 @@ public class DetailsActivity extends Activity {
                 )
         );
 
-        LoadSiegelLogoTask logo_task = new  LoadSiegelLogoTask();
-        logo_task.execute(siegel);
-
-
-
+        Bitmap image = getFromMemoryCache(siegel);
+        if(image != null ){
+            ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
+            logo_image_view.setImageBitmap(image);
+        }
+        else {
+            LoadSiegelLogoTask logo_task = new  LoadSiegelLogoTask();
+            logo_task.execute(siegel);
+        }
     }
 
     /* menu */

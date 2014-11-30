@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ibrow.de.giz.siegelklarheit.LogoHelper.getFromMemoryCache;
+
 /**
  * A an adaptor for list of Siegels, used in list views.
  *
@@ -34,8 +36,6 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
     private final Resources resources;
 
     protected Drawable blankLogo;
-
-    protected HashMap<ShortSiegelInfo, Bitmap> logos = new HashMap<ShortSiegelInfo, Bitmap>(IdentifeyeAPIInterface.MAX_ENTRIES);
 
     public SiegelArrayAdapter(Context context, ShortSiegelInfo[] values) {
         super(context, R.layout.listitem_siegel, values);
@@ -65,7 +65,7 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
         title_view.setText(siegel.getName());
 
         ImageView logo_image_view = (ImageView) rowView.findViewById(R.id.logo_view);
-        Bitmap image = (Bitmap) logos.get(siegel);
+        Bitmap image = getFromMemoryCache(siegel);
         if(image != null){
             logo_image_view.setImageBitmap(image);
         }
@@ -142,7 +142,6 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
         protected void onProgressUpdate(Bitmap... progress) {
             logoView.setImageBitmap(progress[0]);
             gotImage=true;
-            logos.put(siegel, progress[0]);
         }
 
         protected void onPostExecute(Void result){

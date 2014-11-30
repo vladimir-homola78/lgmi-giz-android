@@ -35,6 +35,18 @@ final class LogoHelper {
     private static final int DISK_CACHE_SIZE = (IdentifeyeAPIInterface.MAX_ENTRIES * IMAGE_SIZE );
     private static final int CACHE_VERSION=1;
 
+
+    /**
+     * Attempts to fetch logo from memory.
+     * It's safe to call this in the GUI thread as its quick.
+     *
+     * Returns null if not in cache
+     * @return The logo image for the Siegel if available, or null
+     */
+    public static Bitmap getFromMemoryCache(Siegel siegel){
+        return (Bitmap) MemCache.get( Integer.valueOf(siegel.getId()) );
+    }
+
     /**
      * Fetches the logo image for a siegel.
      *
@@ -43,7 +55,7 @@ final class LogoHelper {
      * Call initDiskCachePath once first before this method.
      *
      * @param siegel
-     * @return
+     * @return The logo image for the Siegel
      *
      * @see #initDiskCachePath(android.content.Context)
      * @see LogoLoaderTask
@@ -63,10 +75,10 @@ final class LogoHelper {
             String filepath= DiskCachePath.getAbsolutePath() + File.separator + siegel_id.toString()+".png";
             File file=new File(filepath);
             if( file.exists() ){
-                synchronized (DiskCacheLock){
+                //synchronized (DiskCacheLock){
                     image = BitmapFactory.decodeFile(filepath);
                     //DiskCacheLock.notifyAll();
-                }
+                //}
                 MemCache.put(siegel_id, image);
                 Log.v("LOGOHELPER", "disk cache hit");
                 return image;

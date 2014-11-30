@@ -122,6 +122,10 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         // Replace whatever is in the fragment container with this fragment
         // and give the fragment a tag name equal to the string at the position
         // selected
+        if(position > (dropdownList.size()-1) ){
+            position = 0;
+        }
+
         try {
             ft.replace(R.id.container, newFragment, dropdownList.get(position));
         }
@@ -132,7 +136,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         // Apply changes
         ft.commit();
 
-        if(position==0){
+        if(position<1){
             currentList = allSiegelsArray;
         }
         else {
@@ -161,12 +165,26 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         Log.v("SEARCH", "filter called");
         String text= filterText.getText().toString().trim().toLowerCase();
         if(text.isEmpty()){
-            /*amFiltering = false;
+            amFiltering = false;
+            int position = listview.getSelectedItemPosition();
+            if(position<1){
+                currentList = allSiegelsArray;
+            }
+            else {
+                int index = position -1;
+                if(sieglsByCategory.length >= position && sieglsByCategory[index]!=null ) {
+                    currentList = sieglsByCategory[index].toArray();
+                }
+                else{
+                    currentList = new ShortSiegelInfo[0];
+                }
+            }
+
             adapter = new SiegelArrayAdapter(this, currentList);
             listview.setAdapter(adapter);
-            lastFilterText="";*/
-            Log.v("SEARCH", "filter empty");
-            //return;
+            lastFilterText="";
+            Log.v("SEARCH", "filter text empty");
+            return;
         }
 
         amFiltering = true;
@@ -184,8 +202,10 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
             }
         }
         filteredList = ssal.toArray();
+
         adapter = new SiegelArrayAdapter(this, filteredList);
         listview.setAdapter(adapter);
+        //currentList = filteredList;
 
         lastFilterText = text;
         Log.v("SEARCH", "filter finsihed");
@@ -381,7 +401,15 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
 
         @Override
         public void afterTextChanged(Editable s) {
-           filterList();
+            if(amFiltering) {
+                Log.v("SEARCH", "textchanged event");
+                filterList();
+            }
+            else{
+                if(! filterText.getText().toString().trim().isEmpty()){
+                    filterList();
+                }
+            }
         }
 
         @Override
