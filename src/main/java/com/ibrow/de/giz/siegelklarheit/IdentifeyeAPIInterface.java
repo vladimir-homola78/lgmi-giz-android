@@ -70,7 +70,17 @@ public interface IdentifeyeAPIInterface {
      * Returns all siegels.
      *
      * @return
+     * @see com.ibrow.de.giz.siegelklarheit.ShortSiegelInfo
      */
     public ShortSiegelInfo[] getAll() throws Exception;
+
+
+    /**
+     * Returns a list of product categories.
+     *
+     * @return
+     * @see com.ibrow.de.giz.siegelklarheit.ProductCategory
+     */
+    public List<ProductCategory> getCategories() throws Exception;
 
 }

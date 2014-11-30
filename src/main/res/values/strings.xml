@@ -58,6 +58,7 @@
 
 
     <string name="filter_hint">Nach Siegeln suchen</string>
+    <string name="category_all">Alle Siegel</string>
 
 
 </resources>

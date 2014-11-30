@@ -25,7 +25,7 @@ import java.util.Map;
  * @see LogoLoaderTask
  * @author Pete
  */
-class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
+public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
 
     private final Context context;
     private final ShortSiegelInfo[] siegels;

@@ -56,7 +56,8 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected static String userAgent="Siegelklarheit (Android)";
 
-    protected static ShortSiegelInfo[] allSiegels=null;
+    protected static ShortSiegelInfo[] allSiegels = null;
+    protected static List<ProductCategory> categories = null;
 
     @Override
     public void setVersionInfo(final String app_version, final String android_version){
@@ -83,6 +84,14 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         return endPoint;
     }
 
+    protected void setConnectionDefaults(){
+        conn.setConnectTimeout(10000); //10 seconds
+        conn.setReadTimeout(30000); // 30 seconds
+        conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("User-Agent", userAgent);
+        conn.setRequestProperty("Cache-Control", "no-cache");
+    }
+
     /**
      * Performs a API request, GET method.
      *
@@ -97,7 +106,8 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         StringBuffer sb = new StringBuffer();
         try {
             conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Connection", "Keep-Alive");
+            setConnectionDefaults();
+            conn.setRequestMethod("GET");
             conn.connect();
             if (conn.getResponseCode() != 200) {
                 throw new Exception("Error, server response: " + conn.getResponseCode());
@@ -187,7 +197,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         String timestamp = generateTimeStamp();
         String hash = generateHash(nonce, timestamp);
 
-        List<ShortSiegelInfo> results = new ArrayList<ShortSiegelInfo>();
+        List<ShortSiegelInfo> results = new ShortSiegelArrayList(3);
 
         String response = uploadImage(image, nonce, timestamp, hash );
         Log.d("API", response);
@@ -336,12 +346,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         URL url = new URL(getEndPoint() + "upload/img");
         String boundary="-----------------------------"+generateTimeStamp();
         conn = (HttpURLConnection) url.openConnection();
+        setConnectionDefaults();
         conn.setDoOutput(true);
-        conn.setChunkedStreamingMode(0);
+        conn.setChunkedStreamingMode(0); // zero sets chunk length to use default
         conn.setRequestMethod("POST");
         conn.setUseCaches(false);
-        conn.setRequestProperty("Connection", "Keep-Alive");
-        conn.setRequestProperty("Cache-Control", "no-cache");
         conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
 
@@ -492,5 +501,49 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         }
 
         return allSiegels;
+    }
+
+
+    public List<ProductCategory> getCategories() throws Exception{
+        if(categories != null){
+            return categories;
+        }
+
+        JSONArray json;
+        // disk cache todo
+
+        json= new JSONArray( makeGetCall( "product_category" ) );
+        int results_size = json.length();
+
+        categories = new ArrayList<ProductCategory>(results_size);
+
+        int id;
+        String name;
+        ProductCategory product_category;
+        int[] siegl_ids;
+
+        JSONArray id_array;
+        int id_array_size;
+
+
+        for(int i=0; i<results_size; i++) {
+            JSONObject item = json.getJSONObject(i);
+            /*Iterator<String> keys= item.keys();
+            while (keys.hasNext() ) {
+                Log.d("API", (String) keys.next());
+            }*/
+            id=item.getInt("id");
+            name=item.getString("name");
+            id_array = item.getJSONArray("standards");
+            id_array_size = id_array.length();
+            siegl_ids = new int[id_array_size];
+            for(int j=0; j<id_array_size; j++){
+                siegl_ids[j] = id_array.getInt(j);
+            }
+            product_category = new ProductCategory(id, name, siegl_ids);
+            categories.add(product_category);
+        }
+
+        return categories;
     }
 }
