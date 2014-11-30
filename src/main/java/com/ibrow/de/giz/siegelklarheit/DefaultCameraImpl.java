@@ -26,7 +26,7 @@ class DefaultCameraImpl implements CameraInterface {
 
     protected int oldZoomLevel;
 
-    protected static final float zoomFactor=0.8F;
+    protected static final float zoomFactor=0.7F;
 
     protected String oldFocusMode;
 
@@ -60,8 +60,7 @@ class DefaultCameraImpl implements CameraInterface {
             throw new Exception("No Camera found");
         }
 
-        Camera c = Camera.open(cameraId); // attempt to get a Camera instance (may throw exception)
-        this.camera = c;
+        this.camera = Camera.open(cameraId); // attempt to get a Camera instance (may throw exception)
 
         Camera.Parameters params = camera.getParameters();
         // set zoom if poss
@@ -70,10 +69,26 @@ class DefaultCameraImpl implements CameraInterface {
             int new_zoom = (int) (params.getMaxZoom() * zoomFactor);
             params.setZoom(new_zoom);
             Log.d("CAMERA", "Zoom set to "+new_zoom+" from "+oldZoomLevel);
-            camera.setParameters(params);
         }
         else {
-            Log.d("CAMERA", "Camera has no Zoom Support");
+            Log.w("CAMERA", "Camera has no Zoom Support");
+        }
+
+        // steady photo mode if supported
+        String old_scene = params.getSceneMode();
+        params.setSceneMode(Camera.Parameters.SCENE_MODE_STEADYPHOTO);
+        if( params.getSceneMode() != null && params.getSceneMode().equals(Camera.Parameters.SCENE_MODE_STEADYPHOTO)){
+            Log.d("CAMERA", "Set scene mode to steadyphoto");
+        }
+        else{
+            params.setSceneMode(old_scene);
+            Log.w("CAMERA", "Could not set scene mode to steadyphoto");
+        }
+
+        // video stablisation where supported
+        if( params.isVideoStabilizationSupported() ){
+            params.setVideoStabilization(true);
+            Log.d("CAMERA", "Video Stabilization enabled");
         }
 
         // try and set to auto focus
@@ -102,27 +117,34 @@ class DefaultCameraImpl implements CameraInterface {
         }
         if( haveContinuousFocus){
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            camera.setParameters(params);
             hasContinuousFocus = true;
             useAutoFocusCallback = true;
-            Log.d("CAMERA", "Have continiuos autofocus");
+            Log.d("CAMERA", "Have continuous auto-focus");
         }
         else {
             if( haveAutoFocus ){
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                camera.setParameters(params);
                 useAutoFocusCallback = true;
-                Log.d("CAMERA", "Have normal autofocus");
+                Log.d("CAMERA", "Have normal auto-focus");
             }
             else {
-                Log.w("CAMERA", "No auto focus mode");
+                Log.w("CAMERA", "No auto or continuous focus mode");
                 if( haveMacroFocus){
-                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                    camera.setParameters(params);
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
                     useAutoFocusCallback = true;
                     Log.d("CAMERA", "Using macro focus mode");
                 }
+                else {
+                    Log.w("CAMERA", "Not possible to use auto-focus callback - no supported modes");
+                }
             }
+        }
+
+        try {
+            camera.setParameters(params);
+        }
+        catch( RuntimeException re ){
+            Log.e("CAMERA", "Could not set camera parameters:" + re.getMessage() );
         }
 
         initalised = true;
@@ -154,7 +176,7 @@ class DefaultCameraImpl implements CameraInterface {
         int right=left + viewFinderSize;
         int bottom=top+viewFinderSize;
         viewFraming = new Rect(left, top, right,bottom);
-        Log.d("CAMERA", "Viewfinder size: "+viewFinderSize);
+        Log.v("CAMERA", "Viewfinder size: "+viewFinderSize);
 
         // now calculate the real image square
 
@@ -167,22 +189,20 @@ class DefaultCameraImpl implements CameraInterface {
             ratio = (float) previewSize.height/(float)height;
         }
         image_size = (int) (ratio * viewFinderSize);
-        Log.d("CAMERA", "Crop image size: "+image_size);
+        Log.v("CAMERA", "Crop image size: "+image_size);
 
 
         left=(previewSize.width - image_size ) / 2;
         top=(previewSize.height - image_size ) / 2;
         right=left + image_size;
         bottom=top + image_size;
+        /*
         Log.d("CAMERA", "Viewfinder rect - top: "+top);
         Log.d("CAMERA", "Viewfinder rect - left: "+left);
         Log.d("CAMERA", "Viewfinder rect - right: "+right);
         Log.d("CAMERA", "Viewfinder rect - bottom: "+bottom);
-
+        */
         imageFrame = new Rect(left, top, right, bottom);
-
-        Log.d("CAMERA", "Viewfinder width: "+imageFrame.width());
-        Log.d("CAMERA", "Viewfinder height: "+imageFrame.height());
     }
 
     public void setPreviewFrameSize(int width, int height){
@@ -301,9 +321,9 @@ class DefaultCameraImpl implements CameraInterface {
             if(! success){
                 Log.w("CAMERA", "Auto focus failed");
                 if(hasContinuousFocus){
-                    Log.d("CAMERA", "CF: Continious mode, not in focus, tring normal autofocus mode and re-focusing...");
+                    Log.d("CAMERA", "CF: Continuous mode, not in focus, tring normal auto-focus mode and re-focusing...");
                     Camera.Parameters params = camera.getParameters();
-                    params.setFocusMode(Camera.Parameters.FLASH_MODE_AUTO);
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                     camera.setParameters(params);
                     camera.autoFocus(new AutoFocusListener(cbl) );
                     return;
@@ -314,11 +334,11 @@ class DefaultCameraImpl implements CameraInterface {
             try{
                 camera.takePicture(null, null,cbl );
                 if(hasContinuousFocus){
-                    Log.d("CAMERA", "CF: Canceling autoficus, should renable continious focus");
+                    Log.d("CAMERA", "CF: Canceling auto-focus, should re-enable continuous focus after the autoFocus() call");
                     camera.cancelAutoFocus();
                     Camera.Parameters params = camera.getParameters();
                     if( params.getFocusMode().equals( Camera.Parameters.FOCUS_MODE_AUTO) ){
-                        Log.d("CAMERA", "CF: RE-enable continious focus mode");
+                        Log.d("CAMERA", "CF: RE-enable continuous focus mode");
                         params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                         camera.setParameters(params);
                     }

@@ -6,17 +6,25 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import java.util.List;
 
@@ -26,11 +34,12 @@ import java.util.List;
  *  @author Pete
  *  @todo Clean the code up
  */
-public class ScanActivity extends Activity implements View.OnClickListener, PictureTakenCallback {
+public class ScanActivity extends Activity implements View.OnClickListener, PictureTakenCallback, View.OnTouchListener {
 
 
     private CameraInterface camera;
     private CameraPreviewFrame previewFrame;
+    private ViewfinderView finder;
     private Button scanButton;
 
     private IdentifeyeAPIInterface api;
@@ -39,7 +48,24 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+
         setContentView(R.layout.activity_scan);
+
+        // @todo set this to correct color
+        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
+
+        // need to de the following, even though its in onResume()
+        // before calling connectPreviewFrame()
+        // so view finder calculated correctly
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
 
         camera = CameraProvider.getCamera();
         if(camera == null) {
@@ -56,6 +82,15 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
+
+
+        try{
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            api.setVersionInfo(pInfo.versionName, Build.VERSION.RELEASE);
+        }
+        catch (Exception e){
+            Log.e("SCAN", "Could not set api version info" + e.getMessage());
+        }
 
         scanButton = (Button)findViewById(R.id.button_scan);
         scanButton.setOnClickListener(this);
@@ -110,29 +145,49 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         try {
             camera.initalise();
-            if(previewFrame==null) {
+            //if(previewFrame==null) {
                 connectPreviewFrame();
-            }
-            else {
-                previewFrame.setCamera(camera);
-            }
+            //}
+            //else {
+            //    previewFrame.setCamera(camera);
+            //}
         } catch (Exception e) {
-            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
+            Log.e("CAMERA", "Could not get camera: " + e.getMessage());
             showCameraErrorDialog(e.getMessage());
         }
     }
 
     @Override
     protected void onResume(){
-        Log.d("SCAN", "onResume() called");
+        Log.v("SCAN", "onResume() called");
         super.onResume();
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        /*
+        * The following hides the stauts bar AND automatically the app navigation bar
+        if (Build.VERSION.SDK_INT >= 16) {
+            int sys_ui_flay_fullscreen = 0;
+            try {
+                sys_ui_flay_fullscreen = ((Integer) View.class.getDeclaredField("SYSTEM_UI_FLAG_FULLSCREEN").get(Integer.class)).intValue();
+            }
+            catch (Exception e){
+                Log.e("SYSTEM_UI_FLAG_FULLSCREEN", e.getMessage());
+            }
+            uiOptions = uiOptions | sys_ui_flay_fullscreen;
+            //uiOptions = uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN  <-- this can't compile against sdk for API 15!
+        }
+        */
+        decorView.setSystemUiVisibility(uiOptions);
+        /*if(this.finder != null){
+            finder.invalidate();
+        }*/
     }
 
     @Override
     protected void onRestart(){
-        Log.d("SCAN", "onRestart() called");
-        reinitialiseCamera();
+        Log.v("SCAN", "onRestart() called");
         super.onRestart();
+        reinitialiseCamera();
     }
 
     @Override
@@ -161,11 +216,14 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.CameraPreviewFrame
      */
     private void connectPreviewFrame(){
+        Log.v("SCAN", "connecting preview frame");
         previewFrame = new CameraPreviewFrame(this, camera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.removeAllViewsInLayout(); // remove old dead children
         preview.addView(previewFrame);
-        ViewfinderView finder = new ViewfinderView(this);
+        finder = new ViewfinderView(this);
         finder.setCamera(camera);
+        finder.setOnTouchListener(this);
         preview.addView(finder);
     }
 
@@ -182,33 +240,42 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setCancelable(false);
         builder.setMessage(getString(R.string.no_camera_message) + " (" + error_message + ")");
         builder.setTitle(R.string.no_camera_title);
-        builder.setPositiveButton(R.string.no_camera_retry_btn ,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        camera.initalise();
-                        connectPreviewFrame();
-                        // got camera now, so dismiss dialog
-                        dialog.cancel();
-                    } catch (Exception e) {
-                        Log.d("CAMERA", "Could not get camera: " + e.getMessage());
-                        Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
-                        showCameraErrorDialog(e.getMessage());
+        builder.setPositiveButton(R.string.no_camera_retry_btn,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            camera.initalise();
+                            connectPreviewFrame();
+                            // got camera now, so dismiss dialog
+                            dialog.cancel();
+                        } catch (Exception e) {
+                            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
+                            //Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
+                            showCameraErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
+                });
         builder.show();
     }
 
     /**
      * Called when the user clicks on the scan now button.
+     *
+     * Calls startScan()
+     *
      * @param v
+     * @see #startScan()
      */
     public void onClick(View v) {
+        startScan();
+    }
+
+    protected void startScan(){
         if(! checkOnline() ){
             return;
         }
         scanButton.setEnabled(false);
+        finder.setActive(true);
         camera.takePicture(this);
         //camera.stopPreview(); - not needed, done by camera itself
     }
@@ -226,10 +293,11 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      *
      */
     public void onPictureTaken(byte[] image){
-        Toast.makeText(getApplicationContext(), "Got photo!", Toast.LENGTH_SHORT).show();
+        Log.v("SCAN", "Got photo!");
         //camera.release();
         //camera = null;
-        new ScanPictureTask(image, api, new ProgressDialog(this) ).execute((Void[])null);
+        finder.setActive(false);
+        new ScanPictureTask(image, api, new ProgressDialog(this) ).execute((Void[]) null);
     }
 
     /**
@@ -276,7 +344,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.ScanActivity.ScanPictureTask
      */
     protected void ProcessScanResult(List<ShortSiegelInfo> results){
-        Toast.makeText(getApplicationContext(), "scan complete", Toast.LENGTH_SHORT).show();
+        Log.v("SCAN", "scan complete");
         int count = results.size();
         if(count == 0){
             showTryAgainDialog();
@@ -287,7 +355,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             ShortSiegelInfo siegel = results.get(0); // get first and only result
             Intent intent = new Intent (this, DetailsActivity.class);
 
-            SiegelklarheitApplication.setLastMatch(siegel);
+            SiegelklarheitApplication.setCurrentSiegel(siegel);
 
             scanButton.setEnabled(true);
             startActivity(intent);
@@ -308,7 +376,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setCancelable(false);
         builder.setMessage(getString(R.string.scan_not_recognised_msg));
         builder.setTitle(R.string.scan_not_recognised_title);
-        builder.setPositiveButton(R.string.scan_not_recognised_tryagain_btn ,
+        builder.setPositiveButton(R.string.scan_not_recognised_tryagain_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         camera.startPreview();
@@ -318,7 +386,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setNegativeButton(R.string.scan_not_recognised_search_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent (context, SearchActivity.class);
+                        Intent intent = new Intent(context, SearchActivity.class);
                         scanButton.setEnabled(true);
                         startActivity(intent);
                     }
@@ -342,8 +410,26 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         int id = item.getItemId();
         Intent intent;
 
+        if(camera != null){
+            if(camera.getIsInitialised()){
+                try{
+                    camera.release();
+                }
+                catch (Exception e){
+                    Log.e("CAMERA", "Could not release camera [menu click]: "+e.getMessage());
+                }
+            }
+            camera = null;
+        }
+
         switch(id){
-            case R.id.action_scan: break; // already scanning
+            case R.id.action_scan:
+                // even though we're already in the scan activity
+                // this menu item is active as a fallback
+                // to restart the activity e.g. camera crashed
+                intent = new Intent (this, ScanActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_search:
                 intent = new Intent (this, SearchActivity.class);
                 startActivity(intent);
@@ -358,6 +444,31 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public boolean onTouch(View v, MotionEvent event){
+        //Log.d("SCAN", "screen touched");
+        if( camera != null && camera.getIsInitialised() ){
+            //Log.d("SCAN","touch, camera ready");
+            int action = event.getActionMasked();
+            //Log.d("SCAN","action is "+action);
+            switch(action) {
+                case MotionEvent.ACTION_UP :
+                    //Log.d("SCAN", "ACTION up at x "+event.getX()+", y "+event.getY() );
+                    int x=(int) event.getX();
+                    int y=(int) event.getY();
+                    Rect finder=camera.getViewFramingRect();
+                    if( (x>finder.left && x<finder.right) && (y>finder.top && y<finder.bottom)  ){
+                        Log.d("SCAN", "Finder touched");
+                        startScan();
+                    }
+                    break;
+
+            }
+
+        }
+        return true;
     }
 
     /* internal classes */

@@ -35,6 +35,18 @@ final class LogoHelper {
     private static final int DISK_CACHE_SIZE = (IdentifeyeAPIInterface.MAX_ENTRIES * IMAGE_SIZE );
     private static final int CACHE_VERSION=1;
 
+
+    /**
+     * Attempts to fetch logo from memory.
+     * It's safe to call this in the GUI thread as its quick.
+     *
+     * Returns null if not in cache
+     * @return The logo image for the Siegel if available, or null
+     */
+    public static Bitmap getFromMemoryCache(Siegel siegel){
+        return (Bitmap) MemCache.get( Integer.valueOf(siegel.getId()) );
+    }
+
     /**
      * Fetches the logo image for a siegel.
      *
@@ -43,7 +55,7 @@ final class LogoHelper {
      * Call initDiskCachePath once first before this method.
      *
      * @param siegel
-     * @return
+     * @return The logo image for the Siegel
      *
      * @see #initDiskCachePath(android.content.Context)
      * @see LogoLoaderTask
@@ -53,8 +65,9 @@ final class LogoHelper {
         Bitmap image;
         // check memory cache first
         Integer siegel_id = new Integer(siegel.getId());
-        image = MemCache.get( siegel_id );
+        image = (Bitmap) MemCache.get( siegel_id );
         if(image != null){
+            Log.v("LOGOHELPER", "memory cache hit");
             return image;
         }
         // try disk
@@ -62,10 +75,12 @@ final class LogoHelper {
             String filepath= DiskCachePath.getAbsolutePath() + File.separator + siegel_id.toString()+".png";
             File file=new File(filepath);
             if( file.exists() ){
-                synchronized (DiskCacheLock){
+                //synchronized (DiskCacheLock){
                     image = BitmapFactory.decodeFile(filepath);
-                }
+                    //DiskCacheLock.notifyAll();
+                //}
                 MemCache.put(siegel_id, image);
+                Log.v("LOGOHELPER", "disk cache hit");
                 return image;
             }
         }
@@ -75,18 +90,23 @@ final class LogoHelper {
         // pull from web
 
         String logo_url = siegel.getLogoURL();
-        Log.d("LOGOHELPER", "Downloading "+logo_url);
+        Log.v("LOGOHELPER", "Downloading "+logo_url);
         HttpURLConnection conn = null;
         InputStream is = null;
 
         try {
             conn = (HttpURLConnection) (new URL(logo_url)).openConnection();
             conn.connect();
-            if (conn.getResponseCode() != 200) {
+
+            if (conn.getResponseCode() >= 400 ) {
                 throw new Exception("Error, server response: " + conn.getResponseCode());
             }
             is=conn.getInputStream();
             image = BitmapFactory.decodeStream(is);
+        }
+        catch(Exception e){
+            Log.e("LOGOHELPER", e.getMessage() );
+            throw e;
         }
         finally {
             if(is != null){
@@ -97,6 +117,7 @@ final class LogoHelper {
             }
         }
 
+        Log.v("LOGOHELPER", "got image from "+logo_url);
         // store in memory cache for next call
         MemCache.put(siegel_id, image);
 
@@ -108,16 +129,22 @@ final class LogoHelper {
                 try {
                     out = new FileOutputStream(filepath);
                     image.compress(Bitmap.CompressFormat.PNG, 100, out);
-                } finally {
+                }
+                catch (Exception e) {
+                    Log.e("LOGOHELPER", e.getMessage() );
+                }
+                finally {
                     try {
                         if (out != null) {
                             out.close();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e("LOGOHELPER", e.getMessage());
                     }
                 }
+                //DiskCacheLock.notifyAll();
             }
+
         }
 
         return image;
@@ -137,6 +164,18 @@ final class LogoHelper {
                         context.getExternalCacheDir().getPath() : context.getCacheDir().getPath();
 
         DiskCachePath =  new File(cachePath + File.separator + CACHE_NAME);
-        DiskCachePathInitialised = true;
+        if(! DiskCachePath.exists() ){
+            try{
+                if( DiskCachePath.mkdir() ){
+                    DiskCachePathInitialised = true;
+                }
+            }
+            catch (Exception e){
+                Log.e("LOGOHELPER", "Error creating cache path: "+e.getMessage());
+            }
+        }
+        else {
+            DiskCachePathInitialised = true;
+        }
     }
 }

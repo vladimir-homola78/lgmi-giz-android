@@ -1,6 +1,10 @@
 package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Application;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.util.Log;
 
 import java.util.List;
 
@@ -23,21 +27,32 @@ public class SiegelklarheitApplication extends Application {
      */
     private static List<ShortSiegelInfo> LastMultipleMatches;
 
+    private static final LogoHelper logoHelper = new LogoHelper(); // keep logohelper memory cache app wide
+
     public SiegelklarheitApplication() {
         super();
         identifyAPI = new TestIdentifeyeAPI();
+        /* can't seem to get package manager here (null), setting info in ScanActivity
+        try{
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            identifyAPI.setVersionInfo(pInfo.versionName, Build.VERSION.RELEASE);
+        }
+        catch (Exception e){
+            Log.e("APPLICATION", "Could not set api version info" + e.getMessage());
+        }
+        */
     }
 
     protected final IdentifeyeAPIInterface getAPI() {
         return identifyAPI;
     }
 
-    public static void setLastMatch(ShortSiegelInfo siegel) {
+    public static void setCurrentSiegel(ShortSiegelInfo siegel) {
         assert siegel != null;
         LastMatch = siegel;
     }
 
-    public static ShortSiegelInfo getLastMatch() {
+    public static ShortSiegelInfo getCurrentSiegel() {
         return LastMatch;
     }
 

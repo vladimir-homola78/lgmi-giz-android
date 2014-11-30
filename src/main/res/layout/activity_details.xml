@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scroll_view"
+>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
     tools:context=".DetailsActivity"
     android:orientation="vertical"
     >
@@ -20,8 +29,8 @@
             android:layout_width="match_parent"
             android:layout_height="96dp"
 
-            android:src="@drawable/blank_label_logo"
-        />
+            android:src="@drawable/loading"
+        /><!-- unfortunately animation not supported -->
 
     </LinearLayout>
 
@@ -46,19 +55,20 @@
         />
 
         <TextView
+            android:paddingTop="3dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="[Unknown]"
             android:id="@+id/rating_symbol_text"
             android:textColor="#ffffff"
-            android:textSize="18dp"
+            android:textSize="16dp"
         />
 
     </LinearLayout>
 
     <WebView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/details_webview"
         android:minHeight="96dp"
         android:padding="@dimen/activity_horizontal_margin"
@@ -68,3 +78,5 @@
     </WebView>
 
 </LinearLayout>
+
+</ScrollView>

@@ -44,7 +44,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected Random rnd = new Random();
 
-    protected final static int EXPECTED_CRITERIA_NUMBER=3;
+
 
     private static final String SALT="w1hif53kEr0d4fblaEacBrak2i3s3nas8ielLadge1e86606iCaRast5e592a2smI";
 
@@ -53,6 +53,16 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected static final String CRLF= "\r\n";
     protected static final String DASHDASH = "--";
+
+    protected static String userAgent="Siegelklarheit (Android)";
+
+    protected static ShortSiegelInfo[] allSiegels = null;
+    protected static List<ProductCategory> categories = null;
+
+    @Override
+    public void setVersionInfo(final String app_version, final String android_version){
+        userAgent="Siegelklarheit/"+app_version+" (Android; Android "+android_version+")";
+    }
 
     /**
      * Returns the API endpoint.
@@ -74,6 +84,14 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         return endPoint;
     }
 
+    protected void setConnectionDefaults(){
+        conn.setConnectTimeout(10000); //10 seconds
+        conn.setReadTimeout(30000); // 30 seconds
+        conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("User-Agent", userAgent);
+        conn.setRequestProperty("Cache-Control", "no-cache");
+    }
+
     /**
      * Performs a API request, GET method.
      *
@@ -88,7 +106,8 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         StringBuffer sb = new StringBuffer();
         try {
             conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Connection", "Keep-Alive");
+            setConnectionDefaults();
+            conn.setRequestMethod("GET");
             conn.connect();
             if (conn.getResponseCode() != 200) {
                 throw new Exception("Error, server response: " + conn.getResponseCode());
@@ -129,6 +148,9 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         MessageDigest m =  MessageDigest.getInstance("MD5");
         m.update(str.getBytes(), 0, str.length() );
         String hash = new BigInteger(1, m.digest()).toString(16);
+        while(hash.length()!=32) { //re-add trimmed leading zeros otherwise it won't match
+            hash = "0" + hash;
+        }
         return hash;
     }
 
@@ -136,7 +158,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
     /**
      * md5(s.n.t)
      *
-     * @param nonce intege from 1-99999 as a string
+     * @param nonce integer from 1-99999 as a string
      * @param timestamp UNIX timestamp as a string
      * @return The md5 hash of secret + nonce + timestamp
      *
@@ -175,7 +197,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         String timestamp = generateTimeStamp();
         String hash = generateHash(nonce, timestamp);
 
-        List<ShortSiegelInfo> results = new ArrayList<ShortSiegelInfo>();
+        List<ShortSiegelInfo> results = new ShortSiegelArrayList(3);
 
         String response = uploadImage(image, nonce, timestamp, hash );
         Log.d("API", response);
@@ -237,7 +259,12 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         }
         else{
             criteria_list = (List) new ArrayList <Criterion>(0);
-            Log.e("API", "Missing criteria attribute :"+item.toString() );
+            if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                Log.v("API", "No criteria for siegel with rating unknown/none");
+            }
+            else {
+                Log.e("API", "Missing criteria attribute :" + item.toString());
+            }
         }
 
         ShortSiegelInfo siegel_info = new ShortSiegelInfo(id, name, logo, rating, criteria_list);
@@ -246,7 +273,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             siegel_info.setConfidenceLevel(item.getInt("c") );
         }
         else {
-            Log.d("API", "No confidence level for item : "+item.toString());
+            Log.v("API", "No confidence level for item : "+item.toString());
         }
 
         return siegel_info;
@@ -319,12 +346,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         URL url = new URL(getEndPoint() + "upload/img");
         String boundary="-----------------------------"+generateTimeStamp();
         conn = (HttpURLConnection) url.openConnection();
+        setConnectionDefaults();
         conn.setDoOutput(true);
-        conn.setChunkedStreamingMode(0);
+        conn.setChunkedStreamingMode(0); // zero sets chunk length to use default
         conn.setRequestMethod("POST");
         conn.setUseCaches(false);
-        conn.setRequestProperty("Connection", "Keep-Alive");
-        conn.setRequestProperty("Cache-Control", "no-cache");
         conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
 
@@ -353,7 +379,26 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         request.flush();
         request.close();
 
-        if (conn.getResponseCode() != 200) {
+        int response_code=0;
+        try{
+            response_code=conn.getResponseCode();
+            if( response_code == 403 ){
+                Log.e("API", "403 response");
+                Log.e("API", "time: "+timestamp);
+                Log.e("API", "nonce: "+nonce);
+                Log.e("API", "hash: "+hash);
+                Log.e("API", "time now: "+generateTimeStamp());
+            }
+        }
+        catch (Exception e){
+            if(e.getMessage().equals("No authentication challenges found")){
+                Log.e("API", "Bad 401 response");
+                Log.e("API", "time: "+timestamp);
+                Log.e("API", "nonce: "+nonce);
+                Log.e("API", "hash: "+hash);
+            }
+        }
+        if (response_code != 200) {
             throw new Exception("Error, server response: " + conn.getResponseCode());
         }
 
@@ -404,12 +449,22 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         if( criteria!=null){
             criteria_list = parseSiegelCriteria(criteria);
             if(criteria_list.size() != EXPECTED_CRITERIA_NUMBER ){
-                Log.w("API", "Didn't get 3 criteria for siegel: "+json.toString() );
+                if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                    Log.v("API", criteria_list.size()+" criteria for siegel with rating unknown/none");
+                }
+                else {
+                    Log.w("API", "Didn't get 3 criteria for siegel: "+json.toString() );
+                }
             }
         }
         else{
-            criteria_list = (List) new ArrayList <Criterion>(0);
-            Log.e("API", "Missing criteria attribute :"+json.toString() );
+            criteria_list = (List) new ArrayList<Criterion>(0);
+            if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+                Log.v("API", "No criteria for siegel with rating unknown/none");
+            }
+            else {
+                Log.e("API", "Missing criteria attribute :" + json.toString());
+            }
         }
 
         String details = json.optString("html");
@@ -418,9 +473,81 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             details = "<html><head></head><body><!-- no details --></body></html>";
         }
 
+        String url = json.optString("shared_url");
+        if( url==null || url.isEmpty() ){
+            Log.w("API", "Missing or empty share url :"+json.toString());
+        }
 
-        SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details);
+        SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details, url);
 
         return siegel;
+    }
+
+    public ShortSiegelInfo[] getAll() throws Exception{
+        if(allSiegels != null) {
+            return allSiegels;
+        }
+
+
+        JSONArray json;
+        // disk cache todo
+
+
+        // fetch from server
+        json= new JSONArray( makeGetCall( "info" ) );
+
+        int results_size = json.length();
+        allSiegels = new ShortSiegelInfo[results_size];
+
+        for(int i=0; i<results_size; i++){
+            JSONObject item = json.getJSONObject(i);
+            allSiegels[i] = parseSiegel(item);
+        }
+
+        return allSiegels;
+    }
+
+
+    public List<ProductCategory> getCategories() throws Exception{
+        if(categories != null){
+            return categories;
+        }
+
+        JSONArray json;
+        // disk cache todo
+
+        json= new JSONArray( makeGetCall( "product_category" ) );
+        int results_size = json.length();
+
+        categories = new ArrayList<ProductCategory>(results_size);
+
+        int id;
+        String name;
+        ProductCategory product_category;
+        int[] siegl_ids;
+
+        JSONArray id_array;
+        int id_array_size;
+
+
+        for(int i=0; i<results_size; i++) {
+            JSONObject item = json.getJSONObject(i);
+            /*Iterator<String> keys= item.keys();
+            while (keys.hasNext() ) {
+                Log.d("API", (String) keys.next());
+            }*/
+            id=item.getInt("id");
+            name=item.getString("name");
+            id_array = item.getJSONArray("standards");
+            id_array_size = id_array.length();
+            siegl_ids = new int[id_array_size];
+            for(int j=0; j<id_array_size; j++){
+                siegl_ids[j] = id_array.getInt(j);
+            }
+            product_category = new ProductCategory(id, name, siegl_ids);
+            categories.add(product_category);
+        }
+
+        return categories;
     }
 }

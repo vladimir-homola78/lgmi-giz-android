@@ -5,10 +5,11 @@
     tools:context="com.ibrow.de.giz.siegelklarheit.InfosActivity">
 
 
-    <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
-        android:layout_height="match_parent"  android:textColor="#33b5e5"
-        android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-        android:text="NOT IMPLENTED YET" />
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/info_webview">
+    </WebView>
 
 
 </FrameLayout>

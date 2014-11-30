@@ -1,68 +1,106 @@
 package com.ibrow.de.giz.siegelklarheit;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.View;
-
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * This view is overlaid on top of the camera preview. It adds the viewfinder rectangle and partial
  * transparency outside it.
+ *
+ * @author Pete
+ * @see ScanActivity#connectPreviewFrame()
  */
-public final class ViewfinderView extends View {
+final class ViewfinderView extends View {
 
-
-    private static final int[] SCANNER_ALPHA = {0, 64, 128, 192, 255, 192, 128, 64};
-    private static final long ANIMATION_DELAY = 80L;
-    private static final int CURRENT_POINT_OPACITY = 0xA0;
-    private static final int MAX_RESULT_POINTS = 20;
-    private static final int POINT_SIZE = 6;
-
-    private static final String MASK_COLOUR="#44ffffff"; // aRGB
+    /** Surrounding Transparency color aRGB */
+    private static final String MASK_COLOUR="#44ffffff";
+    /** Color of the 4 right-angles drwan in the corners of the finder. aRGB */
     private static final String FINDER_COLOUR="#88ffffff";
 
+    /** Color of the 4 right-angles drwan in the corners of the finder when we're taking a photo. aRGB */
+    private static final String FINDER_COLOUR_ACTIVE="#8800ff00";
 
+    protected boolean active=false;
 
     private final Paint paint;
 
     private final int maskColor;
     private final int finderColor;
+    private final int finderActiveColor;
 
+    /** Length of the lines for drawing the 4 corners inside the viewfinder.
+     * Proportionally calculated based on the size of the viewfinder. */
     private int finderSize;
+
+    /**How much space between the perimeter of the viewfinder and where we draw the 4 right-angles.
+     * Proportionally calculated based on the size of the viewfinder. */
     private int framePad;
 
-    private int scannerAlpha;
+    private static final int ZERO=0;
+    private static final int ONE=1;
+
+    /**
+     * framePad = finder.width / PAD_PROPORTION.
+     * @see #framePad
+     */
+    private static final int PAD_PROPORTION=10;
+
+    /**
+     * Used to calculate length of line of the 4 right angles.
+     * finderSize = finder.width / FINDER_SIZE_PROPORTION
+     * @see #finderSize
+     */
+    private static final int FINDER_SIZE_PROPORTION=6;
+
+    /**
+     * Stroke size of right-angle lines on larger displays.
+     */
+    private static final float THICK_STROKE=3.0F;
+
+    /**
+     * Stroke size of right-angle lines on small displays.
+     */
+    private static final float THIN_STROKE=1.0F;
+
+
+    /**
+     * At which size we use THICK_STROKE instead of THIN_STROKE
+     *  - size of viewfinder.
+     */
+    private static final int MIN_WIDTH_FOR_THICK_STROKE=350;
+
 
     private CameraInterface camera;
 
-
-
-
     public ViewfinderView(Context context) {
         super(context);
-
-
         // Initialize these once for performance rather than calling them every time in onDraw().
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
         maskColor = Color.parseColor(MASK_COLOUR);
         finderColor = Color.parseColor(FINDER_COLOUR);
-
+        finderActiveColor = Color.parseColor(FINDER_COLOUR_ACTIVE);
     }
 
 
+    /**
+     * Sets the camera for this view finder view.
+     * Used only by the scan activity.
+     *
+     * @param camera
+     * @see com.ibrow.de.giz.siegelklarheit.ScanActivity#connectPreviewFrame()
+     */
     public void setCamera(CameraInterface camera) {
         this.camera = camera;
+    }
+
+
+    public void setActive(boolean active_state){
+        this.active = active_state;
+        invalidate();
     }
 
 
@@ -77,8 +115,11 @@ public final class ViewfinderView extends View {
             return;
         }
 
-        finderSize = frame.width() / 6;
-        framePad = frame.width() / 10;
+
+        finderSize = frame.width() / FINDER_SIZE_PROPORTION;
+        framePad = frame.width() / PAD_PROPORTION;
+
+        assert frame.width() == frame.height(); //should be square!
 
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -87,19 +128,25 @@ public final class ViewfinderView extends View {
         // Draw the exterior (i.e. outside the framing rect)
         paint.setColor( maskColor);
         paint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(0, 0, width, frame.top, paint);
-        canvas.drawRect(0, frame.top, frame.left, frame.bottom + 1, paint);
-        canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
-        canvas.drawRect(0, frame.bottom + 1, width, height, paint);
+        canvas.drawRect(ZERO, ZERO, width, frame.top, paint);
+        canvas.drawRect(ZERO, frame.top, frame.left, frame.bottom + ONE, paint);
+        canvas.drawRect(frame.right + ONE, frame.top, width, frame.bottom + ONE, paint);
+        canvas.drawRect(ZERO, frame.bottom + ONE, width, height, paint);
 
-        paint.setColor( finderColor);
-        paint.setStyle(Paint.Style.STROKE);
-
-        if(frame.width() > 350 ){
-            paint.setStrokeWidth(3.0F);
+        if(! active){
+            paint.setColor( finderColor);
         }
         else {
-            paint.setStrokeWidth(1.0F);
+            android.util.Log.d("viewfinder", "active!");
+            paint.setColor( finderActiveColor );
+        }
+        paint.setStyle(Paint.Style.STROKE);
+
+        if(frame.width() >  MIN_WIDTH_FOR_THICK_STROKE ){
+            paint.setStrokeWidth(THICK_STROKE);
+        }
+        else {
+            paint.setStrokeWidth(THIN_STROKE);
         }
         // top left
         int left = frame.left+framePad;
@@ -120,20 +167,7 @@ public final class ViewfinderView extends View {
         canvas.drawLine(right, bottom, right, bottom-finderSize, paint); //line up
         canvas.drawLine(right, bottom, right-finderSize, bottom, paint); //line accross
 
-
         //canvas.drawRect(frame, paint);
-
-
     }
 
-/*
-    public void drawViewfinder() {
-        Bitmap resultBitmap = this.resultBitmap;
-        this.resultBitmap = null;
-        if (resultBitmap != null) {
-            resultBitmap.recycle();
-        }
-        invalidate();
-    }
-*/
 }

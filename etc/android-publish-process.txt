@@ -1,0 +1,23 @@
+1) A google account for GIZ is required, sign up is at https://accounts.google.com/SignUp?hl=de&continue=https%3A%2F%2Fplay.google.com%2Fapps%2Fpublish 
+if one is not already owned.
+
+2) Signup at https://play.google.com/apps/publish/signup/ , a one-time fee of 25$US must be paid.
+
+3) Add Ibrow as a user to the developer console.(1)
+
+Login to the developers console at https://play.google.com/apps/publish/
+Einstellung -> Nutzerkonten und Rechte ->  Neuen Nutzer einladen
+
+Email address: XXXXXXX
+
+Under "Berechtigungen" (rights), select all permissions.
+
+Click on "Einladung senden"
+ 
+
+4) Ibrow will publish the App.  72 hours should be allowed from uploading/updating the app and it being available in the App store.
+
+
+[1] https://support.google.com/googleplay/android-developer/answer/2528691?hl=de
+
+

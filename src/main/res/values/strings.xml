@@ -13,7 +13,7 @@
 
     <string name="title_imprint">Impressum</string>
     <string name="title_infos">Weitere Infos</string>
-    <string name="multipleresults">Scan-Ergebnis</string>
+    <string name="title_multipleresults">Scan-Ergebnis</string>
     <string name="title_activity_search">Alle Siegel</string>
 
 
@@ -39,10 +39,26 @@
 
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="rating_verygood"><b>Sehr Gute<b>\n</b></b></string>
+    <string name="text_multiple_results">Das Label konnte nicht eindeutig erkannt werden.  Bitte wählen Sie das entsprechende Label aus der Liste aus</string>
+    <string name="text_multiple_results_list_all">Haben Sie ein anders Siegel gesucht?</string>
+    <string name="button_list_all">Liste aller Siegel ansehen</string>
+
+    <string name="rating_verygood"><b>Sehr gute Wahl!</b>\nDieses Siegel erfüllt unsere höchsten Anforderungen im Bereich Umwelt und Soziales</string>
     <string name="rating_good"><b>Gute Wahl!</b>\nDieses Siegel erfühllt unsere Mindesanforderungen im Bereich Umwelt und Soziales</string>
-    <string name="rating_ok"><b>Ok</b>\n</string>
-    <string name="rating_bad"><b>Das geht besser!</b>\nDieses Siegel erfühllt unsere Mindesanforderungen nicht</string>
-    <string name="rating_unknown"><b>Unbekannt</b>\n</string>
+    <string name="rating_bad"><b>Das geht besser!</b>\nDieses Siegel erfüllt unsere Mindestanforderungen nicht</string>
+    <string name="rating_none"><b>Keine Bewertung</b>\nDieses Siegel kann nicht bewertet werden, da der Siegelgeber einer Bewertung nicht zugestimmt hat</string>
+    <string name="rating_unknown"><b>Keine Bewertung</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor, wird aber sobald als möglich durchgeführt und/oder eingestellt</string>
+
+    <string name="criterion_type_system">Glaubwürdigkeit</string>
+    <string name="criterion_type_environment">Umweltfreundlichkeit</string>
+    <string name="criterion_type_socioeconomic">Sozialverträglichkeit</string>
+
+    <string name="criterion_none"><b>Keine Daten</b>\nDer Siegelgeber hat einer Bewertung nicht zugestimmt</string>
+    <string name="criterion_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor</string>
+
+
+    <string name="filter_hint">Nach Siegeln suchen</string>
+    <string name="category_all">Alle Siegel</string>
+
 
 </resources>

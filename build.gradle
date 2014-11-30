@@ -3,13 +3,12 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 15
     buildToolsVersion "21.1.0"
-
     defaultConfig {
         applicationId "com.ibrow.de.giz.siegelklarheit"
         minSdkVersion 15
-        targetSdkVersion 15
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 21
+        versionCode 3
+        versionName "0.3 Alpha"
     }
     buildTypes {
         release {
@@ -17,8 +16,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:21.0.2'
 }

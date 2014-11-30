@@ -22,6 +22,8 @@ public interface IdentifeyeAPIInterface {
      */
     public static final int MAX_ENTRIES = 160;
 
+    public final static int EXPECTED_CRITERIA_NUMBER=3;
+
     /**
      * Pings the API.
      * Used to prime the HTTP connection.
@@ -40,13 +42,45 @@ public interface IdentifeyeAPIInterface {
     public SiegelInfo getInfo(int id) throws Exception;
 
     /**
-     * Matches an image to Sigeln
+     * Matches an image to Seigel
+     *
      * @param image JPEG image
      * @return List of matches. Maybe empty (i.e. no matches), contain 1 or more matches.
      * @throws Exception
      */
     public List<ShortSiegelInfo> identifySiegel(byte[] image) throws Exception;
 
+    /**
+     * Get the base URL for webviews.
+     *
+     * @return
+     */
     public String getWebviewBaseURL();
+
+    /**
+     * Sets the system version infomation, used for user-agent strings
+     *
+     * @param app_version From versionName in manifest
+     * @param android_version The android version, e.g. 4.1.3
+     */
+    public void setVersionInfo(String app_version, String android_version);
+
+
+    /**
+     * Returns all siegels.
+     *
+     * @return
+     * @see com.ibrow.de.giz.siegelklarheit.ShortSiegelInfo
+     */
+    public ShortSiegelInfo[] getAll() throws Exception;
+
+
+    /**
+     * Returns a list of product categories.
+     *
+     * @return
+     * @see com.ibrow.de.giz.siegelklarheit.ProductCategory
+     */
+    public List<ProductCategory> getCategories() throws Exception;
 
 }

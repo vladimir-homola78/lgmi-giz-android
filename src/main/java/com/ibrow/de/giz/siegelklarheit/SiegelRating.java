@@ -9,11 +9,11 @@ import android.graphics.Color;
  */
 enum SiegelRating {
 
-    UNKNOWN("#888888", "unknown"),
+    UNKNOWN("#ffffffff", "unknown"),
     VERY_GOOD("#115746", "verygood"),
     GOOD("#4b9f53", "good"),
     BAD("#cd3333", "bad"),
-    OK("#666666", "ok");
+    NONE("#666666", "none");
 
     private int color;
     private String name;
@@ -59,8 +59,8 @@ enum SiegelRating {
     public static final SiegelRating fromNumericId(int id){
         switch (id){
             case -1 : return SiegelRating.UNKNOWN;
-            case 0 : return SiegelRating.BAD;
-            case 1 : return SiegelRating.OK;
+            case 0 : return SiegelRating.NONE;
+            case 1 : return SiegelRating.BAD;
             case 2 : return SiegelRating.GOOD;
             case 3 : return SiegelRating.VERY_GOOD;
         }

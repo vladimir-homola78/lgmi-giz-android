@@ -9,7 +9,7 @@ class TestIdentifeyeAPI extends IdentifeyeAPI{
 
     protected final String testEndPoint="http://identifeye.ibrow.com:5001/";
 
-    protected final String testImageBase="http://identifeye.ibrow.com:5001/webviews";
+    protected final String testImageBase="http://identifeye.ibrow.com:5001";
 
     @Override
     protected String getEndPoint(){
