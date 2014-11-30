@@ -95,7 +95,6 @@ public class DetailsActivity extends Activity {
 
         MenuItem shareItem = menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
-        shareActionProvider.
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         shareActionProvider.setShareIntent(intent);
