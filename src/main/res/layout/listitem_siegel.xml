@@ -13,6 +13,7 @@
         android:layout_alignParentTop="true"
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
+        android:scaleType="centerInside"
     />
 
     <LinearLayout
@@ -130,6 +131,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:id="@+id/rating_holder"
+        android:minHeight="96dp"
     >
         <TextView
             android:layout_width="33dp"
@@ -145,6 +147,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/rating_symbol_good"
             android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
         />
     </FrameLayout>
 
