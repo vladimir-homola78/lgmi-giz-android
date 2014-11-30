@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,6 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
         blankLogo = context.getResources().getDrawable(R.drawable.blank_label_logo);
         LogoHelper.initDiskCachePath(context);
     }
-
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

@@ -13,13 +13,20 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +50,12 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
     protected ListView listview;
 
     protected ArrayList<String> dropdownList=new ArrayList<String>(5);
+
+    protected boolean amFiltering = false;
+    protected ShortSiegelInfo[] filteredList;
+
+    protected EditText filterText;
+    protected String lastFilterText="";
 
 
     @Override
@@ -92,6 +105,13 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         //listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new ItemListener(this));
+
+        filterText = (EditText) findViewById(R.id.filter);
+        filterText.setText("");
+        filterText.setOnEditorActionListener( new FilterTextListener() );
+        FilterTextChangedListener ftcl= new FilterTextChangedListener();
+        filterText.addTextChangedListener( ftcl );
+        //filterText.setOnKeyListener( ftcl );
     }
 
     public boolean onNavigationItemSelected(int position, long itemId) {
@@ -117,7 +137,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         }
         else {
             int index = position -1;
-            if(sieglsByCategory.length >= position) {
+            if(sieglsByCategory.length >= position && sieglsByCategory[index]!=null ) {
                 currentList = sieglsByCategory[index].toArray();
             }
             else{
@@ -126,7 +146,49 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         }
         adapter = new SiegelArrayAdapter(this, currentList);
         listview.setAdapter(adapter);
+
+        // remove filter text on category change (?)
+        amFiltering = false;
+        filterText.setText("");
+
         return true;
+    }
+
+    /**
+     * Filter the list by the text input.
+     */
+    protected void filterList(){
+        Log.v("SEARCH", "filter called");
+        String text= filterText.getText().toString().trim().toLowerCase();
+        if(text.isEmpty()){
+            /*amFiltering = false;
+            adapter = new SiegelArrayAdapter(this, currentList);
+            listview.setAdapter(adapter);
+            lastFilterText="";*/
+            Log.v("SEARCH", "filter empty");
+            //return;
+        }
+
+        amFiltering = true;
+        if(lastFilterText.equals(text)){
+            // nothing changed (bear in mind trim() etc.
+            return;
+        }
+
+
+        ShortSiegelArrayList ssal = new ShortSiegelArrayList(currentList.length);
+        //int text_length = text.length();
+        for(int i=0; i<currentList.length; i++){
+            if( currentList[i].getName().toLowerCase().contains(text) ){
+                ssal.add(currentList[i]);
+            }
+        }
+        filteredList = ssal.toArray();
+        adapter = new SiegelArrayAdapter(this, filteredList);
+        listview.setAdapter(adapter);
+
+        lastFilterText = text;
+        Log.v("SEARCH", "filter finsihed");
     }
 
     /* menu */
@@ -212,6 +274,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
                 allSiegelsArray = new ShortSiegelInfo[0];
 
             }
+            // categories
             try{
                 cats = api.getCategories();
                 // map siegels to ids
@@ -275,8 +338,59 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent (context, DetailsActivity.class);
-            SiegelklarheitApplication.setCurrentSiegel(currentList[position]);
+            if(! amFiltering){
+                SiegelklarheitApplication.setCurrentSiegel(currentList[position]);
+            }
+            else {
+                SiegelklarheitApplication.setCurrentSiegel(filteredList[position]);
+            }
             startActivity(intent);
+        }
+    }
+
+    private final class FilterTextListener implements TextView.OnEditorActionListener{
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+
+
+
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId==EditorInfo.IME_ACTION_SEND) {
+                filterList();
+                imm.hideSoftInputFromWindow(filterText.getWindowToken(), 0);
+                handled = true;
+            }
+            return handled;
+        }
+
+    }
+
+    private final class  FilterTextChangedListener implements TextWatcher, View.OnKeyListener{
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+           //NOP
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after) {
+            //NOP
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+           filterList();
+        }
+
+        @Override
+        public boolean onKey (View v, int keyCode, KeyEvent event){
+            Log.v("SEARCH", "key press");
+            if( event.getNumber()!=0){
+                filterList();
+            }
+            return false;
         }
     }
 }

@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
+ * List content fragment, used for the drown down menu in Search activity.
  *
  * @see <a href="http://developer.android.com/guide/topics/ui/actionbar.html">Action bar docs</a>
+ * @see com.ibrow.de.giz.siegelklarheit.SearchActivity
  */
 public class ListContentFragment extends Fragment {
     private String mText;
