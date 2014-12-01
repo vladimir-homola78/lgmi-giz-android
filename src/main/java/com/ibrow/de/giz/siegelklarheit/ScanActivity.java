@@ -161,10 +161,18 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     protected void onResume(){
         Log.v("SCAN", "onResume() called");
         super.onResume();
+        hideNavBar();
+    }
+
+    private final void hideNavBar(){
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+            /*
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        /*
-        * The following hides the stauts bar AND automatically the app navigation bar
+
+        // The following hides the stauts bar AND automatically the app navigation bar
         if (Build.VERSION.SDK_INT >= 16) {
             int sys_ui_flay_fullscreen = 0;
             try {
@@ -176,11 +184,9 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             uiOptions = uiOptions | sys_ui_flay_fullscreen;
             //uiOptions = uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN  <-- this can't compile against sdk for API 15!
         }
-        */
+
         decorView.setSystemUiVisibility(uiOptions);
-        /*if(this.finder != null){
-            finder.invalidate();
-        }*/
+        */
     }
 
     @Override
@@ -267,6 +273,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see #startScan()
      */
     public void onClick(View v) {
+        //hideNavBar();
         startScan();
     }
 
@@ -456,12 +463,14 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             switch(action) {
                 case MotionEvent.ACTION_UP :
                     //Log.d("SCAN", "ACTION up at x "+event.getX()+", y "+event.getY() );
+
                     int x=(int) event.getX();
                     int y=(int) event.getY();
                     Rect finder=camera.getViewFramingRect();
                     if( (x>finder.left && x<finder.right) && (y>finder.top && y<finder.bottom)  ){
-                        Log.d("SCAN", "Finder touched");
+                        Log.v("SCAN", "Finder touched");
                         startScan();
+                        //hideNavBar();
                     }
                     break;
 
