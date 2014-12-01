@@ -1,15 +1,30 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ibrow.de.giz.siegelklarheit.InfosActivity">
 
-
-    <WebView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/info_webview">
-    </WebView>
+        android:orientation="vertical"
+    >
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/info_webview">
+        </WebView>
+
+        <Button
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_tour_btn"
+            android:layout_gravity="center"
+            android:id="@+id/start_tour_btn"
+            />
+
+    </LinearLayout>
 
 
-</FrameLayout>
+</ScrollView>

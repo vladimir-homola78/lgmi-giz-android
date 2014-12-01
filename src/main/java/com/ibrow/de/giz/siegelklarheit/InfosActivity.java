@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.io.InputStreamReader;
  */
 public class InfosActivity extends Activity {
 
+    protected Button startTourBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,32 +33,22 @@ public class InfosActivity extends Activity {
         // WebView.setWebContentsDebuggingEnabled(true); <- needs API 19
         html_view.getSettings().setJavaScriptEnabled(true);
 
-        StringBuilder buf=new StringBuilder();
-        BufferedReader in=null;
-        try {
-            InputStream is=getAssets().open("html/weitere-infos.html");
-            in= new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String str;
+        html_view.loadUrl("file:///android_asset/html/weitere-infos.html");
 
-            while ((str = in.readLine()) != null) {
-                buf.append(str);
-            }
-        }
-        catch (IOException ioe){
-            Log.e("INFOS", ioe.getMessage());
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch (IOException ioe){
-                Log.e("INFOS", ioe.getMessage());
-            }
-        }
+        startTourBtn = (Button) findViewById(R.id.start_tour_btn);
+        startTourBtn.setOnClickListener( new ButtonListener() );
+    }
 
-
-        html_view.loadDataWithBaseURL("file:///android_asset/html/", buf.toString(), "text/html", "UTF-8", null);
-        html_view.getSettings().setLoadsImagesAutomatically(true);
+    /**
+     * Starts tour activity - from button click.
+     * @todo implement
+     *
+     */
+    protected void startTour(){
+        /*
+        Intent intent = new Intent (this, TourActivity.class);
+        startActivity(intent);
+        */
     }
 
     /* menu */
@@ -89,4 +83,18 @@ public class InfosActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /* Private classes */
+
+    private final class ButtonListener implements View.OnClickListener{
+
+        /**
+         * Starts the tour by calling satartTour()
+         * @see #startTour()
+         * @param v
+         */
+        public void onClick(View v) {
+            startTour();
+        }
+
+    }
 }

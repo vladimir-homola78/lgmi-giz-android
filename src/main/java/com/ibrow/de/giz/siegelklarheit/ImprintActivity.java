@@ -28,31 +28,7 @@ public class ImprintActivity extends Activity {
         WebView html_view=(WebView) findViewById(R.id.imprint_webview);
         html_view.getSettings().setJavaScriptEnabled(true);
 
-        StringBuilder buf=new StringBuilder();
-        BufferedReader in=null;
-        try {
-            InputStream is=getAssets().open("html/impressum.html");
-            in= new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String str;
-
-            while ((str = in.readLine()) != null) {
-                buf.append(str);
-            }
-        }
-        catch (IOException ioe){
-            Log.e("IMPRINT", ioe.getMessage());
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch (IOException ioe){
-                Log.e("IMPRINT", ioe.getMessage());
-            }
-        }
-
-
-        html_view.loadDataWithBaseURL("file:///android_asset/html/", buf.toString(), "text/html", "UTF-8", null);
+        html_view.loadUrl("file:///android_asset/html/impressum.html");
     }
 
     /* menu */

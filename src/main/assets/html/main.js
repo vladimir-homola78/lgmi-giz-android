@@ -1,8 +1,15 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+
 var details = require('./details');
 var score = require('./score');
 var search = require('./search');
 var core = require('./core');
+if(iOS){
+    var ios = require('./ios');
+    ios.init();
+}
+
 
 $(function() {
   details();
@@ -10,48 +17,8 @@ $(function() {
   search();
 });
 
-},{"./core":2,"./details":3,"./score":4,"./search":5}],2:[function(require,module,exports){
+},{"./core":2,"./details":3,"./ios":4,"./score":5,"./search":6}],2:[function(require,module,exports){
 module.exports = (function(){
-
-    function getMetaContent(property){
-        var tags = document.getElementsByTagName('meta');
-        var txt = "";
-        console.log(tags.length);
-        for(var t=0; t<tags.length; t++){
-
-            if(tags[t].getAttribute("property") ==property){
-
-                txt = tags[t].content;
-                break;
-            }
-        }
-        return txt;
-    }
-    window.getMetaContent = getMetaContent;
-
-    var logAppCacheChangeState = function(){
-      // set of listeners to deal with caching status
-        function logEvent(event) {
-            console.log(event.type)
-            window.location = "action:"+event.type;
-        }
-        //reading manifest for the first time of check for change
-        window.applicationCache.addEventListener('checking', logEvent, false);
-        //new version of the cache is ready o be swapped in
-        window.applicationCache.addEventListener('updateready', logEvent, false);
-        //no change to manifest
-        window.applicationCache.addEventListener('noupdate', logEvent, false);
-        // downloading resource
-        window.applicationCache.addEventListener('downloading', logEvent, false);
-        // all listed resources cached
-        window.applicationCache.addEventListener('cached', logEvent, false);
-        // code 404 or 410 cache has been deleted
-        window.applicationCache.addEventListener('obsolete', logEvent, false);
-
-        //error occured downloading manifest and so aborted
-        window.applicationCache.addEventListener('error', logEvent, false);        
-    }
-
     
     var goToDetails = function(){
         // Go to details page on list item click.
@@ -63,7 +30,6 @@ module.exports = (function(){
 
     // Events
     $( document ).ready(function(){
-        logAppCacheChangeState();
         goToDetails();
     });
 
@@ -154,6 +120,57 @@ module.exports = function() {
 };
 
 },{}],4:[function(require,module,exports){
+module.exports = (function(){
+
+    function getMetaContent(property){
+        var tags = document.getElementsByTagName('meta');
+        var txt = "";
+        console.log(tags.length);
+        for(var t=0; t<tags.length; t++){
+
+            if(tags[t].getAttribute("property") ==property){
+
+                txt = tags[t].content;
+                break;
+            }
+        }
+        return txt;
+    }
+
+    var logAppCacheChangeState = function(){
+      // set of listeners to deal with caching status
+        function logEvent(event) {
+            console.log(event.type)
+            window.location = "action:"+event.type;
+        }
+        //reading manifest for the first time of check for change
+        window.applicationCache.addEventListener('checking', logEvent, false);
+        //new version of the cache is ready o be swapped in
+        window.applicationCache.addEventListener('updateready', logEvent, false);
+        //no change to manifest
+        window.applicationCache.addEventListener('noupdate', logEvent, false);
+        // downloading resource
+        window.applicationCache.addEventListener('downloading', logEvent, false);
+        // all listed resources cached
+        window.applicationCache.addEventListener('cached', logEvent, false);
+        // code 404 or 410 cache has been deleted
+        window.applicationCache.addEventListener('obsolete', logEvent, false);
+
+        //error occured downloading manifest and so aborted
+        window.applicationCache.addEventListener('error', logEvent, false);        
+    }
+
+    var init = function(){
+        window.getMetaContent = getMetaContent;
+        logAppCacheChangeState();
+    }
+
+    return {
+        init: init
+    }
+
+}());
+},{}],5:[function(require,module,exports){
 /**********************************************************************
  Score bar charts
 **********************************************************************/
@@ -226,7 +243,7 @@ module.exports = function() {
   progressBar();
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**********************************************************************
  Search functionality
  This is a "type forward" search for the Standard List page
