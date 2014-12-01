@@ -9,6 +9,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -155,41 +156,78 @@ class DefaultCameraImpl implements CameraInterface {
      * @param width Display width
      * @param height Display height
      */
-    protected void calculateViewFinder(int width, int height){
+    protected void calculateViewFinder(int width, int height) {
+        int vf_size = width;
 
-        Camera.Parameters params = camera.getParameters();
-        previewSize = params.getPreviewSize();
-
-        int vf_size= width;
-
-        if( width > height){ // use the smallest of the 2
+        if (width > height) { // use the smallest of the 2
             vf_size = height;
         }
 
         viewFinderSize = (int) (VIEWFINDER_SIZE_RELATIVE * vf_size);
-        if(viewFinderSize<MIN_VIEWFINDER_SIZE && height > MIN_VIEWFINDER_SIZE && width> MIN_VIEWFINDER_SIZE){
+        if (viewFinderSize < MIN_VIEWFINDER_SIZE && height > MIN_VIEWFINDER_SIZE && width > MIN_VIEWFINDER_SIZE) {
             viewFinderSize = MIN_VIEWFINDER_SIZE;
         }
         // calculate the view finder size based on the *display* frame size
-        int left=(width -viewFinderSize ) / 2;
-        int top=(height -viewFinderSize ) / 2;
-        int right=left + viewFinderSize;
-        int bottom=top+viewFinderSize;
-        viewFraming = new Rect(left, top, right,bottom);
-        Log.v("CAMERA", "Viewfinder size: "+viewFinderSize);
+        int left = (width - viewFinderSize) / 2;
+        int top = (height - viewFinderSize) / 2;
+        int right = left + viewFinderSize;
+        int bottom = top + viewFinderSize;
+        viewFraming = new Rect(left, top, right, bottom);
+
+        Log.v("CAMERA", "Display width: " + width);
+        Log.v("CAMERA", "Display height: " + height);
+        Log.v("CAMERA", "Viewfinder size: " + viewFinderSize);
 
         // now calculate the real image square
+        Camera.Parameters params = camera.getParameters();
+        previewSize = params.getPreviewSize();
+
+        int camera_width = previewSize.width;
+        int camera_height = previewSize.height;
+
+        // camera getPreviewSite does NOT take into account orientation
+        // however, the disaply width and height (the params in this method) DO
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
+        if ((info.orientation >= 90 && info.orientation < 180) || (info.orientation >= 270 && info.orientation < 360)) {
+            //  portrait orientation
+            int tmp = camera_height;
+            camera_height = camera_width;
+            camera_width = tmp;
+            Log.v("CAMERA", "Orientation is portrait, height & width preview sizes swapped");
+        }
+
 
         int image_size;
-        float ratio=0;
-        if(height > width ){
-           ratio  =  (float) previewSize.width/(float)width;
+        float ratio = 0;
+        if (height > width) {
+            ratio = (float) camera_width / (float) width;
+            image_size = (int) (ratio * viewFinderSize);
+        } else {
+            ratio = (float) camera_height / (float) height;
+            image_size = (int) (ratio * viewFinderSize);
+        }
+        Log.v("CAMERA", "ratio: " + ratio);
+        Log.v("CAMERA", "Crop image size: " + image_size);
+
+        Log.v("CAMERA", "camera preview width (raw): " + previewSize.width);
+        Log.v("CAMERA", "Camera preview height (raw): " + previewSize.height);
+
+        if (camera_height > camera_width){ // check against the smallest of the 2 dimensions
+            if (image_size > camera_width) {
+                Log.w("CAMERA", "viewfinder size of "+image_size+" was greater than camera image width of "+camera_width);
+                image_size = camera_width;
+                Log.v("CAMERA", "New crop image size: " + image_size);
+            }
         }
         else {
-            ratio = (float) previewSize.height/(float)height;
+            if (image_size > camera_height) {
+                Log.w("CAMERA", "viewfinder size of "+image_size+" was greater than camera image height of "+camera_height);
+                image_size = camera_height;
+                Log.v("CAMERA", "New crop image size: " + image_size);
+            }
         }
-        image_size = (int) (ratio * viewFinderSize);
-        Log.v("CAMERA", "Crop image size: "+image_size);
+
 
 
         left=(previewSize.width - image_size ) / 2;
@@ -227,9 +265,9 @@ class DefaultCameraImpl implements CameraInterface {
             case Surface.ROTATION_270: degrees = 270; break;
         }
         int new_rotation = (info.orientation - degrees + 360) % 360;
-        /*Log.d("CAMERA", "current rotation: "+current_Rotation);
-        Log.d("CAMERA", "camera info rotation: "+info.orientation);
-        Log.d("CAMERA", "new rotation: "+new_rotation);*/
+        //Log.d("CAMERA", "current rotation: "+current_Rotation);
+        Log.v("CAMERA", "camera info rotation: "+info.orientation);
+        //Log.d("CAMERA", "new rotation: "+new_rotation);*/
         camera.setDisplayOrientation(new_rotation);
     }
 
@@ -283,6 +321,28 @@ class DefaultCameraImpl implements CameraInterface {
         }
     }
 
+    /**
+     * Saves the picture taken to the gallery - used for debugging only.
+     *
+     */
+    private final void saveImage(Bitmap b){
+        try{
+            java.io.File storageDir = android.os.Environment.getExternalStoragePublicDirectory(
+                    android.os.Environment.DIRECTORY_PICTURES);
+            if( ! storageDir.exists() ){
+                if(storageDir.mkdir()){
+                    Log.d("CAMERA", "Storage dir created");
+                }
+            }
+            java.io.File image = new java.io.File(storageDir,  "debug-siegelklarheit-last-pic.png");
+            b.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(image));
+            Log.d("CAMERA", "Pic saved in "+storageDir.getAbsolutePath() );
+        }
+        catch (Exception e){
+            Log.e("CAMAERA", e.getMessage());
+        }
+    }
+
 
     private final class CallbackListener implements android.hardware.Camera.PictureCallback{
 
@@ -305,6 +365,9 @@ class DefaultCameraImpl implements CameraInterface {
             catch (IOException e){
                 Log.e("CAMERA", e.getMessage());
             }
+            // DEBUGGING
+            //saveImage(cropped_bitmap);
+            // END DEBUGGING
             callback.onPictureTaken( cropped_data );
         }
     }
