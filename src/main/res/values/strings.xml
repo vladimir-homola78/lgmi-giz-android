@@ -63,5 +63,15 @@
 
     <string name="start_tour_btn">Tour Starten</string>
 
+    <string name="skip_tour_btn">Tour überspringen</string>
+    <string name="end_tour_btn">Tour beenden</string>
+
+    <string name="tour_title_1">Siegel scannen</string>
+    <string name="tour_title_2">Bewertungen ansehen</string>
+    <string name="tour_title_3">Siegel vergleichen</string>
+    <string name="tour_desc_1">Scannen Sie das Siegel auf dem Produkt</string>
+    <string name="tour_desc_2">In wenigen Sekunden erhalten Sie eine Bewertung des Siegels</string>
+    <string name="tour_desc_3">Vergleichen Sie Siegel miteinander</string>
+
 
 </resources>

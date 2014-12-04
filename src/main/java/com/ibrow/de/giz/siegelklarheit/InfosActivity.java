@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Activity that shows "weiter infos"
+ * Activity that shows "weiter infos".
  *
  * @author Pete
  */
@@ -45,10 +45,8 @@ public class InfosActivity extends Activity {
      *
      */
     protected void startTour(){
-        /*
         Intent intent = new Intent (this, TourActivity.class);
         startActivity(intent);
-        */
     }
 
     /* menu */

@@ -2,6 +2,7 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,10 +31,15 @@ public class ListContentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rootView = inflater.inflate(R.layout.drowndown_container, container, false);
+
         // This is called to define the layout for the fragment;
         // we just create a TextView and set its text to be the fragment tag
-        TextView text = new TextView(getActivity());
+        //TextView text = new TextView(getActivity());
+        TextView text = (TextView) rootView.findViewById(R.id.dropdown_text);
         text.setText(mText);
-        return text;
+        //return text;
+        return  rootView;
     }
 }

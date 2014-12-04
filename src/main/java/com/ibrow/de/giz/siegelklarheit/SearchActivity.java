@@ -17,6 +17,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -127,7 +128,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         }
 
         try {
-            ft.replace(R.id.container, newFragment, dropdownList.get(position));
+            ft.replace(R.id.dropdown_container, newFragment, dropdownList.get(position));
         }
         catch (Exception e){
             Log.e("SEARCH", e.getMessage());
