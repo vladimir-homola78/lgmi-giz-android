@@ -2,16 +2,13 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Activity that shows the Impressum
@@ -19,6 +16,8 @@ import java.io.InputStreamReader;
  * @author Pete
  */
 public class ImprintActivity extends Activity {
+
+    protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +28,24 @@ public class ImprintActivity extends Activity {
         html_view.getSettings().setJavaScriptEnabled(true);
 
         html_view.loadUrl("file:///android_asset/html/impressum.html");
+
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
     }
 
     /* menu */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,6 +55,9 @@ public class ImprintActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
         switch(id){

@@ -7,8 +7,16 @@
     <!-- <string name="action_settings">Einstellungen</string>-->
     <string name="menu_search">Siegel suchen</string>
     <string name="menu_scan">Siegel scannen</string>
-    <string name="menu_info">Weitere Infos</string>
+    <string name="menu_info">Mehr erfahren</string>
     <string name="menu_imprint">Impressum</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+    <string name="federal_government">Die\nBundesregierung</string>
+    <string name="navdraw_info_text">Gefördert vom Bundesministerium für wirtschaftliche Zusammenarbeit und Entwicklung\n\n
+
+Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderungen der Bundesregierung an leistungsfähige und glaubwürdige Siegel beruhen.</string>
 
 
     <string name="title_imprint">Impressum</string>

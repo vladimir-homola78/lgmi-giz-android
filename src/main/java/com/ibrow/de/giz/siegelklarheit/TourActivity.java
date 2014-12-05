@@ -1,11 +1,15 @@
 package com.ibrow.de.giz.siegelklarheit;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -33,6 +37,8 @@ public class TourActivity extends FragmentActivity  implements View.OnClickListe
     private Drawable circleHollow;
 
     private Button[] navButtons=new Button[NUM_PAGES+1];
+
+    protected NavDrawHelper navDraw;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,8 @@ public class TourActivity extends FragmentActivity  implements View.OnClickListe
             navButtons[i].setOnClickListener( new NavButtonListener(i) );
         }
 
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+
     }
 
     /**
@@ -80,6 +88,55 @@ public class TourActivity extends FragmentActivity  implements View.OnClickListe
         }
         startActivity(intent);
     }
+
+    /* menu stuff */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
+        int id = item.getItemId();
+        Intent intent;
+        switch(id){
+            case R.id.action_scan:
+                intent = new Intent (this, ScanActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_search:
+                intent = new Intent (this, SearchActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_info:
+                // already here
+                break;
+            case R.id.action_imprint:
+                intent = new Intent (this, ImprintActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     /* internal classes */
 

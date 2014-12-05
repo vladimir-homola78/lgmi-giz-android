@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -15,15 +16,18 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 //import android.widget.Toast;
 
 import java.util.List;
@@ -44,6 +48,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     private IdentifeyeAPIInterface api;
 
+    protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +102,19 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         scanButton.setEnabled(true);
 
         new PingTask(api).execute((Void[])null);
+
+
+
+
+
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+
+        // fix for the fact the actionbar is in overly - doesnt work unfortunatley
+        ListView nav_list = (ListView) findViewById(R.id.nav_drawer);
+        nav_list.setPadding(0, getActionBar().getHeight(), 0 , 0);
+        //ListView.MarginLayoutParams params = (ListView.MarginLayoutParams) nav_list.getLayoutParams();
+        //params.setPadding(params.leftMargin, (params.topMargin +getActionBar().getHeight() ) , params.rightMargin, params.bottomMargin);
+        //nav_list.setLayoutParams(params);
     }
 
     @Override
@@ -324,7 +342,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setCancelable(false);
         builder.setMessage(getString(R.string.scan_error) + " (" + msg + ")");
         builder.setTitle(R.string.error);
-        builder.setPositiveButton(R.string.ok_btn ,
+        builder.setPositiveButton(R.string.ok_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //reinitialiseCamera();
@@ -404,6 +422,19 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     /* menu */
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -411,9 +442,9 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
 

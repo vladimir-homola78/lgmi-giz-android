@@ -7,12 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -58,6 +60,8 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
     protected EditText filterText;
     protected String lastFilterText="";
 
+
+    protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +117,24 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         FilterTextChangedListener ftcl= new FilterTextChangedListener();
         filterText.addTextChangedListener( ftcl );
         //filterText.setOnKeyListener( ftcl );
+
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
+
+
 
     public boolean onNavigationItemSelected(int position, long itemId) {
         //Log.v("SEARCH", "Dropdown position: "+position);
@@ -222,9 +243,10 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         int id = item.getItemId();
         Intent intent;
 

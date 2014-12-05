@@ -2,7 +2,7 @@
 
     <item android:id="@+id/action_scan" android:title="@string/menu_scan"
         android:icon="@drawable/menu_camera"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
     />
 
     <item android:id="@+id/action_info" android:title="@string/menu_info"
