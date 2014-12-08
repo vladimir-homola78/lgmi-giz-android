@@ -41,6 +41,8 @@ class DefaultCameraImpl implements CameraInterface {
 
     protected  Rect imageFrame;
 
+    protected int rotation = 0;
+
     protected DefaultCameraImpl(){
         //NOP
     }
@@ -188,9 +190,8 @@ class DefaultCameraImpl implements CameraInterface {
 
         // camera getPreviewSite does NOT take into account orientation
         // however, the disaply width and height (the params in this method) DO
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        Camera.getCameraInfo(cameraId, info);
-        if ((info.orientation >= 90 && info.orientation < 180) || (info.orientation >= 270 && info.orientation < 360)) {
+        Log.v("CAMERA","calculateViewFinder() current camera rotation is: "+rotation);
+        if ((rotation >= 90 && rotation < 180) || (rotation >= 270 && rotation < 360)) {
             //  portrait orientation
             int tmp = camera_height;
             camera_height = camera_width;
@@ -235,13 +236,16 @@ class DefaultCameraImpl implements CameraInterface {
         top=(camera_height - image_size ) / 2;
         right=left + image_size;
         bottom=top + image_size;
-        /*
-        Log.d("CAMERA", "Viewfinder rect - top: "+top);
-        Log.d("CAMERA", "Viewfinder rect - left: "+left);
-        Log.d("CAMERA", "Viewfinder rect - right: "+right);
-        Log.d("CAMERA", "Viewfinder rect - bottom: "+bottom);
-        */
+
+        Log.v("CAMERA", "Viewfinder rect - top: "+top);
+        Log.v("CAMERA", "Viewfinder rect - left: "+left);
+        Log.v("CAMERA", "Viewfinder rect - right: "+right);
+        Log.v("CAMERA", "Viewfinder rect - bottom: "+bottom);
+
+
         imageFrame = new Rect(left, top, right, bottom);
+        Log.v("CAMERA", "Viewfinder rect - width: "+imageFrame.width() );
+        Log.v("CAMERA", "Viewfinder rect - height: "+imageFrame.height());
     }
 
     public void setPreviewFrameSize(int width, int height){
@@ -258,6 +262,9 @@ class DefaultCameraImpl implements CameraInterface {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
         int degrees = 0;
+        Log.v("CAMERA","Setting orientation...");
+        Log.v("CAMERA","Current orientation: "+current_Rotation);
+
         // new rotation needs to be multiple of 90 degrees
         switch (current_Rotation ) {
             case Surface.ROTATION_0: degrees = 0; break;
@@ -268,8 +275,9 @@ class DefaultCameraImpl implements CameraInterface {
         int new_rotation = (info.orientation - degrees + 360) % 360;
         //Log.d("CAMERA", "current rotation: "+current_Rotation);
         Log.v("CAMERA", "camera info rotation: "+info.orientation);
-        //Log.d("CAMERA", "new rotation: "+new_rotation);*/
+        Log.v("CAMERA", "new rotation: "+new_rotation);
         camera.setDisplayOrientation(new_rotation);
+        rotation = new_rotation;
     }
 
     public Rect getViewFramingRect(){
@@ -357,17 +365,19 @@ class DefaultCameraImpl implements CameraInterface {
             // crop the camera image based on the view finder
             try {
                 Bitmap tmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Log.v("CAMERA", "Image from camera is "+tmp.getWidth()+"px wide, and "+tmp.getHeight()+"px tall");
 
-                Camera.CameraInfo info = new Camera.CameraInfo();
-                Camera.getCameraInfo(cameraId, info);
-                if ((info.orientation >= 90 && info.orientation < 180) || (info.orientation >= 270 && info.orientation < 360)) {
+                Log.v("CAMERA", "Camera rotation: "+rotation);
+                if ((rotation>= 90 && rotation < 180) || (rotation >= 270 && rotation < 360)) {
                     Log.v("CAMERA", "Phone Orientation is portrait, rotating image");
                     Matrix matrix = new Matrix();
                     matrix.postRotate(90);
                     tmp = Bitmap.createBitmap(tmp, 0, 0, tmp.getWidth(), tmp.getHeight(), matrix, true);
+                    Log.v("CAMERA", "Rotated image is "+tmp.getWidth()+"px wide, and "+tmp.getHeight()+"px tall");
                 }
 
                 Bitmap cropped_bitmap = Bitmap.createBitmap(tmp, imageFrame.left, imageFrame.top, imageFrame.width(), imageFrame.height());
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 cropped_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] cropped_data = baos.toByteArray();
@@ -382,7 +392,7 @@ class DefaultCameraImpl implements CameraInterface {
                 callback.onPictureTaken(cropped_data);
             }
             catch (Exception e){
-                Log.e("CAMERA", "Problem with procesing taken image: "+e.getMessage());
+                Log.e("CAMERA", "Problem with processing taken image: "+e.getMessage());
             }
 
         }

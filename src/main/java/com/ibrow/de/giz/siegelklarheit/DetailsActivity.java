@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -206,6 +207,13 @@ public class DetailsActivity extends Activity {
                 WebView html_view=(WebView) findViewById(R.id.details_webview);
                 html_view.getSettings().setJavaScriptEnabled(true);
                 html_view.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
+                html_view.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return false;
+                    }
+                });
                 //Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
                 String url = result.getShareURL();
                 if( ! url.isEmpty() ){

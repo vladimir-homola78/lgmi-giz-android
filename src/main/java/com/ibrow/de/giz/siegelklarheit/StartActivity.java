@@ -29,7 +29,8 @@ public class StartActivity extends Activity{
         boolean alreadyRun = settings.getBoolean( ALREADY_RUN_ONCE, false );
 
         if( alreadyRun  ){
-            intent = new Intent( this, ScanActivity.class );
+            //intent = new Intent( this, ScanActivity.class );
+            intent = new Intent( this, SplashActivity.class );
         }
         else {
             intent = new Intent( this, TourActivity.class );
