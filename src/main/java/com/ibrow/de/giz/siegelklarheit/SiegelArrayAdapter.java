@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -120,6 +122,12 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
                 } // end loop
                 break;
         } // end switch
+
+        RelativeLayout info_holder = (RelativeLayout) rowView.findViewById(R.id.siegel_row);
+        FrameLayout rating_holder = (FrameLayout) rowView.findViewById(R.id.rating_holder);
+        //rating_holder.setMinimumHeight( info_holder.getHeight() );
+        //rating_image_view.setMinimumHeight( info_holder.getHeight() );
+        //rating_color.setMinimumHeight( info_holder.getHeight() );
 
         return rowView;
     }

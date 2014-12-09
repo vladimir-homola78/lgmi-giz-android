@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/tour_desc"
         android:text="@string/tour_desc_1"
-
+        android:textSize="16sp"
     />
 
 </LinearLayout>

@@ -24,12 +24,15 @@
 
         <EditText
             android:id="@+id/filter"
+            android:textColor="#333"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textFilter"
             android:imeOptions="actionSearch"
             android:hint="@string/filter_hint"
             android:drawableLeft="@drawable/filter_search"
+            android:drawablePadding="@dimen/pad"
+
         />
     </LinearLayout>
 
@@ -42,13 +45,15 @@
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/nav_drawer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
         android:divider="#ddd"
         android:dividerHeight="1dp"
+        android:footerDividersEnabled="false"
         android:background="#fff"
+        android:listSelector="@drawable/navdraw_selector"
     >
 
     </ListView>

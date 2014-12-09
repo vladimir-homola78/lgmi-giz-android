@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,10 +35,16 @@ public class DetailsActivity extends Activity {
 
     protected Drawable blankLogo;
 
+    protected SiegelInfo siegel;
+
+    protected WebView htmlView;
+
     private ShareActionProvider shareActionProvider;
     private boolean haveShareURL = false;
 
     protected NavDrawHelper navDraw;
+
+    protected boolean linkClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +63,8 @@ public class DetailsActivity extends Activity {
         assert siegel_short_info != null;
 
         setMainDisplay(siegel_short_info);
-        WebView html_view=(WebView) findViewById(R.id.details_webview);
-        //html_view.loadUrl("file:///android_asset/loading.html");
+        htmlView =(WebView) findViewById(R.id.details_webview);
+        //htmlView.loadUrl("file:///android_asset/loading.html");
 
         new LoadFullInfoTask(api).execute( new Integer(siegel_short_info.getId()) );
 
@@ -159,6 +166,24 @@ public class DetailsActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * We trap the back key here for the web view.
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( (keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null) && htmlView.canGoBack() && linkClicked ){
+            //htmlView.goBack();
+            htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), siegel.getDetails(), "text/html", "UTF-8", null);
+            linkClicked = false;
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     /* internal classes */
 
 
@@ -203,14 +228,15 @@ public class DetailsActivity extends Activity {
 
         protected void onPostExecute(SiegelInfo result){
             if(result!=null){
-                Log.d("LoadFullInfoTask", "got result for id "+result.getId());
-                WebView html_view=(WebView) findViewById(R.id.details_webview);
-                html_view.getSettings().setJavaScriptEnabled(true);
-                html_view.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
-                html_view.setWebViewClient(new WebViewClient() {
+                Log.v("LoadFullInfoTask", "got result for id " + result.getId());
+                siegel = result;
+                htmlView.getSettings().setJavaScriptEnabled(true);
+                htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
+                htmlView.setWebViewClient(new WebViewClient() {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
                         view.loadUrl(url);
+                        linkClicked = true;
                         return false;
                     }
                 });

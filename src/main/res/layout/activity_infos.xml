@@ -18,12 +18,17 @@
             <WebView
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                android:id="@+id/info_webview">
+                android:id="@+id/info_webview"
+                android:minHeight="300dp"
+                >
             </WebView>
 
             <Button
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:layout_width="wrap_content"
+                style="@style/ButtonTheme"
+                android:layout_marginLeft="@dimen/large_margin"
+                android:layout_marginRight="@dimen/large_margin"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/start_tour_btn"
                 android:layout_gravity="center"
@@ -37,13 +42,15 @@
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/nav_drawer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
         android:divider="#ddd"
         android:dividerHeight="1dp"
         android:background="#fff"
+        android:footerDividersEnabled="false"
+        android:listSelector="@drawable/navdraw_selector"
         >
 
     </ListView>

@@ -20,9 +20,11 @@ Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderunge
 
 
     <string name="title_imprint">Impressum</string>
-    <string name="title_infos">Weitere Infos</string>
+    <!--<string name="title_infos">Weitere Infos</string>-->
+    <string name="title_infos">Mehr erfahren</string>
     <string name="title_multipleresults">Scan-Ergebnis</string>
     <string name="title_activity_search">Alle Siegel</string>
+    <string name="title_activity_tour">Siegelklarheit Tour</string>
 
 
     <string name="warning">Warnung</string>
@@ -43,9 +45,6 @@ Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderunge
     <string name="scan_not_recognised_msg">Das gescannte Label konnte nicht erkannt werden.</string>
     <string name="scan_not_recognised_search_btn">Nach Label suchen</string>
     <string name="scan_not_recognised_tryagain_btn">Erneut scannen</string>
-
-
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="text_multiple_results">Das Label konnte nicht eindeutig erkannt werden.  Bitte wählen Sie das entsprechende Label aus der Liste aus</string>
     <string name="text_multiple_results_list_all">Haben Sie ein anders Siegel gesucht?</string>

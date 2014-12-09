@@ -24,9 +24,12 @@
     />
 
     <Button
+        style="@style/ButtonTranslucentTheme"
+        android:layout_marginLeft="@dimen/large_margin"
+        android:layout_marginRight="@dimen/large_margin"
+        android:layout_width="match_parent"
         android:id="@+id/button_scan"
         android:text="@string/button_scan"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_alignParentBottom="true"
@@ -39,13 +42,16 @@
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/nav_drawer"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:layout_gravity="start|bottom"
         android:choiceMode="singleChoice"
         android:divider="#ddd"
         android:dividerHeight="1dp"
+        android:footerDividersEnabled="false"
         android:background="#fff"
+        android:listSelector="@drawable/navdraw_selector"
         >
 
     </ListView>

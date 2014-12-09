@@ -62,8 +62,8 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         setContentView(R.layout.activity_scan);
 
-        // @todo set this to correct color
-        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
+
+        getActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.navigation_translucent)));
 
         // need to de the following, even though its in onResume()
         // before calling connectPreviewFrame()
@@ -103,18 +103,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         new PingTask(api).execute((Void[])null);
 
-
-
-
-
         navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
-
-        // fix for the fact the actionbar is in overly - doesnt work unfortunatley
-        ListView nav_list = (ListView) findViewById(R.id.nav_drawer);
-        nav_list.setPadding(0, getActionBar().getHeight(), 0 , 0);
-        //ListView.MarginLayoutParams params = (ListView.MarginLayoutParams) nav_list.getLayoutParams();
-        //params.setPadding(params.leftMargin, (params.topMargin +getActionBar().getHeight() ) , params.rightMargin, params.bottomMargin);
-        //nav_list.setLayoutParams(params);
     }
 
     @Override
@@ -185,6 +174,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     private final void hideNavBar(){
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
             /*
         View decorView = getWindow().getDecorView();
@@ -487,6 +477,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     public boolean onTouch(View v, MotionEvent event){
         //Log.d("SCAN", "screen touched");
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         if( camera != null && camera.getIsInitialised() ){
             //Log.d("SCAN","touch, camera ready");
             int action = event.getActionMasked();

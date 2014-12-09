@@ -15,13 +15,13 @@ import android.widget.Button;
  */
 public class SplashActivity extends Activity implements View.OnClickListener{
 
-    protected NavDrawHelper navDraw;
+    //protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout));
+        //navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout));
 
         ((Button) findViewById(R.id.splash_search_btn)).setOnClickListener(this);
         ((Button) findViewById(R.id.splash_scan_btn)).setOnClickListener(this);

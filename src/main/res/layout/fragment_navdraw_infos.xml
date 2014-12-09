@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     android:id="@+id/navdrawinfos_holder"
     android:padding="16dp"
 >
@@ -28,7 +28,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:gravity="center_vertical"
-            android:textColor="#aaa"
+            android:textColor="#333"
             android:paddingRight="12dp"
             android:text="@string/federal_government"
         />
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/navdrawinfos_text"
-        android:textColor="#aaa"
+        android:textColor="#333"
         android:text="@string/navdraw_info_text"
      />
 

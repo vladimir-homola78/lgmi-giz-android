@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#ffffff"
+    android:id="@+id/siegel_row"
 >
 
     <ImageView
@@ -128,7 +129,7 @@
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:id="@+id/rating_holder"
         android:minHeight="96dp"

@@ -14,7 +14,8 @@
     <WebView
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/imprint_webview">
+        android:id="@+id/imprint_webview"
+    >
     </WebView>
 
 
@@ -22,13 +23,15 @@
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/nav_drawer"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
     android:choiceMode="singleChoice"
     android:divider="#ddd"
     android:dividerHeight="1dp"
     android:background="#fff"
+    android:footerDividersEnabled="false"
+        android:listSelector="@drawable/navdraw_selector"
         >
 
     </ListView>
