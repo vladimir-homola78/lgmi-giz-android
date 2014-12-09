@@ -183,7 +183,7 @@ class DefaultCameraImpl implements CameraInterface {
 
         // now calculate the real image square
         Camera.Parameters params = camera.getParameters();
-        previewSize = params.getPreviewSize();
+        previewSize = params.getPictureSize();
 
         int camera_width = previewSize.width;
         int camera_height = previewSize.height;

@@ -7,8 +7,8 @@ android {
         applicationId "com.ibrow.de.giz.siegelklarheit"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 10
-        versionName '0.4 Beta'
+        versionCode 11
+        versionName '0.4.1 Beta'
     }
     buildTypes {
         release {
