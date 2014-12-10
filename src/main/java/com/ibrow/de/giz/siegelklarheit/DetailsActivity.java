@@ -15,7 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
@@ -62,14 +65,19 @@ public class DetailsActivity extends Activity {
         ShortSiegelInfo siegel_short_info = SiegelklarheitApplication.getCurrentSiegel();
         assert siegel_short_info != null;
 
-        setMainDisplay(siegel_short_info);
         htmlView =(WebView) findViewById(R.id.details_webview);
+        setMainDisplay(siegel_short_info);
+
         //htmlView.loadUrl("file:///android_asset/loading.html");
 
-        new LoadFullInfoTask(api).execute( new Integer(siegel_short_info.getId()) );
+        if( siegel_short_info.getRating()!=SiegelRating.UNKNOWN && siegel_short_info.getRating()!=SiegelRating.NONE ) {
+            // only load full infos if there's more infos to fetch!
+            new LoadFullInfoTask(api).execute(new Integer(siegel_short_info.getId()));
+        }
+
+        ((Button) findViewById(R.id.no_infos_show_list_btn)).setOnClickListener( new ButtonListener() );
 
         navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
-
     }
 
     @Override
@@ -92,6 +100,16 @@ public class DetailsActivity extends Activity {
         View rating_holder=(View) findViewById(R.id.rating_view);
 
         rating_holder.setBackgroundColor(rating.getColor());
+
+
+
+        if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+            htmlView.setVisibility(View.GONE);
+            ((LinearLayout) findViewById(R.id.no_infos_holder) ).setVisibility(View.VISIBLE);
+            if( rating==SiegelRating.UNKNOWN ){
+                ((ImageView) findViewById(R.id.rating_symbol_image) ).setVisibility(View.GONE);
+            }
+        }
 
         ImageView rating_image_view = (ImageView) findViewById(R.id.rating_symbol_image);
         rating_image_view.setImageDrawable( getResources().getDrawable(getResources().getIdentifier(DRAWABLE + rating.getImageIdentifier(), null, getPackageName())) );
@@ -184,6 +202,21 @@ public class DetailsActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * Starts the search activity.
+     *
+     * Called by the button click,
+     * visible when we have no more infos for a siegel
+     *
+     * @see com.ibrow.de.giz.siegelklarheit.DetailsActivity.ButtonListener
+     * @see com.ibrow.de.giz.siegelklarheit.SearchActivity
+     */
+    protected final void showList(){
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     /* internal classes */
 
 
@@ -236,6 +269,7 @@ public class DetailsActivity extends Activity {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
                         view.loadUrl(url);
+                        ((ScrollView) findViewById(R.id.details_scroll_view)).pageScroll(View.FOCUS_UP);
                         linkClicked = true;
                         return false;
                     }
@@ -258,5 +292,18 @@ public class DetailsActivity extends Activity {
             }
             Log.e("LoadFullInfoTask", "Got null result");
         }
+    }
+
+    private final class ButtonListener implements View.OnClickListener{
+
+        /**
+         * Starts the tour by calling showList()
+         * @see #showList()
+         * @param v
+         */
+        public void onClick(View v) {
+            showList();
+        }
+
     }
 }

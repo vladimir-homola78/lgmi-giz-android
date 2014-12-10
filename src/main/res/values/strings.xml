@@ -54,7 +54,7 @@ Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderunge
     <string name="rating_good"><b>Gute Wahl!</b>\nDieses Siegel erfühllt unsere Mindesanforderungen im Bereich Umwelt und Soziales</string>
     <string name="rating_bad"><b>Das geht besser!</b>\nDieses Siegel erfüllt unsere Mindestanforderungen nicht</string>
     <string name="rating_none"><b>Keine Bewertung</b>\nDieses Siegel kann nicht bewertet werden, da der Siegelgeber einer Bewertung nicht zugestimmt hat</string>
-    <string name="rating_unknown"><b>Keine Bewertung</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor, wird aber sobald als möglich durchgeführt und/oder eingestellt</string>
+    <string name="rating_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor, wird aber sobald als möglich durchgeführt und/oder eingestellt</string>
 
     <string name="criterion_type_system">Glaubwürdigkeit</string>
     <string name="criterion_type_environment">Umweltfreundlichkeit</string>
@@ -63,6 +63,8 @@ Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderunge
     <string name="criterion_none"><b>Keine Daten</b>\nDer Siegelgeber hat einer Bewertung nicht zugestimmt</string>
     <string name="criterion_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor</string>
 
+    <string name="details_no_info">Efahren Sie mehr über andere Siegel</string>
+    <string name="details_no_info_list_btn">Liste aller Siegel ansehen</string>
 
     <string name="filter_hint">Nach Siegeln suchen</string>
     <string name="category_all">Alle Siegel</string>
