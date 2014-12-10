@@ -153,6 +153,9 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
         }
 
         protected void onPostExecute(Void result){
+            if( isCancelled() ){
+                return;
+            }
             if(! gotImage ){
                 logoView.setImageDrawable(blankLogo);
             }

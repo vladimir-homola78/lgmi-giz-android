@@ -232,6 +232,9 @@ public class DetailsActivity extends Activity {
         }
 
         protected void onPostExecute(Void result){
+            if( isCancelled() ){
+                return;
+            }
             if(! gotImage ){
                 ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
                 logo_image_view.setImageDrawable(blankLogo);
@@ -260,6 +263,10 @@ public class DetailsActivity extends Activity {
         }
 
         protected void onPostExecute(SiegelInfo result){
+            if( isCancelled() ){
+                Log.v("LoadFullInfoTask", "Task cancelled");
+                return;
+            }
             if(result!=null){
                 Log.v("LoadFullInfoTask", "got result for id " + result.getId());
                 siegel = result;

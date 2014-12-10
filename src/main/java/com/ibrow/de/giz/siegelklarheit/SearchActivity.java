@@ -355,6 +355,10 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
         }
 
         protected void onPostExecute(Void result) {
+            if( isCancelled() ){
+                Log.e("FetchInfoTask", "task cancelled");
+                return;
+            }
             currentList = allSiegelsArray;
             adapter = new SiegelArrayAdapter(context, currentList);
             listview.setAdapter(adapter);

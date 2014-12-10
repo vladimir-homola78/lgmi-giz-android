@@ -584,6 +584,10 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         protected void onPostExecute(List<ShortSiegelInfo>  result) {
             Log.d("ScanPictureTask", "finished");
+            if( isCancelled() ){
+                Log.v("ScanPictureTask", "Task cancelled");
+                return;
+            }
             progressDialog.dismiss();
             if(result == null){
                 apiError(error);

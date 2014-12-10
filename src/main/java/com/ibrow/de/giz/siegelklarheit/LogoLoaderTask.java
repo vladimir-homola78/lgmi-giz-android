@@ -60,6 +60,8 @@ abstract class LogoLoaderTask extends AsyncTask<Siegel, Bitmap, Void>{
      */
     @Override
     protected void onPostExecute(Void result){
-        // finished, NOP
+        if( isCancelled() ){
+            return;
+        }
     }
 }
