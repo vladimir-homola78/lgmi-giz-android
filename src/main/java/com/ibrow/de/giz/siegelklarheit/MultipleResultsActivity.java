@@ -3,8 +3,10 @@ package com.ibrow.de.giz.siegelklarheit;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,17 +27,21 @@ public class MultipleResultsActivity extends Activity {
     protected IdentifeyeAPIInterface api;
     protected ShortSiegelInfo[] siegel_array;
 
+    protected NavDrawHelper navDraw;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multipleresults);
 
+        /**
         try{
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
         catch (NullPointerException npe){
             Log.e("MULTI", "Null for getActionBar(): "+npe.getMessage());
         }
+        */
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         List<ShortSiegelInfo> siegels = app.getLastMultipleMatches();
@@ -53,7 +59,22 @@ public class MultipleResultsActivity extends Activity {
 
         Button searchButton = (Button)findViewById(R.id.button_search);
         searchButton.setOnClickListener(new ButtonListener(this) );
+
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,6 +84,9 @@ public class MultipleResultsActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
         switch(id){

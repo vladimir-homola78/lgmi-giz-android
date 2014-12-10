@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ibrow.de.giz.siegelklarheit"
-    android:versionCode="4"
-    android:versionName="0.3.1 Alpha" >
+    android:versionCode="12"
+    android:versionName="0.4.2 Beta" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -23,17 +23,36 @@
     <application
         android:name="com.ibrow.de.giz.siegelklarheit.SiegelklarheitApplication"
         android:allowBackup="true"
-        android:icon="@drawable/logo"
+        android:logo="@drawable/logo"
+        android:icon="@drawable/launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name="com.ibrow.de.giz.siegelklarheit.ScanActivity"
-            android:label="@string/app_name" >
+            android:name="com.ibrow.de.giz.siegelklarheit.StartActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:noHistory="true"
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.SplashActivity"
+            android:label="@string/app_name"
+            android:noHistory="true"
+        >
+
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.ScanActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+        >
         </activity>
 
         <activity
@@ -65,7 +84,7 @@
 
         <activity
             android:name="com.ibrow.de.giz.siegelklarheit.InfosActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppInfoTheme"
             android:label="@string/title_infos"
             >
         </activity>
@@ -73,6 +92,13 @@
         <activity
             android:name="com.ibrow.de.giz.siegelklarheit.ImprintActivity"
             android:label="@string/title_imprint"
+            android:theme="@style/AppInfoTheme"
+            >
+        </activity>
+
+        <activity
+            android:name="com.ibrow.de.giz.siegelklarheit.TourActivity"
+            android:label="@string/title_activity_tour"
             android:theme="@style/AppTheme"
             >
         </activity>

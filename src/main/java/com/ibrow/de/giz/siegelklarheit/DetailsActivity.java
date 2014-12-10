@@ -2,16 +2,23 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
@@ -31,8 +38,16 @@ public class DetailsActivity extends Activity {
 
     protected Drawable blankLogo;
 
+    protected SiegelInfo siegel;
+
+    protected WebView htmlView;
+
     private ShareActionProvider shareActionProvider;
     private boolean haveShareURL = false;
+
+    protected NavDrawHelper navDraw;
+
+    protected boolean linkClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +65,32 @@ public class DetailsActivity extends Activity {
         ShortSiegelInfo siegel_short_info = SiegelklarheitApplication.getCurrentSiegel();
         assert siegel_short_info != null;
 
+        htmlView =(WebView) findViewById(R.id.details_webview);
         setMainDisplay(siegel_short_info);
-        WebView html_view=(WebView) findViewById(R.id.details_webview);
-        //html_view.loadUrl("file:///android_asset/loading.html");
 
-        new LoadFullInfoTask(api).execute( new Integer(siegel_short_info.getId()) );
+        //htmlView.loadUrl("file:///android_asset/loading.html");
 
+        if( siegel_short_info.getRating()!=SiegelRating.UNKNOWN && siegel_short_info.getRating()!=SiegelRating.NONE ) {
+            // only load full infos if there's more infos to fetch!
+            new LoadFullInfoTask(api).execute(new Integer(siegel_short_info.getId()));
+        }
+
+        ((Button) findViewById(R.id.no_infos_show_list_btn)).setOnClickListener( new ButtonListener() );
+
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
     }
 
     private void setMainDisplay(final Siegel siegel){
@@ -65,6 +100,16 @@ public class DetailsActivity extends Activity {
         View rating_holder=(View) findViewById(R.id.rating_view);
 
         rating_holder.setBackgroundColor(rating.getColor());
+
+
+
+        if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
+            htmlView.setVisibility(View.GONE);
+            ((LinearLayout) findViewById(R.id.no_infos_holder) ).setVisibility(View.VISIBLE);
+            if( rating==SiegelRating.UNKNOWN ){
+                ((ImageView) findViewById(R.id.rating_symbol_image) ).setVisibility(View.GONE);
+            }
+        }
 
         ImageView rating_image_view = (ImageView) findViewById(R.id.rating_symbol_image);
         rating_image_view.setImageDrawable( getResources().getDrawable(getResources().getIdentifier(DRAWABLE + rating.getImageIdentifier(), null, getPackageName())) );
@@ -112,9 +157,9 @@ public class DetailsActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
 
@@ -139,6 +184,39 @@ public class DetailsActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * We trap the back key here for the web view.
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( (keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null) && htmlView.canGoBack() && linkClicked ){
+            //htmlView.goBack();
+            htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), siegel.getDetails(), "text/html", "UTF-8", null);
+            linkClicked = false;
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * Starts the search activity.
+     *
+     * Called by the button click,
+     * visible when we have no more infos for a siegel
+     *
+     * @see com.ibrow.de.giz.siegelklarheit.DetailsActivity.ButtonListener
+     * @see com.ibrow.de.giz.siegelklarheit.SearchActivity
+     */
+    protected final void showList(){
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     /* internal classes */
 
 
@@ -154,6 +232,9 @@ public class DetailsActivity extends Activity {
         }
 
         protected void onPostExecute(Void result){
+            if( isCancelled() ){
+                return;
+            }
             if(! gotImage ){
                 ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
                 logo_image_view.setImageDrawable(blankLogo);
@@ -182,11 +263,24 @@ public class DetailsActivity extends Activity {
         }
 
         protected void onPostExecute(SiegelInfo result){
+            if( isCancelled() ){
+                Log.v("LoadFullInfoTask", "Task cancelled");
+                return;
+            }
             if(result!=null){
-                Log.d("LoadFullInfoTask", "got result for id "+result.getId());
-                WebView html_view=(WebView) findViewById(R.id.details_webview);
-                html_view.getSettings().setJavaScriptEnabled(true);
-                html_view.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
+                Log.v("LoadFullInfoTask", "got result for id " + result.getId());
+                siegel = result;
+                htmlView.getSettings().setJavaScriptEnabled(true);
+                htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
+                htmlView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        ((ScrollView) findViewById(R.id.details_scroll_view)).pageScroll(View.FOCUS_UP);
+                        linkClicked = true;
+                        return false;
+                    }
+                });
                 //Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
                 String url = result.getShareURL();
                 if( ! url.isEmpty() ){
@@ -205,5 +299,18 @@ public class DetailsActivity extends Activity {
             }
             Log.e("LoadFullInfoTask", "Got null result");
         }
+    }
+
+    private final class ButtonListener implements View.OnClickListener{
+
+        /**
+         * Starts the tour by calling showList()
+         * @see #showList()
+         * @param v
+         */
+        public void onClick(View v) {
+            showList();
+        }
+
     }
 }

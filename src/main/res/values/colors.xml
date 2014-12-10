@@ -1,5 +1,14 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
+    <color name="neutral">#f0f0e1</color>
+    <color name="orange">#f26d20</color>
+    <color name="orange_translucent">#88f26d20</color>
+    <color name="white">#ffffff</color>
+    <color name="navigation">#f7da9c</color>
+    <color name="navigation_translucent">#88f7da9c</color>
+
+    <color name="navdraw_onclick">#e3e3e3</color>
+
 
 </resources>

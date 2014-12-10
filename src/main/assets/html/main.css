@@ -185,13 +185,13 @@ select {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 300;
-  src: url("Roboto-Light.ttf") format("truetype");
+  src: url("fonts/Roboto/Roboto-Light.ttf") format("truetype");
 }
 @font-face {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 500;
-  src: url("Roboto-Medium.ttf") format("truetype");
+  src: url("fonts/Roboto/Roboto-Medium.ttf") format("truetype");
 }
 .font-face-default {
   -webkit-font-smoothing: antialiased;
@@ -258,7 +258,7 @@ p,
   font-weight: normal;
 }
 #standard {
-  background: #eff0e2;
+  background: #f0f0e1;
 }
 #standard header {
   text-align: center;
@@ -284,35 +284,35 @@ p,
   background: linear-gradient(80deg, #115746 0%, #115746 55%, #1f6654 55%, #1f6654 100%);
 }
 #standard #face.high::before {
-  content: url("web_face_darkgreen.png");
+  content: url("web_face.png");
 }
 #standard #face.med {
   background-color: #4b9f53;
   background: linear-gradient(80deg, #4b9f53 0%, #4b9f53 55%, #57a861 55%, #57a861 100%);
 }
 #standard #face.med::before {
-  content: url("web_face_green.png");
+  content: url("web_facf.png");
 }
 #standard #face.low {
   background-color: #c33131;
   background: linear-gradient(80deg, #c33131 0%, #c33131 55%, #cf3f3f 55%, #cf3f3f 100%);
 }
 #standard #face.low::before {
-  content: url("web_face_red.png");
+  content: url("web_facg.png");
 }
 #standard #face.no-consent {
   background-color: #666666;
   background: linear-gradient(80deg, #666666 0%, #666666 55%, #6b6b6b 55%, #6b6b6b 100%);
 }
 #standard #face.no-consent::before {
-  content: url("web_face_grey.png");
+  content: url("web_fach.png");
 }
 #standard #face.no-data {
   background-color: #666666;
   background: linear-gradient(80deg, #666666 0%, #666666 55%, #6b6b6b 55%, #6b6b6b 100%);
 }
 #standard #face.no-data::before {
-  content: url(" ");
+  content: " ";
   width: 60px;
   height: 60px;
   border: 4px solid #ffffff;
@@ -413,13 +413,13 @@ p,
   background: #ffffff !important;
 }
 #standard #tabs nav ul li.star::after {
-  content: url("web_medium_star.png");
+  content: url("images/web_medium_star.png");
 }
 #standard #tabs nav ul li.tick::after {
-  content: url("web_medium_tick.png");
+  content: url("images/web_medium_tick.png");
 }
 #standard #tabs nav ul li.cross::after {
-  content: url("web_mediumx.png");
+  content: url("web_medi.png");
 }
 #standard #tabs article {
   padding: 10px 5%;
@@ -436,13 +436,13 @@ p,
   min-height: 35px;
 }
 #standard #tabs article h3.star {
-  background: url("web_large_star.png") 0 0 no-repeat;
+  background: url("images/web_large_star.png") 0 0 no-repeat;
 }
 #standard #tabs article h3.tick {
-  background: url("web_large_tick.png") 0 0 no-repeat;
+  background: url("images/web_large_tick.png") 0 0 no-repeat;
 }
 #standard #tabs article h3.cross {
-  background: url("web_largex.png") 0 0 no-repeat;
+  background: url("web_larg.png") 0 0 no-repeat;
 }
 #standard #tabs article ul {
   list-style: none;
@@ -456,11 +456,11 @@ p,
   display: none;
 }
 #standard #tabs article ul li input[type=checkbox] + label {
-  background: url("web_unchecked.png") 10px 3px no-repeat;
+  background: url("web_unch.png") 10px 3px no-repeat;
   padding-left: 45px;
 }
 #standard #tabs article ul li input[type=checkbox]:checked + label {
-  background: url("web_checked.png") 10px 3px no-repeat;
+  background: url("web_chec.png") 10px 3px no-repeat;
 }
 #standard #description {
   margin: 20px 5%;
@@ -471,15 +471,12 @@ p,
 #standard #description .fade::before {
   content: " ";
   width: 100%;
-  height: 50px;
+  height: 80px;
   display: block;
-  background: linear-gradient(transparent 1px, #eff0e2);
+  background: linear-gradient(to bottom, rgba(240, 240, 225, 0) 0%, #f0f0e1 90%, #f0f0e1 100%);
   position: absolute;
   bottom: 0;
   left: 0;
-}
-#standard #description .expand {
-  margin-top: 10px;
 }
 #standard #description button {
   border: 0;
@@ -497,10 +494,10 @@ p,
   margin-left: 10px;
 }
 #standard #description button.expand::after {
-  content: url("web_down_arrow.png");
+  content: url("images/web_down_arrow.png");
 }
 #standard #description button.hide::after {
-  content: url("web_up_arrow.png");
+  content: url("images/web_up_arrow.png");
 }
 #standard #sectors {
   margin: 20px 5%;
@@ -515,7 +512,7 @@ p,
   width: 20%;
   font-size: 0px;
   line-height: 0px;
-  color: #eff0e2;
+  color: #f0f0e1;
   text-align: center;
 }
 #standard #sectors ul li::after {
@@ -528,16 +525,16 @@ p,
   opacity: 01;
 }
 #standard #sectors ul li.textilien::after {
-  content: url("web_shirt_icon.png");
+  content: url("web_shir.png");
 }
 #standard #sectors ul li.lebensmittel::after {
-  content: url("web_food_icon.png");
+  content: url("web_food.png");
 }
 #standard #sectors ul li.papier::after {
-  content: url("web_map_icon.png");
+  content: url("web_map_.png");
 }
 #standard #sectors ul li.holz::after {
-  content: url("web_trees_icon.png");
+  content: url("web_tree.png");
 }
 #standard #lifecycle {
   margin: 20px 5%;
@@ -642,7 +639,7 @@ progress::-webkit-progress-bar {
  Listing and comparison pages
 **********************************************************************/
 #multi {
-  background: #eff0e2;
+  background: #f0f0e1;
 }
 #multi .content-top {
   margin: 5% 5% 20px 5%;
@@ -661,7 +658,7 @@ progress::-webkit-progress-bar {
   font-size: 110%;
   color: #acada3;
   font-face: Roboto, sans-serif;
-  background: url("app_menu_magnify_grey.png") 5px 0 no-repeat;
+  background: url("images/app_menu_magnify_grey.png") 5px 0 no-repeat;
   border: 0;
   width: 100%;
   padding-left: 35px;
@@ -681,7 +678,7 @@ progress::-webkit-progress-bar {
   content: " ";
 }
 #list {
-  background: #eff0e2;
+  background: #f0f0e1;
   padding-bottom: 10px;
   background: linear-gradient(to bottom, rgba(136, 136, 136, 0.65) 90%, rgba(0, 0, 0, 0) 100%);
 }
@@ -702,7 +699,7 @@ progress::-webkit-progress-bar {
   position: relative;
   padding: 15px 5%;
   height: 90px;
-  border-bottom: 1px solid #eff0e2;
+  border-bottom: 1px solid #f0f0e1;
   cursor: pointer;
 }
 #list div.item h2 {
@@ -712,7 +709,10 @@ progress::-webkit-progress-bar {
   font-family: Roboto, sans-serif;
   font-weight: 500;
   margin-bottom: 10px;
-  margin: 0 0 5px 75px;
+  margin: 0 0 5px 85px;
+}
+#list div.item h4 {
+  margin-bottom: 0;
 }
 #list div.item p.logo {
   position: absolute;
@@ -723,7 +723,8 @@ progress::-webkit-progress-bar {
 #list div.item p.logo img {
   max-width: 100%;
 }
-#list div.item table {
+#list div.item table,
+#list div.item div {
   display: block;
   margin: 0 85px;
   position: relative;
@@ -736,13 +737,13 @@ progress::-webkit-progress-bar {
   right: 0;
 }
 #list div.item table td.star::after {
-  content: url("web_small_star.png");
+  content: url("web_smal.png");
 }
 #list div.item table td.tick::after {
-  content: url("web_small_tick.png");
+  content: url("web_smam.png");
 }
 #list div.item table td.cross::after {
-  content: url("web_smallx.png");
+  content: url("web_sman.png");
 }
 #list div.item::after {
   display: block;
@@ -755,31 +756,31 @@ progress::-webkit-progress-bar {
   background: linear-gradient(270deg, #115746 0%, #115746 50px, #ffffff 50px, #ffffff 100%);
 }
 #list div.item.high::after {
-  content: url("web_face_darkgreen.png");
+  content: url("web_face.png");
 }
 #list div.item.med {
   background: linear-gradient(270deg, #4b9f53 0%, #4b9f53 50px, #ffffff 50px, #ffffff 100%);
 }
 #list div.item.med::after {
-  content: url("web_face_green.png");
+  content: url("web_facf.png");
 }
 #list div.item.low {
   background: linear-gradient(270deg, #c33131 0%, #c33131 50px, #ffffff 50px, #ffffff 100%);
 }
 #list div.item.low::after {
-  content: url("web_face_red.png");
+  content: url("web_facg.png");
 }
 #list div.item.no-consent {
   background: linear-gradient(270deg, #666666 0%, #666666 50px, #ffffff 50px, #ffffff 100%);
 }
 #list div.item.no-consent::after {
-  content: url("web_face_grey.png");
+  content: url("web_fach.png");
 }
 #list div.item.no-data {
   background: linear-gradient(270deg, #666666 0%, #666666 50px, #ffffff 50px, #ffffff 100%);
 }
 #list div.item.no-data::after {
-  content: url(" ");
+  content: " ";
   width: 60px;
   height: 60px;
   position: absolute;
@@ -818,22 +819,22 @@ progress::-webkit-progress-bar {
 }
 #content h4.high {
   color: #115746;
-  background: url("web_face_darkgreen.png") 0 0 no-repeat;
+  background: url("web_face.png") 0 0 no-repeat;
 }
 #content h4.med {
   color: #4b9f53;
   color: #115746;
-  background: url("web_face_green.png") 0 0 no-repeat;
+  background: url("web_facf.png") 0 0 no-repeat;
 }
 #content h4.low {
   color: #c33131;
   color: #115746;
-  background: url("web_face_red.png") 0 0 no-repeat;
+  background: url("web_facg.png") 0 0 no-repeat;
 }
 #content h4.no-consent {
   color: #c33131;
   color: #115746;
-  background: url("web_face_grey.png") 0 0 no-repeat;
+  background: url("web_fach.png") 0 0 no-repeat;
 }
 #content h4.no-data {
   color: #c33131;
@@ -845,13 +846,13 @@ progress::-webkit-progress-bar {
   margin-left: 10px;
 }
 #content p.star::after {
-  content: url("web_small_star.png");
+  content: url("web_smal.png");
 }
 #content p.tick::after {
-  content: url("web_small_tick.png");
+  content: url("web_smam.png");
 }
 #content p.cross::after {
-  content: url("web_smallx.png");
+  content: url("web_sman.png");
 }
 #content .address {
   margin-bottom: 20px;
@@ -894,16 +895,16 @@ a {
 }
 /** Stars and faces, shared throughout the site **/
 .high-img {
-  content: url("web_face_darkgreen.png");
+  content: url("web_face.png");
 }
 .med-img {
-  content: url("web_face_green.png");
+  content: url("web_facf.png");
 }
 .low-img {
-  content: url("web_face_red.png");
+  content: url("web_facg.png");
 }
 .no-data-img {
-  content: url(" ");
+  content: " ";
   width: 60px;
   height: 60px;
   border: 4px solid #ffffff;
@@ -912,7 +913,7 @@ a {
   margin-right: 20px;
 }
 .no-consent-img {
-  content: url("web_face_grey.png");
+  content: url("web_fach.png");
 }
 .star-img {
   content: url("web_medium_star.png");
@@ -921,14 +922,14 @@ a {
   content: url("web_medium_tick.png");
 }
 .cross-img {
-  content: url("web_mediumx.png");
+  content: url("web_medi.png");
 }
 .star-img-sm {
-  content: url("web_small_star.png");
+  content: url("web_smal.png");
 }
 .tick-img-sm {
-  content: url("web_small_tick.png");
+  content: url("web_smam.png");
 }
 .cross-img-sm {
-  content: url("web_smallx.png");
+  content: url("web_sman.png");
 }

@@ -2,11 +2,15 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,11 +18,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Activity that shows "weiter infos"
+ * Activity that shows "weiter infos".
  *
  * @author Pete
  */
 public class InfosActivity extends Activity {
+
+    protected Button startTourBtn;
+
+    protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,35 +37,36 @@ public class InfosActivity extends Activity {
         // WebView.setWebContentsDebuggingEnabled(true); <- needs API 19
         html_view.getSettings().setJavaScriptEnabled(true);
 
-        StringBuilder buf=new StringBuilder();
-        BufferedReader in=null;
-        try {
-            InputStream is=getAssets().open("html/weitere-infos.html");
-            in= new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String str;
+        html_view.loadUrl("file:///android_asset/html/weitere-infos.html");
 
-            while ((str = in.readLine()) != null) {
-                buf.append(str);
-            }
-        }
-        catch (IOException ioe){
-            Log.e("INFOS", ioe.getMessage());
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch (IOException ioe){
-                Log.e("INFOS", ioe.getMessage());
-            }
-        }
+        startTourBtn = (Button) findViewById(R.id.start_tour_btn);
+        startTourBtn.setOnClickListener( new ButtonListener() );
 
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+    }
 
-        html_view.loadDataWithBaseURL("file:///android_asset/html/", buf.toString(), "text/html", "UTF-8", null);
-        html_view.getSettings().setLoadsImagesAutomatically(true);
+    /**
+     * Starts tour activity - from button click.
+     */
+    protected void startTour(){
+        Intent intent = new Intent (this, TourActivity.class);
+        startActivity(intent);
     }
 
     /* menu */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,6 +76,9 @@ public class InfosActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
         switch(id){
@@ -89,4 +101,18 @@ public class InfosActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /* Private classes */
+
+    private final class ButtonListener implements View.OnClickListener{
+
+        /**
+         * Starts the tour by calling satartTour()
+         * @see #startTour()
+         * @param v
+         */
+        public void onClick(View v) {
+            startTour();
+        }
+
+    }
 }

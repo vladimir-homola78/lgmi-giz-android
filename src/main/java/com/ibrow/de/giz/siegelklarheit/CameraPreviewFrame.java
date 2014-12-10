@@ -79,6 +79,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
         // start preview with new settings
         try {
             camera.setPreviewDisplay(this.holder);
+            camera.setOrientation(activity.getWindowManager().getDefaultDisplay().getRotation());
             camera.setPreviewFrameSize(this.getWidth(), this.getHeight() );
             camera.startPreview();
 

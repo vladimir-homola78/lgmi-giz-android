@@ -7,14 +7,24 @@
     <!-- <string name="action_settings">Einstellungen</string>-->
     <string name="menu_search">Siegel suchen</string>
     <string name="menu_scan">Siegel scannen</string>
-    <string name="menu_info">Weitere Infos</string>
+    <string name="menu_info">Mehr erfahren</string>
     <string name="menu_imprint">Impressum</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+    <string name="federal_government">Die\nBundesregierung</string>
+    <string name="navdraw_info_text">Gefördert vom Bundesministerium für wirtschaftliche Zusammenarbeit und Entwicklung\n\n
+
+Diese App bietet Bewertungen von Umwelt- und Sozialsiegeln, die auf Anforderungen der Bundesregierung an leistungsfähige und glaubwürdige Siegel beruhen.</string>
 
 
     <string name="title_imprint">Impressum</string>
-    <string name="title_infos">Weitere Infos</string>
+    <!--<string name="title_infos">Weitere Infos</string>-->
+    <string name="title_infos">Mehr erfahren</string>
     <string name="title_multipleresults">Scan-Ergebnis</string>
     <string name="title_activity_search">Alle Siegel</string>
+    <string name="title_activity_tour">Siegelklarheit Tour</string>
 
 
     <string name="warning">Warnung</string>
@@ -36,9 +46,6 @@
     <string name="scan_not_recognised_search_btn">Nach Label suchen</string>
     <string name="scan_not_recognised_tryagain_btn">Erneut scannen</string>
 
-
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-
     <string name="text_multiple_results">Das Label konnte nicht eindeutig erkannt werden.  Bitte wählen Sie das entsprechende Label aus der Liste aus</string>
     <string name="text_multiple_results_list_all">Haben Sie ein anders Siegel gesucht?</string>
     <string name="button_list_all">Liste aller Siegel ansehen</string>
@@ -47,7 +54,7 @@
     <string name="rating_good"><b>Gute Wahl!</b>\nDieses Siegel erfühllt unsere Mindesanforderungen im Bereich Umwelt und Soziales</string>
     <string name="rating_bad"><b>Das geht besser!</b>\nDieses Siegel erfüllt unsere Mindestanforderungen nicht</string>
     <string name="rating_none"><b>Keine Bewertung</b>\nDieses Siegel kann nicht bewertet werden, da der Siegelgeber einer Bewertung nicht zugestimmt hat</string>
-    <string name="rating_unknown"><b>Keine Bewertung</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor, wird aber sobald als möglich durchgeführt und/oder eingestellt</string>
+    <string name="rating_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor, wird aber sobald als möglich durchgeführt und/oder eingestellt</string>
 
     <string name="criterion_type_system">Glaubwürdigkeit</string>
     <string name="criterion_type_environment">Umweltfreundlichkeit</string>
@@ -56,9 +63,24 @@
     <string name="criterion_none"><b>Keine Daten</b>\nDer Siegelgeber hat einer Bewertung nicht zugestimmt</string>
     <string name="criterion_unknown"><b>Keine Daten</b>\nDie Bewertung für dieses Siegel liegt noch nicht vor</string>
 
+    <string name="details_no_info">Efahren Sie mehr über andere Siegel</string>
+    <string name="details_no_info_list_btn">Liste aller Siegel ansehen</string>
 
     <string name="filter_hint">Nach Siegeln suchen</string>
     <string name="category_all">Alle Siegel</string>
+
+
+    <string name="start_tour_btn">Tour Starten</string>
+
+    <string name="skip_tour_btn">Tour überspringen</string>
+    <string name="end_tour_btn">Tour beenden</string>
+
+    <string name="tour_title_1">Siegel scannen</string>
+    <string name="tour_title_2">Bewertungen ansehen</string>
+    <string name="tour_title_3">Siegel vergleichen</string>
+    <string name="tour_desc_1">Scannen Sie das Siegel auf dem Produkt</string>
+    <string name="tour_desc_2">In wenigen Sekunden erhalten Sie eine Bewertung des Siegels</string>
+    <string name="tour_desc_3">Vergleichen Sie Siegel miteinander</string>
 
 
 </resources>

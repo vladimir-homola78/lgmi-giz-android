@@ -2,16 +2,13 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Activity that shows the Impressum
@@ -19,6 +16,8 @@ import java.io.InputStreamReader;
  * @author Pete
  */
 public class ImprintActivity extends Activity {
+
+    protected NavDrawHelper navDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,34 +27,25 @@ public class ImprintActivity extends Activity {
         WebView html_view=(WebView) findViewById(R.id.imprint_webview);
         html_view.getSettings().setJavaScriptEnabled(true);
 
-        StringBuilder buf=new StringBuilder();
-        BufferedReader in=null;
-        try {
-            InputStream is=getAssets().open("html/impressum.html");
-            in= new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String str;
+        html_view.loadUrl("file:///android_asset/html/impressum.html");
 
-            while ((str = in.readLine()) != null) {
-                buf.append(str);
-            }
-        }
-        catch (IOException ioe){
-            Log.e("IMPRINT", ioe.getMessage());
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch (IOException ioe){
-                Log.e("IMPRINT", ioe.getMessage());
-            }
-        }
-
-
-        html_view.loadDataWithBaseURL("file:///android_asset/html/", buf.toString(), "text/html", "UTF-8", null);
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
     }
 
     /* menu */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navDraw.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        navDraw.onConfigurationChanged(newConfig);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,6 +55,9 @@ public class ImprintActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (navDraw.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         Intent intent;
         switch(id){

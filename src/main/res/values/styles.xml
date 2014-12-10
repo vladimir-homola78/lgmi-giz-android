@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
+        <item name="android:windowBackground">@color/neutral</item>
+        <item name="android:colorBackground">@color/neutral</item>
+        <item name="android:textColor">#333333</item>
+
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+
+        <item name="android:spinnerDropDownItemStyle">@style/DropDownItem</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+
+        <item name="android:editTextBackground">@drawable/edittext_selector</item>
+
     </style>
 
+    <!-- used for infos and impressum page - white background -->
+    <style name="AppInfoTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+    </style>
+
+
+    <style name="ActionBar"
+        parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@color/navigation</item>
+        <item name="android:textColor">#333</item>
+
+    </style>
+
+        <style name="DropDownItem" parent="@android:style/Widget.Holo.Light.DropDownItem.Spinner">
+            <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+            <item name="android:background">@color/navigation</item>
+        </style>
+
+        <style name="SpinnerItem" parent="@android:style/Widget.Holo.TextView.SpinnerItem">
+            <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+            <item name="android:background">@color/navigation</item>
+            <item name="android:divider">#666</item>
+        </style>
+
+
+    <style name="ButtonTheme" parent="android:Widget.Holo.Light.Button">
+        <item name="android:background">@drawable/rounded_buttons</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
+        <item name="android:drawablePadding">1dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ButtonTranslucentTheme" parent="ButtonTheme">
+        <item name="android:background">@drawable/rounded_buttons_translucent</item>
+    </style>
+
+
+    <!-- the following should be now deprecated -->
     <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@null</item>

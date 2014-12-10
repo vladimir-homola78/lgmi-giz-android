@@ -9,7 +9,7 @@ import android.graphics.Color;
  */
 enum SiegelRating {
 
-    UNKNOWN("#ffffffff", "unknown"),
+    UNKNOWN("#666666", "unknown"),
     VERY_GOOD("#115746", "verygood"),
     GOOD("#4b9f53", "good"),
     BAD("#cd3333", "bad"),
