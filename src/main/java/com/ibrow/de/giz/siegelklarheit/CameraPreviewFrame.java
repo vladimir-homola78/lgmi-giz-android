@@ -14,12 +14,14 @@ import java.io.IOException;
  * @see com.ibrow.de.giz.siegelklarheit.ScanActivity
  * @author Pete
  */
-public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Callback{
+public final class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Callback{
 
 
     private SurfaceHolder holder;
     private CameraInterface camera;
     private Activity activity;
+
+    private final static String LOG_TAG="CAMERA";
 
     public CameraPreviewFrame(Activity activity, CameraInterface camera) {
         super(activity); // Activity is a subclass of Context
@@ -53,7 +55,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
             camera.setPreviewFrameSize(this.getWidth(), this.getHeight() );
             camera.startPreview();
         } catch (Exception e) {
-            Log.w("CAMERA", "Error setting camera preview: " + e.getMessage());
+            Log.w(LOG_TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
@@ -71,7 +73,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
         try {
             camera.stopPreview();
         } catch (Exception e){
-            Log.e("CAMERA", "Error stopping camera preview: " + e.getMessage());
+            Log.e(LOG_TAG, "Error stopping camera preview: " + e.getMessage());
         }
 
         camera.setOrientation(activity.getWindowManager().getDefaultDisplay().getRotation());
@@ -84,7 +86,7 @@ public class CameraPreviewFrame extends SurfaceView implements SurfaceHolder.Cal
             camera.startPreview();
 
         } catch (Exception e){
-            Log.w("CAMERA", "Error starting camera preview: " + e.getMessage());
+            Log.w(LOG_TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 }

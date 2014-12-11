@@ -85,6 +85,24 @@ public interface CameraInterface {
     * */
     public void release();
 
+    /**
+     * Can this camera zoom.
+     *
+     * @return true if the camera can zoom
+     */
+    public boolean canZoom();
+
+    /**
+     * Is the camera zoomed in or not?
+     *
+     * @return true if zoomed in, otherwise false
+     */
+    public boolean isZoomedIn();
+
+
+    public void zoomOut();
+    public void zoomIn();
+    public boolean canSmoothZoom();
 
     /**
      * Takes a picture.

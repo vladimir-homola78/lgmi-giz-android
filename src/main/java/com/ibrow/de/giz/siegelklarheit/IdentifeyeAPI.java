@@ -31,6 +31,7 @@ import java.util.Random;
  */
 class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
+    protected final String LOG_TAG="API";
     /**
      * API endpoint, including protocol and with trailing slash.
      */
@@ -133,7 +134,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
 
     public void ping() throws Exception{
-        //Log.d("API", makeGetCall("ping") );
+        //Log.d(LOG_TAG, makeGetCall("ping") );
         makeGetCall("ping");
     }
 
@@ -180,16 +181,16 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
      */
     protected final String generateNonce(){
         int randomNum = rnd.nextInt((NONCE_MAX - NONCE_MIN) + 1) + NONCE_MIN;
-        return new Integer(randomNum).toString();
+        return Integer.toString(randomNum);
     }
 
     /**
-     * Gets the current UNIX timestamp, used for a imgage upload request.
+     * Gets the current UNIX timestamp, used for a image upload request.
      *
      * @return Current UNIX time (seconds since Epoch) as a string
      */
     protected final String generateTimeStamp(){
-        return new Long (System.currentTimeMillis()/1000L).toString();
+        return Long.toString(System.currentTimeMillis()/1000L);
     }
 
     public List<ShortSiegelInfo> identifySiegel(final byte[] image) throws Exception{
@@ -200,7 +201,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         List<ShortSiegelInfo> results = new ShortSiegelArrayList(3);
 
         String response = uploadImage(image, nonce, timestamp, hash );
-        Log.d("API", response);
+        Log.d(LOG_TAG, response);
 
         JSONArray json = new JSONArray( response );
         int results_size = json.length();
@@ -234,7 +235,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
         String logo = item.optString("logo");
         if(logo== null || logo.equals("") ){
-            Log.e("API", "Missing logo attribute :"+item.toString() );
+            Log.e(LOG_TAG, "Missing logo attribute :"+item.toString() );
             logo = "";
         }
         else {
@@ -243,11 +244,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
         int rating_number = item.optInt("rating");
         if(item.isNull("rating")){
-            Log.e("API", "Missing rating attribute :"+item.toString() );
+            Log.e(LOG_TAG, "Missing rating attribute :"+item.toString() );
         }
         SiegelRating rating = SiegelRating.fromNumericId(rating_number);
         if(rating==null){
-            Log.e("API", "Invalid rating value of "+rating_number+" :"+item.toString() );
+            Log.e(LOG_TAG, "Invalid rating value of "+rating_number+" :"+item.toString() );
             rating = SiegelRating.UNKNOWN;
         }
 
@@ -260,10 +261,10 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         else{
             criteria_list = (List) new ArrayList <Criterion>(0);
             if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
-                Log.v("API", "No criteria for siegel with rating unknown/none");
+                Log.v(LOG_TAG, "No criteria for siegel with rating unknown/none");
             }
             else {
-                Log.e("API", "Missing criteria attribute :" + item.toString());
+                Log.e(LOG_TAG, "Missing criteria attribute :" + item.toString());
             }
         }
 
@@ -273,7 +274,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             siegel_info.setConfidenceLevel(item.getInt("c") );
         }
         else {
-            Log.v("API", "No confidence level for item : "+item.toString());
+            Log.v(LOG_TAG, "No confidence level for item : "+item.toString());
         }
 
         return siegel_info;
@@ -301,7 +302,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             key=keys.next();
             type=CriteriaType.getFromName(key);
             if(type==null){
-                Log.e("API", "Bad criteria name of '"+key+"' : "+criteria.toString());
+                Log.e(LOG_TAG, "Bad criteria name of '"+key+"' : "+criteria.toString());
                 continue;
             }
 
@@ -309,12 +310,12 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
             value_id = criteria.optInt(key, -1);
             if( value_id == -1){
-                Log.e("API", "Missing criterium value for '"+key+"' : "+criteria.toString());
+                Log.e(LOG_TAG, "Missing criterium value for '"+key+"' : "+criteria.toString());
                 continue;
             }
             value = CriteriaValue.getFromId(value_id);
             if(value==null){
-                Log.e("API", "Bad criteria value of '"+value_id+"' : "+criteria.toString());
+                Log.e(LOG_TAG, "Bad criteria value of '"+value_id+"' : "+criteria.toString());
                 continue;
             }
 
@@ -383,19 +384,19 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         try{
             response_code=conn.getResponseCode();
             if( response_code == 403 ){
-                Log.e("API", "403 response");
-                Log.e("API", "time: "+timestamp);
-                Log.e("API", "nonce: "+nonce);
-                Log.e("API", "hash: "+hash);
-                Log.e("API", "time now: "+generateTimeStamp());
+                Log.e(LOG_TAG, "403 response");
+                Log.e(LOG_TAG, "time: "+timestamp);
+                Log.e(LOG_TAG, "nonce: "+nonce);
+                Log.e(LOG_TAG, "hash: "+hash);
+                Log.e(LOG_TAG, "time now: "+generateTimeStamp());
             }
         }
         catch (Exception e){
             if(e.getMessage().equals("No authentication challenges found")){
-                Log.e("API", "Bad 401 response");
-                Log.e("API", "time: "+timestamp);
-                Log.e("API", "nonce: "+nonce);
-                Log.e("API", "hash: "+hash);
+                Log.e(LOG_TAG, "Bad 401 response");
+                Log.e(LOG_TAG, "time: "+timestamp);
+                Log.e(LOG_TAG, "nonce: "+nonce);
+                Log.e(LOG_TAG, "hash: "+hash);
             }
         }
         if (response_code != 200) {
@@ -427,7 +428,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
         String logo = json.optString("logo");
         if(logo==null || logo.equals("") ){
-            Log.e("API", "Missing logo attribute :"+json.toString() );
+            Log.e(LOG_TAG, "Missing logo attribute :"+json.toString() );
             logo = "";
         }
         else {
@@ -436,11 +437,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
         int rating_number = json.optInt("rating");
         if(json.isNull("rating")){
-            Log.e("API", "Missing rating attribute :"+json.toString() );
+            Log.e(LOG_TAG, "Missing rating attribute :"+json.toString() );
         }
         SiegelRating rating = SiegelRating.fromNumericId(rating_number);
         if(rating==null){
-            Log.e("API", "Invalid rating value of "+rating_number+" :"+json.toString() );
+            Log.e(LOG_TAG, "Invalid rating value of "+rating_number+" :"+json.toString() );
             rating = SiegelRating.UNKNOWN;
         }
 
@@ -450,32 +451,32 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             criteria_list = parseSiegelCriteria(criteria);
             if(criteria_list.size() != EXPECTED_CRITERIA_NUMBER ){
                 if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
-                    Log.v("API", criteria_list.size()+" criteria for siegel with rating unknown/none");
+                    Log.v(LOG_TAG, criteria_list.size()+" criteria for siegel with rating unknown/none");
                 }
                 else {
-                    Log.w("API", "Didn't get 3 criteria for siegel: "+json.toString() );
+                    Log.w(LOG_TAG, "Didn't get 3 criteria for siegel: "+json.toString() );
                 }
             }
         }
         else{
             criteria_list = (List) new ArrayList<Criterion>(0);
             if(rating==SiegelRating.UNKNOWN || rating==SiegelRating.NONE){
-                Log.v("API", "No criteria for siegel with rating unknown/none");
+                Log.v(LOG_TAG, "No criteria for siegel with rating unknown/none");
             }
             else {
-                Log.e("API", "Missing criteria attribute :" + json.toString());
+                Log.e(LOG_TAG, "Missing criteria attribute :" + json.toString());
             }
         }
 
         String details = json.optString("html");
         if( details==null || details.equals("") ){
-            Log.w("API", "Missing or empty details html :"+json.toString());
+            Log.w(LOG_TAG, "Missing or empty details html :"+json.toString());
             details = "<html><head></head><body><!-- no details --></body></html>";
         }
 
         String url = json.optString("shared_url");
         if( url==null || url.isEmpty() ){
-            Log.w("API", "Missing or empty share url :"+json.toString());
+            Log.w(LOG_TAG, "Missing or empty share url :"+json.toString());
         }
 
         SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details, url);
@@ -534,7 +535,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             JSONObject item = json.getJSONObject(i);
             /*Iterator<String> keys= item.keys();
             while (keys.hasNext() ) {
-                Log.d("API", (String) keys.next());
+                Log.d(LOG_TAG, (String) keys.next());
             }*/
             id=item.getInt("id");
             name=item.getString("name");

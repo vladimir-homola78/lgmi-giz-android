@@ -1,5 +1,6 @@
 package com.ibrow.de.giz.siegelklarheit;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -8,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -18,16 +18,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 //import android.widget.Toast;
 
 import java.util.List;
@@ -50,15 +51,15 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     protected NavDrawHelper navDraw;
 
+    private static final String LOG_TAG="SCAN";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_scan);
 
@@ -68,13 +69,23 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         // need to de the following, even though its in onResume()
         // before calling connectPreviewFrame()
         // so view finder calculated correctly
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        decorView.setSystemUiVisibility(uiOptions);
+        hideNavBar();
+        /*
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+        if(Build.VERSION.SDK_INT >= 16) {
+            RelativeLayout l = (RelativeLayout) findViewById(R.id.scan_layout);
+            l.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            if(Build.VERSION.SDK_INT >= 19 ){
+                immerseMode();
+            }
+        }
+        */
+
 
         camera = CameraProvider.getCamera();
         if(camera == null) {
-            Log.d("SCAN", "No camera from provider");
+            Log.d(LOG_TAG, "No camera from provider");
         }
 
         try {
@@ -94,7 +105,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             api.setVersionInfo(pInfo.versionName, Build.VERSION.RELEASE);
         }
         catch (Exception e){
-            Log.e("SCAN", "Could not set api version info" + e.getMessage());
+            Log.e(LOG_TAG, "Could not set api version info" + e.getMessage());
         }
 
         scanButton = (Button)findViewById(R.id.button_scan);
@@ -152,12 +163,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         try {
             camera.initalise();
-            //if(previewFrame==null) {
-                connectPreviewFrame();
-            //}
-            //else {
-            //    previewFrame.setCamera(camera);
-            //}
+            connectPreviewFrame();
         } catch (Exception e) {
             Log.e("CAMERA", "Could not get camera: " + e.getMessage());
             showCameraErrorDialog(e.getMessage());
@@ -166,40 +172,52 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
     @Override
     protected void onResume(){
-        Log.v("SCAN", "onResume() called");
+        Log.v(LOG_TAG, "onResume() called");
         super.onResume();
         hideNavBar();
+        if(camera != null && camera.canZoom() ){
+            if(camera.canSmoothZoom() && camera.isZoomedIn() ){
+                camera.zoomOut();
+            }
+            if(! camera.isZoomedIn() ) {
+                camera.zoomIn();
+            }
+        }
     }
 
     private final void hideNavBar(){
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-            /*
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-
-        // The following hides the stauts bar AND automatically the app navigation bar
-        if (Build.VERSION.SDK_INT >= 16) {
-            int sys_ui_flay_fullscreen = 0;
-            try {
-                sys_ui_flay_fullscreen = ((Integer) View.class.getDeclaredField("SYSTEM_UI_FLAG_FULLSCREEN").get(Integer.class)).intValue();
+        if(Build.VERSION.SDK_INT < 19){
+            if(Build.VERSION.SDK_INT >= 16) {
+                RelativeLayout l = (RelativeLayout) findViewById(R.id.scan_layout);
+                l.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
             }
-            catch (Exception e){
-                Log.e("SYSTEM_UI_FLAG_FULLSCREEN", e.getMessage());
+            hideNavBarBehind();
+            if( ! (KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK) && KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME)) ) {
+                // software keys, so navigationbar that will fraking reappear on first touch, use handler:
+                getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new NavBarListener());
             }
-            uiOptions = uiOptions | sys_ui_flay_fullscreen;
-            //uiOptions = uiOptions | View.SYSTEM_UI_FLAG_FULLSCREEN  <-- this can't compile against sdk for API 15!
         }
+        else{
+            immerseMode();
+        }
+    }
 
-        decorView.setSystemUiVisibility(uiOptions);
-        */
+    @TargetApi(15)
+    private final void hideNavBarBehind(){
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    @TargetApi(19)
+    private final void immerseMode(){
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     @Override
     protected void onRestart(){
-        Log.v("SCAN", "onRestart() called");
+        Log.v(LOG_TAG, "onRestart() called");
         super.onRestart();
         reinitialiseCamera();
     }
@@ -230,7 +248,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.CameraPreviewFrame
      */
     private void connectPreviewFrame(){
-        Log.v("SCAN", "connecting preview frame");
+        Log.v(LOG_TAG, "connecting preview frame");
         previewFrame = new CameraPreviewFrame(this, camera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.removeAllViewsInLayout(); // remove old dead children
@@ -308,7 +326,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      *
      */
     public void onPictureTaken(byte[] image){
-        Log.v("SCAN", "Got photo!");
+        Log.v(LOG_TAG, "Got photo!");
         //camera.release();
         //camera = null;
         finder.setActive(false);
@@ -359,7 +377,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see com.ibrow.de.giz.siegelklarheit.ScanActivity.ScanPictureTask
      */
     protected void ProcessScanResult(List<ShortSiegelInfo> results){
-        Log.v("SCAN", "scan complete");
+        Log.v(LOG_TAG, "scan complete");
         int count = results.size();
         if(count == 0){
             showTryAgainDialog();
@@ -476,21 +494,20 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
 
     public boolean onTouch(View v, MotionEvent event){
-        //Log.d("SCAN", "screen touched");
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        //Log.d(LOG_TAG, "screen touched");
         if( camera != null && camera.getIsInitialised() ){
-            //Log.d("SCAN","touch, camera ready");
+            //Log.d(LOG_TAG,"touch, camera ready");
             int action = event.getActionMasked();
-            //Log.d("SCAN","action is "+action);
+            //Log.d(LOG_TAG,"action is "+action);
             switch(action) {
                 case MotionEvent.ACTION_UP :
-                    //Log.d("SCAN", "ACTION up at x "+event.getX()+", y "+event.getY() );
+                    //Log.d(LOG_TAG, "ACTION up at x "+event.getX()+", y "+event.getY() );
 
                     int x=(int) event.getX();
                     int y=(int) event.getY();
                     Rect finder=camera.getViewFramingRect();
                     if( (x>finder.left && x<finder.right) && (y>finder.top && y<finder.bottom)  ){
-                        Log.v("SCAN", "Finder touched");
+                        Log.v(LOG_TAG, "Finder touched");
                         startScan();
                         //hideNavBar();
                     }
@@ -569,11 +586,13 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                     String msg;
                     if(e!=null && e.getMessage()!=null){
                         msg = "ScanPictureTask: " + e.getMessage();
+                        Log.e("API", msg,  e);
+
                     }
                     else {
                         msg="[unknown in ScanPictureTask]";
+                        Log.wtf("API", msg);
                     }
-                    Log.e("API", msg);
                     error = e;
                 }
                 return null;
@@ -583,7 +602,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
 
         protected void onPostExecute(List<ShortSiegelInfo>  result) {
-            Log.d("ScanPictureTask", "finished");
+            Log.v("ScanPictureTask", "finished");
             if( isCancelled() ){
                 Log.v("ScanPictureTask", "Task cancelled");
                 return;
@@ -595,5 +614,22 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             }
             ProcessScanResult(result);
         }
+    }
+
+
+    private final class NavBarListener implements View.OnSystemUiVisibilityChangeListener{
+
+        public void onSystemUiVisibilityChange(int visibility){
+            Log.v(LOG_TAG, "SysUI change");
+            if( (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0 ){
+                Log.v(LOG_TAG, "navbar visible");
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                if(camera!=null && scanButton.isEnabled()) { //assume button click
+                    startScan();
+                }
+            }
+        }
+
     }
 }

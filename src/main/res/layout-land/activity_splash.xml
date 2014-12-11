@@ -1,0 +1,92 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:id="@+id/splash_holder"
+        android:padding="@dimen/activity_vertical_margin"
+
+    >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/splash_image"
+            android:src="@drawable/splash_logo"
+            android:layout_weight="0.5"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+        />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:id="@+id/splash_button_holder"
+            android:layout_weight="0.5"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+
+        >
+            <Button
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Siegel suchen"
+                android:id="@+id/splash_search_btn"
+                android:drawableLeft="@drawable/splash_search"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                style="@style/ButtonTheme"
+            />
+
+            <Button
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Siegel scannen"
+                android:id="@+id/splash_scan_btn"
+                android:drawableLeft="@drawable/splash_camera"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                style="@style/ButtonTheme"
+            />
+
+            <Button
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mehr erfahren"
+                android:id="@+id/splash_infos_btn"
+                android:drawableLeft="@drawable/splash_info"
+                android:drawablePadding="1dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                style="@style/ButtonTheme"
+            />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/nav_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:choiceMode="singleChoice"
+    android:divider="#ddd"
+    android:dividerHeight="1dp"
+    android:footerDividersEnabled="false"
+    android:background="#fff"
+        android:listSelector="@drawable/navdraw_selector"
+        >
+    </ListView>
+
+</android.support.v4.widget.DrawerLayout>

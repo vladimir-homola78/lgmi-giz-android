@@ -2,10 +2,12 @@ package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -66,6 +68,20 @@ public class DetailsActivity extends Activity {
         assert siegel_short_info != null;
 
         htmlView =(WebView) findViewById(R.id.details_webview);
+        htmlView.getSettings().setJavaScriptEnabled(true);
+
+        String user_agent = "Siegelklarheit (Android)";
+        try{
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            user_agent = "Siegelklarheit/"+pInfo.versionName+" (Android; Android "+Build.VERSION.RELEASE+")";
+        }
+        catch (Exception e){
+            Log.wtf("DETAILS", "Could not get version info: " + e.getMessage());
+        }
+        htmlView.getSettings().setUserAgentString(user_agent);
+
+
+
         setMainDisplay(siegel_short_info);
 
         //htmlView.loadUrl("file:///android_asset/loading.html");
@@ -270,7 +286,6 @@ public class DetailsActivity extends Activity {
             if(result!=null){
                 Log.v("LoadFullInfoTask", "got result for id " + result.getId());
                 siegel = result;
-                htmlView.getSettings().setJavaScriptEnabled(true);
                 htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), result.getDetails(), "text/html", "UTF-8", null);
                 htmlView.setWebViewClient(new WebViewClient() {
                     @Override

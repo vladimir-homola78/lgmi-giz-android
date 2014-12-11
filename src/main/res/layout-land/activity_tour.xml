@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tour_pager"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.55"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+    />
+
+   <LinearLayout
+       android:layout_width="0dip"
+       android:layout_height="fill_parent"
+       android:orientation="vertical"
+       android:id="@+id/tour_buttons_holder"
+       android:layout_weight="0.45">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/tour_nav_btn_holder"
+            android:layout_gravity="center|center_vertical"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="100dp"
+        >
+
+            <Button
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginLeft="24dp"
+                android:id="@+id/tour_nav_btn_1"
+                android:background="@drawable/circle"
+                android:textColor="#ffffffff"
+                android:text=""
+            />
+
+            <Button
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="24dp"
+                android:id="@+id/tour_nav_btn_2"
+                android:background="@drawable/circle_hollow"
+                android:textColor="#ffffffff"
+                android:text=""
+            />
+
+            <Button
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="24dp"
+                android:id="@+id/tour_nav_btn_3"
+                android:background="@drawable/circle_hollow"
+                android:textColor="#ffffffff"
+                android:text=""
+            />
+
+        </LinearLayout>
+
+        <Button
+            style="@style/ButtonTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/end_tour_btn"
+            android:text="@string/skip_tour_btn"
+            android:layout_gravity="center|bottom"
+            android:layout_weight="0"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            />
+
+   </LinearLayout>
+
+</LinearLayout>
+
+
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/nav_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="#ddd"
+        android:footerDividersEnabled="false"
+        android:dividerHeight="1dp"
+        android:background="#fff"
+        android:listSelector="@drawable/navdraw_selector"
+        >
+
+    </ListView>
+
+</android.support.v4.widget.DrawerLayout>
