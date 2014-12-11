@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 15
+    compileSdkVersion 21
     buildToolsVersion "21.1.0"
     defaultConfig {
         applicationId "com.ibrow.de.giz.siegelklarheit"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 12
-        versionName '0.4.2 Beta'
+        versionCode 13
+        versionName '0.4.3 Beta'
     }
     buildTypes {
         release {

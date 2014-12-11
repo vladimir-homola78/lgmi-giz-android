@@ -26,16 +26,14 @@
 
     <Button
         style="@style/ButtonTranslucentTheme"
-        android:layout_marginLeft="@dimen/large_margin"
-        android:layout_marginRight="@dimen/large_margin"
-        android:layout_width="match_parent"
+        android:layout_marginRight="@dimen/pad"
+        android:layout_width="wrap_content"
         android:id="@+id/button_scan"
         android:text="@string/button_scan"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:enabled="false"
     />
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/pad"
+    android:layout_marginBottom="@dimen/pad"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tour_title"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="@string/tour_title_1"
+        android:layout_marginBottom="@dimen/pad"
+
+    />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tour_desc"
+        android:text="@string/tour_desc_1"
+        android:textSize="16sp"
+     />
+    <ImageView
+        android:id="@+id/tour_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tour1"
+        android:layout_marginBottom="@dimen/pad"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitCenter"
+    />
+    <!--android:layout_gravity="center_horizontal"-->
+
+
+
+</LinearLayout>
