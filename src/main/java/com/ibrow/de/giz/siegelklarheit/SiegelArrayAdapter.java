@@ -123,11 +123,13 @@ public class SiegelArrayAdapter extends ArrayAdapter<ShortSiegelInfo> {
                 break;
         } // end switch
 
-        RelativeLayout info_holder = (RelativeLayout) rowView.findViewById(R.id.siegel_row);
+        LinearLayout info_holder = (LinearLayout) rowView.findViewById(R.id.info_holder);
         FrameLayout rating_holder = (FrameLayout) rowView.findViewById(R.id.rating_holder);
         //rating_holder.setMinimumHeight( info_holder.getHeight() );
         //rating_image_view.setMinimumHeight( info_holder.getHeight() );
         //rating_color.setMinimumHeight( info_holder.getHeight() );
+        android.util.Log.d("SiegelAdapter", "info holder hieght is "+info_holder.getHeight());
+        //rating_color.setHeight( info_holder.getHeight() );
 
         return rowView;
     }

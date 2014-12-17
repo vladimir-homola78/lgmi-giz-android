@@ -42,6 +42,9 @@ public class DetailsActivity extends Activity {
 
     protected SiegelInfo siegel;
 
+    protected LinearLayout logoViewContainer;
+    protected LinearLayout ratingView;
+    protected ImageView logoImageView;
     protected WebView htmlView;
 
     private ShareActionProvider shareActionProvider;
@@ -80,7 +83,9 @@ public class DetailsActivity extends Activity {
         }
         htmlView.getSettings().setUserAgentString(user_agent);
 
-
+        logoViewContainer = (LinearLayout) findViewById(R.id.logo_view_container);
+        ratingView = (LinearLayout) findViewById(R.id.rating_view);
+        logoImageView = (ImageView) findViewById(R.id.logo_view);
 
         setMainDisplay(siegel_short_info);
 
@@ -137,10 +142,9 @@ public class DetailsActivity extends Activity {
                 )
         );
 
-        Bitmap image = getFromMemoryCache(siegel);
+        Bitmap image = LogoHelper.getFromMemoryCache(siegel);
         if(image != null ){
-            ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
-            logo_image_view.setImageBitmap(image);
+            logoImageView.setImageBitmap(image);
         }
         else {
             LoadSiegelLogoTask logo_task = new LoadSiegelLogoTask();
@@ -212,6 +216,8 @@ public class DetailsActivity extends Activity {
         if ( (keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null) && htmlView.canGoBack() && linkClicked ){
             //htmlView.goBack();
             htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(), siegel.getDetails(), "text/html", "UTF-8", null);
+            logoViewContainer.setVisibility(View.VISIBLE);
+            ratingView.setVisibility(View.VISIBLE);
             linkClicked = false;
             return true;
         }
@@ -242,8 +248,7 @@ public class DetailsActivity extends Activity {
 
         @Override
         protected void onProgressUpdate(Bitmap... progress) {
-            ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
-            logo_image_view.setImageBitmap(progress[0]);
+            logoImageView.setImageBitmap(progress[0]);
             gotImage=true;
         }
 
@@ -252,8 +257,7 @@ public class DetailsActivity extends Activity {
                 return;
             }
             if(! gotImage ){
-                ImageView logo_image_view = (ImageView) findViewById(R.id.logo_view);
-                logo_image_view.setImageDrawable(blankLogo);
+                logoImageView.setImageDrawable(blankLogo);
             }
         }
     }
@@ -290,10 +294,15 @@ public class DetailsActivity extends Activity {
                 htmlView.setWebViewClient(new WebViewClient() {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        view.loadUrl(url);
-                        ((ScrollView) findViewById(R.id.details_scroll_view)).pageScroll(View.FOCUS_UP);
-                        linkClicked = true;
-                        return false;
+                        if( url.startsWith(api.getWebviewBaseURL()) ){ // internal url, eg. score
+                            view.loadUrl(url);
+                            logoViewContainer.setVisibility(View.GONE);
+                            ratingView.setVisibility(View.GONE);
+                            ((ScrollView) findViewById(R.id.details_scroll_view)).pageScroll(View.FOCUS_UP);
+                            linkClicked = true;
+                            return false;
+                        }
+                        return true; //external url, open in browser
                     }
                 });
                 //Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
