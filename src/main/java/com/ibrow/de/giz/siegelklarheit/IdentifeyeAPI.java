@@ -58,7 +58,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
     protected static String userAgent="Siegelklarheit (Android)";
 
     protected static ShortSiegelInfo[] allSiegels = null;
-    protected static List<ProductCategory> categories = null;
+    protected static ArrayList<ProductCategory> categories = null;
 
     @Override
     public void setVersionInfo(final String app_version, final String android_version){
@@ -145,7 +145,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
      * @return md5 hash, hexadecimal string
      * @throws NoSuchAlgorithmException If no md5 support on device (highly unlikely)
      */
-    protected static String MD5Hash(String str) throws NoSuchAlgorithmException{
+    protected static String MD5Hash(final String str) throws NoSuchAlgorithmException{
         MessageDigest m =  MessageDigest.getInstance("MD5");
         m.update(str.getBytes(), 0, str.length() );
         String hash = new BigInteger(1, m.digest()).toString(16);
@@ -168,7 +168,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
      * @see #generateNonce()
      * @see #generateTimeStamp()
      */
-    private final String generateHash(String nonce, String timestamp) throws NoSuchAlgorithmException{
+    private final String generateHash(final String nonce, final String timestamp) throws NoSuchAlgorithmException{
         return MD5Hash(SALT+nonce+timestamp);
     }
 
@@ -281,7 +281,9 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
     }
 
     /**
-     * Parses the criteria part of sigel infomation.
+     * Parses the criteria part of Siegel information.
+     *
+     * Glaubwürdigkeit, Umweltfreundlichkeit, Sozialverträglichkeit.
      *
      * @param criteria The 'criteria' part of a JSON sigel object.
      * @return List of criterion, maybe empty, though we expect all 3 to be present.
@@ -319,11 +321,67 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
                 continue;
             }
 
+
             Criterion criterion = new Criterion(type, value);
             result.add(criterion);
         }
 
+        sortCriteria(result);
         return result;
+    }
+
+    /**
+     * Temp. workaround to sort the criteria list.
+     *
+     * Must be: Glaubwürdigkeit Umweltfreundlichkeit Sozialverträglichkeit
+     *
+     * @param criteria
+     * @see #parseSiegelCriteria
+     */
+    private void sortCriteria(ArrayList<Criterion> criteria){
+        if (criteria.size() < 2) {
+            return; // only 1 (or no) criterion, nothing to sort
+        }
+        // ensure SYSTEM ( Glaubwürdigkeit) is first
+        if(criteria.get(0).getType()!=CriteriaType.SYSTEM) {
+
+
+
+
+            int system_index = -1;
+            for (int i = 1; i < criteria.size(); i++) {
+                if (criteria.get(i).getType() == CriteriaType.SYSTEM) {
+                    system_index = i;
+                    break;
+                }
+            }
+
+            if (system_index != -1) {
+                Criterion tmp = criteria.get(0);
+                criteria.set(0, criteria.get(system_index));
+                criteria.set(system_index, tmp);
+            }
+
+        }
+
+        // ensure ENVIRONMENT ( Umweltfreundlichkeit ) is 2nd
+        if(criteria.get(1).getType()!=CriteriaType.ENVIRONMENT && criteria.size() > 2) {
+
+            int environment_index = -1;
+            for (int i = 2; i < criteria.size(); i++) {
+                if (criteria.get(i).getType() == CriteriaType.ENVIRONMENT) {
+                    environment_index = i;
+                    break;
+                }
+            }
+
+            if (environment_index != -1) {
+                Criterion tmp = criteria.get(1);
+                criteria.set(1, criteria.get(environment_index));
+                criteria.set(environment_index, tmp);
+            }
+
+        }
     }
 
     /**
@@ -419,7 +477,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         return stringBuilder.toString();
     }
 
-    public SiegelInfo getInfo(int id) throws Exception{
+    public SiegelInfo getInfo(final int id) throws Exception{
         assert id > 0;
         JSONObject json = new JSONObject( makeGetCall( "info/"+id) );
 
@@ -533,10 +591,6 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
         for(int i=0; i<results_size; i++) {
             JSONObject item = json.getJSONObject(i);
-            /*Iterator<String> keys= item.keys();
-            while (keys.hasNext() ) {
-                Log.d(LOG_TAG, (String) keys.next());
-            }*/
             id=item.getInt("id");
             name=item.getString("name");
             id_array = item.getJSONArray("standards");
@@ -549,6 +603,58 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             categories.add(product_category);
         }
 
+        sortCategories(categories);
+
         return categories;
+    }
+
+    /**
+     * Temp. workaround to sort product categories.
+     *
+     *  Textilien Lebensmittel Papier Holz
+     *  @param categories
+     *
+     *  @see #getCategories()
+     */
+    private void sortCategories(ArrayList<ProductCategory> categories){
+        if(categories.size()==1){
+            return;
+        }
+
+        sortCategory(categories, "Textilien", 0);
+        sortCategory(categories, "Lebensmittel", 1);
+        sortCategory(categories, "Papier", 2);
+        sortCategory(categories, "Holz", 3);
+    }
+
+    /**
+     * ensure category with *name* is at *desired_index*.
+     *
+     * @param categories
+     * @param name
+     * @param desired_index
+     * @see #sortCategories(java.util.ArrayList)
+     */
+    private void sortCategory(ArrayList<ProductCategory> categories, final String name, int desired_index){
+        if(desired_index > (categories.size()-1) ){
+            return;
+        }
+
+        ProductCategory tmp = categories.get(desired_index);
+        if(tmp.getName()==name){
+            return; //already there
+        }
+        int index = -1;
+        for(int i=0; i< categories.size(); i++){
+            if(categories.get(i).getName().equals(name) ){
+                index = i;
+                break;
+            }
+        }
+
+        if(index!=-1){
+            categories.set(desired_index, categories.get(index) );
+            categories.set(index, tmp);
+        }
     }
 }

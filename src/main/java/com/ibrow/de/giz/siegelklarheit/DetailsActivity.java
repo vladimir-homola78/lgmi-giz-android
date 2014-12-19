@@ -24,8 +24,6 @@ import android.widget.ScrollView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-import static com.ibrow.de.giz.siegelklarheit.LogoHelper.getFromMemoryCache;
-
 /**
  * Shows the details of a Siegel.
  *

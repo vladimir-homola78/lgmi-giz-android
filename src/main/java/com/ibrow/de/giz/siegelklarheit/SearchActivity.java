@@ -291,7 +291,11 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
                         dialog.dismiss();
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null) titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
         return false;
     }
 

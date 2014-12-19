@@ -15,6 +15,7 @@
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:scaleType="centerInside"
+        android:contentDescription="Siegel"
     />
 
     <LinearLayout
@@ -33,8 +34,6 @@
                 android:layout_weight="99"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_toRightOf="@+id/logo_view"
-                android:layout_toLeftOf="@+id/rating_holder"
                 android:paddingLeft="3dp"
             >
 
@@ -45,7 +44,7 @@
                     android:paddingBottom="3dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Title\n2ndline"
+                    android:text="Title\n2nd line"
                     android:id="@+id/siegel_name_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -144,7 +143,6 @@
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
                 android:id="@+id/rating_holder"
                 android:minHeight="96dp"
             >
@@ -162,9 +160,9 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/rating_symbol_good"
                     android:layout_gravity="center_vertical"
+                    android:contentDescription="Gesicht"
 
                 />
-                <!--  android:adjustViewBounds="true" -->
             </FrameLayout>
 
     </LinearLayout>
