@@ -1,5 +1,7 @@
 package com.ibrow.de.giz.siegelklarheit;
 
+import android.content.Context;
+
 import java.util.List;
 
 /**
@@ -82,5 +84,15 @@ public interface IdentifeyeAPIInterface {
      * @see com.ibrow.de.giz.siegelklarheit.ProductCategory
      */
     public List<ProductCategory> getCategories() throws Exception;
+
+
+    /**
+     * Initiates disk cache for the API.
+     *
+     * Multple calls are harmless.
+     *
+     * @param context
+     */
+    public void initDiskCache(final Context context);
 
 }

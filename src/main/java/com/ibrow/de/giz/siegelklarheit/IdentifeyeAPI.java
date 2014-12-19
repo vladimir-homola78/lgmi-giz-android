@@ -1,5 +1,7 @@
 package com.ibrow.de.giz.siegelklarheit;
 
+import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -9,8 +11,11 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -18,8 +23,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
 
 /**
  * Concrete Implementation of the identifeye API.
@@ -31,7 +39,7 @@ import java.util.Random;
  */
 class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
-    protected final String LOG_TAG="API";
+    protected final static String LOG_TAG="API";
     /**
      * API endpoint, including protocol and with trailing slash.
      */
@@ -59,6 +67,11 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     protected static ShortSiegelInfo[] allSiegels = null;
     protected static ArrayList<ProductCategory> categories = null;
+
+    protected static MaxSizeHashMap<Integer, SiegelInfo> SiegelInfoCache = new MaxSizeHashMap<Integer, SiegelInfo>(3, 7);
+
+    private static boolean DiskCachePathInitialised=false;
+    private static File DiskCachePath;
 
     @Override
     public void setVersionInfo(final String app_version, final String android_version){
@@ -479,7 +492,47 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
 
     public SiegelInfo getInfo(final int id) throws Exception{
         assert id > 0;
-        JSONObject json = new JSONObject( makeGetCall( "info/"+id) );
+
+        SiegelInfo siegel;
+
+        siegel = SiegelInfoCache.get(Integer.valueOf(id));
+        if(siegel != null){
+            Log.v(LOG_TAG, "getInfo memory cache hit");
+            return siegel;
+        }
+
+        JSONObject json;
+
+        if(DiskCachePathInitialised) {
+            File cache_file = new File(DiskCachePath, id + ".dat");
+            if (cache_file.exists()) {
+                try {
+                    json = new JSONObject(getStringFromFile(cache_file));
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "error read cache file: " + e.getMessage());
+                    // try to get from API instead
+                    json = new JSONObject(makeGetCall("info/" + id));
+                }
+
+                Log.v(LOG_TAG, "getInfo disk cache hit");
+            } else { // make API call
+                String json_string = makeGetCall("info/" + id);
+                json = new JSONObject(json_string);
+
+                // write to file cache
+                PrintWriter pw = new PrintWriter(cache_file);
+                try {
+                    pw.println(json_string);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Problem writing cache file " + e.getMessage());
+                } finally {
+                    pw.close();
+                }
+            }
+        }
+        else {
+            json = new JSONObject(makeGetCall("info/" + id));
+        }
 
         String name = json.getString("name");
         assert name != "";
@@ -537,7 +590,9 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             Log.w(LOG_TAG, "Missing or empty share url :"+json.toString());
         }
 
-        SiegelInfo siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details, url);
+        siegel = new SiegelInfo(id, name, logo, rating, criteria_list, details, url);
+
+        SiegelInfoCache.put(Integer.valueOf(id), siegel);
 
         return siegel;
     }
@@ -547,13 +602,37 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
             return allSiegels;
         }
 
-
         JSONArray json;
-        // disk cache todo
 
+        if(DiskCachePathInitialised){
+            File cache_file = new File(DiskCachePath, "list.dat");
+            if (cache_file.exists()) {
+                try {
+                    json = new JSONArray(getStringFromFile(cache_file));
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "error read cache file: " + e.getMessage());
+                    // try to get from API instead
+                    json = new JSONArray(makeGetCall("info"));
+                }
+            } else { // make API call
+                String json_string = makeGetCall("info");
+                json = new JSONArray(json_string);
 
-        // fetch from server
-        json= new JSONArray( makeGetCall( "info" ) );
+                // write to file cache
+                PrintWriter pw = new PrintWriter(cache_file);
+                try {
+                    pw.println(json_string);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Problem writing cache file " + e.getMessage());
+                } finally {
+                    pw.close();
+                }
+            }
+        }
+        else {
+            // fetch from server
+            json = new JSONArray(makeGetCall("info"));
+        }
 
         int results_size = json.length();
         allSiegels = new ShortSiegelInfo[results_size];
@@ -573,9 +652,36 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         }
 
         JSONArray json;
-        // disk cache todo
 
-        json= new JSONArray( makeGetCall( "product_category" ) );
+        if(DiskCachePathInitialised){
+            File cache_file = new File(DiskCachePath, "categories.dat");
+            if (cache_file.exists()) {
+                try {
+                    json = new JSONArray(getStringFromFile(cache_file));
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "error read cache file: " + e.getMessage());
+                    // try to get from API instead
+                    json = new JSONArray(makeGetCall("product_category"));
+                }
+            } else { // make API call
+                String json_string = makeGetCall("product_category");
+                json = new JSONArray(json_string);
+
+                // write to file cache
+                PrintWriter pw = new PrintWriter(cache_file);
+                try {
+                    pw.println(json_string);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Problem writing cache file " + e.getMessage());
+                } finally {
+                    pw.close();
+                }
+            }
+        }
+        else {
+            json = new JSONArray(makeGetCall("product_category"));
+        }
+
         int results_size = json.length();
 
         categories = new ArrayList<ProductCategory>(results_size);
@@ -604,6 +710,7 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         }
 
         sortCategories(categories);
+
 
         return categories;
     }
@@ -655,6 +762,71 @@ class IdentifeyeAPI implements IdentifeyeAPIInterface {
         if(index!=-1){
             categories.set(desired_index, categories.get(index) );
             categories.set(index, tmp);
+        }
+    }
+
+    /**
+     * Initialsises the disk cache location.
+     *
+     * @param context
+     */
+    public void initDiskCache(final Context context){
+        if(DiskCachePathInitialised) { // already done
+            return;
+        }
+
+        String cachePath = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable() ?
+                context.getExternalCacheDir().getPath() : context.getCacheDir().getPath();
+
+        DiskCachePath =  new File(cachePath + File.separator + "data");
+        if(! DiskCachePath.exists() ){
+            try{
+                if( DiskCachePath.mkdir() ){
+                    DiskCachePathInitialised = true;
+                }
+            }
+            catch (Exception e){
+                Log.e(LOG_TAG, "Error creating cache path: "+e.getMessage());
+            }
+        }
+        else {
+            DiskCachePathInitialised = true;
+        }
+    }
+
+    protected static String convertStreamToString(InputStream is) throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    protected static String getStringFromFile(File filePath) throws Exception {
+        FileInputStream fin = new FileInputStream(filePath);
+        String ret = convertStreamToString(fin);
+        //Make sure you close all streams.
+        fin.close();
+        return ret;
+    }
+
+    // intern classes
+
+    private static class MaxSizeHashMap<K, V> extends LinkedHashMap<K, V> {
+
+        private final int maxSize;
+
+        public MaxSizeHashMap(int initialCapacity, int maxSize) {
+            super(initialCapacity);
+            this.maxSize = maxSize;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > maxSize;
         }
     }
 }

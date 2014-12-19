@@ -101,7 +101,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         new PingTask(api).execute((Void[])null);
 
-        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout), true );
     }
 
     @Override

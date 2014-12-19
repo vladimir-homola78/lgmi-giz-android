@@ -73,6 +73,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
+        api.initDiskCache(this);
 
         try{
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);

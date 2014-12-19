@@ -26,13 +26,17 @@ public class NavDrawHelper extends ActionBarDrawerToggle implements ListView.OnI
     private final ArrayList<NavDrawItem> items  = new ArrayList<NavDrawItem>(NUM_ITEMS);
     private final NavdrawAdapter adapter;
     private final DrawerLayout drawerLayout;
-
-
+    private final boolean stopActivity;
 
     NavDrawHelper(Activity activity, DrawerLayout drawer_layout){
+        this(activity,drawer_layout, false);
+    }
+
+    NavDrawHelper(Activity activity, DrawerLayout drawer_layout, boolean stop_activity){
         super(activity, drawer_layout, R.drawable.nav_drawer, R.string.open, R.string.close);
         this.activity = activity;
         this.drawerLayout = drawer_layout;
+        this.stopActivity = stop_activity;
 
         items.add( new NavDrawItem( activity.getString(R.string.menu_search), R.drawable.menu_search) );
         items.add( new NavDrawItem( activity.getString(R.string.menu_scan), R.drawable.menu_camera) );
@@ -83,10 +87,12 @@ public class NavDrawHelper extends ActionBarDrawerToggle implements ListView.OnI
 
         if(intent!=null) {
             drawerLayout.closeDrawers();
-            activity.startActivity(intent);
+            if( ! (stopActivity && position==1) ) {
+                activity.startActivity(intent);
+            }
         }
         else{
-            Log.e("NAVDRAW", "Unknown position of "+position+" clicked");
+            Log.e("NAVDRAW", "Unknown position of " + position + " clicked");
         }
     }
 }

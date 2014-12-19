@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -61,6 +62,7 @@ public class DetailsActivity extends Activity {
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
+        api.initDiskCache(this);
 
         LogoHelper.initDiskCachePath(this);
         blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
@@ -70,6 +72,7 @@ public class DetailsActivity extends Activity {
 
         htmlView =(WebView) findViewById(R.id.details_webview);
         htmlView.getSettings().setJavaScriptEnabled(true);
+        htmlView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         String user_agent = "Siegelklarheit (Android)";
         try{
@@ -160,6 +163,12 @@ public class DetailsActivity extends Activity {
         shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
+        if(haveShareURL && siegel!=null) { // already fetched (e.g. memory cache) before menu created here
+            intent.putExtra(Intent.EXTRA_SUBJECT, siegel.getName());
+            intent.putExtra(Intent.EXTRA_TEXT, siegel.getShareURL());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        }
+
         shareActionProvider.setShareIntent(intent);
 
         return true;
@@ -293,14 +302,23 @@ public class DetailsActivity extends Activity {
                     @Override
                     public boolean shouldOverrideUrlLoading(WebView view, String url) {
                         if( url.startsWith(api.getWebviewBaseURL()) ){ // internal url, eg. score
+                            view.scrollTo(0, 0);
                             view.loadUrl(url);
                             logoViewContainer.setVisibility(View.GONE);
                             ratingView.setVisibility(View.GONE);
                             ((ScrollView) findViewById(R.id.details_scroll_view)).pageScroll(View.FOCUS_UP);
                             linkClicked = true;
+                            view.scrollTo(0, 0);
+                            view.pageUp(true);
                             return false;
                         }
                         return true; //external url, open in browser
+                    }
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        //view.scrollTo(0, 0);
+                        //view.pageUp(true);
                     }
                 });
                 //Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
@@ -311,7 +329,10 @@ public class DetailsActivity extends Activity {
                     intent.putExtra(Intent.EXTRA_SUBJECT, result.getName());
                     intent.putExtra(Intent.EXTRA_TEXT, url);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                    shareActionProvider.setShareIntent(intent);
+                    // race condition!
+                    if(shareActionProvider != null) { //avoid race condition if we reach this point before menu created
+                        shareActionProvider.setShareIntent(intent);
+                    }
                     haveShareURL = true;
                 }
                 else {
