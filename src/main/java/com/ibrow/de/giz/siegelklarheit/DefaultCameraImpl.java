@@ -75,7 +75,16 @@ class DefaultCameraImpl implements CameraInterface {
             throw new Exception("No Camera found");
         }
 
-        this.camera = Camera.open(cameraId); // attempt to get a Camera instance (may throw exception)
+        try {
+            this.camera = Camera.open(cameraId); // attempt to get a Camera instance (may throw exception)
+        }
+        catch (Exception e){
+            // wierd unreproducabele edge cases - if at first we don't succeed, try again
+            // If it still fails, the 2nd exception will be thrown up and caught by scanactivity
+            Log.e(LOG_TAG, "Camera open failed: "+e.getMessage());
+            this.camera = Camera.open(cameraId);
+        }
+
 
         Camera.Parameters params = camera.getParameters();
         // set zoom if poss

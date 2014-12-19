@@ -1,11 +1,11 @@
 package com.ibrow.de.giz.siegelklarheit;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,13 +25,18 @@ public class NavDrawHelper extends ActionBarDrawerToggle implements ListView.OnI
     private final Activity activity;
     private final ArrayList<NavDrawItem> items  = new ArrayList<NavDrawItem>(NUM_ITEMS);
     private final NavdrawAdapter adapter;
-
-
+    private final DrawerLayout drawerLayout;
+    private final boolean stopActivity;
 
     NavDrawHelper(Activity activity, DrawerLayout drawer_layout){
-        // = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
+        this(activity,drawer_layout, false);
+    }
+
+    NavDrawHelper(Activity activity, DrawerLayout drawer_layout, boolean stop_activity){
         super(activity, drawer_layout, R.drawable.nav_drawer, R.string.open, R.string.close);
         this.activity = activity;
+        this.drawerLayout = drawer_layout;
+        this.stopActivity = stop_activity;
 
         items.add( new NavDrawItem( activity.getString(R.string.menu_search), R.drawable.menu_search) );
         items.add( new NavDrawItem( activity.getString(R.string.menu_scan), R.drawable.menu_camera) );
@@ -48,36 +53,46 @@ public class NavDrawHelper extends ActionBarDrawerToggle implements ListView.OnI
 
         drawer_layout.setDrawerListener(this);
 
-        activity.getActionBar().setDisplayHomeAsUpEnabled(true);
+        try {
+            activity.getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        catch (NullPointerException npe){
+            Log.wtf("NAVDRAW", "getActionBar() returned null: "+npe.getMessage());
+        }
         activity.getActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
     public void onItemClick(AdapterView parent, View view, int position, long id) {
-        Intent intent;
+        Intent intent=null;
 
         switch(position){
             case 0:
                 intent = new Intent (activity, SearchActivity.class);
-                activity.startActivity(intent);
                 break;
             case 1:
                 intent = new Intent (activity, ScanActivity.class);
-                activity.startActivity(intent);
                 break;
             case 2:
                 intent = new Intent (activity, InfosActivity.class);
-                activity.startActivity(intent);
                 break;
             case 3:
                 intent = new Intent (activity, ImprintActivity.class);
-                activity.startActivity(intent);
                 break;
             case 4 : // infos item at bottom
                 intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://www.giz.de/"));
-                activity.startActivity(intent);
+                intent.setData(Uri.parse("http://www.siegelklarheit.de/"));
                 break;
+        }
+
+        if(intent!=null) {
+            drawerLayout.closeDrawers();
+            if( ! (stopActivity && position==1) ) {
+                activity.startActivity(intent);
+            }
+        }
+        else{
+            Log.e("NAVDRAW", "Unknown position of " + position + " clicked");
         }
     }
 }

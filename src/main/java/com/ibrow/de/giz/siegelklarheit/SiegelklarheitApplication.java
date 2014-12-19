@@ -32,6 +32,7 @@ public class SiegelklarheitApplication extends Application {
     public SiegelklarheitApplication() {
         super();
         identifyAPI = new TestIdentifeyeAPI();
+
         /* can't seem to get package manager here (null), setting info in ScanActivity
         try{
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);

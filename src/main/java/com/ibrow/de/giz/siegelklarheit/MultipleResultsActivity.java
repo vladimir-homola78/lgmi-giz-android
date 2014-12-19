@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.List;
@@ -50,6 +52,12 @@ public class MultipleResultsActivity extends Activity {
         siegel_array = siegels.toArray(siegel_array);
 
         final ListView listview = (ListView) findViewById(R.id.list_view);
+
+        // footer part
+        final LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.listfooter_multiresults, null);
+        LinearLayout list_footer = (LinearLayout) view.findViewById(R.id.list_multi_footer);
+        listview.addFooterView(list_footer);
 
         final SiegelArrayAdapter adapter = new SiegelArrayAdapter(this, siegel_array);
 

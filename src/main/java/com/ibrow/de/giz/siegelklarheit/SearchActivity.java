@@ -73,6 +73,7 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
+        api.initDiskCache(this);
 
         try{
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -291,7 +292,11 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
                         dialog.dismiss();
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null) titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
         return false;
     }
 

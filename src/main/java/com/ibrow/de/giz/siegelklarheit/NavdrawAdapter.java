@@ -64,7 +64,6 @@ public final class NavdrawAdapter extends BaseAdapter {
             TextView label = (TextView) rootview.findViewById(R.id.navdraw_text);
             label.setText( item.getName() );
             icon.setImageResource( item.getIconResourceId() );
-            //label.setCompoundDrawables( context.getResources().getDrawable( item.getIconResourceId() ), null, null, null);
         }
         else { // special infos item at bottom
             rootview = inflater.inflate(R.layout.fragment_navdraw_infos, null);

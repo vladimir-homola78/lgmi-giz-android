@@ -37,7 +37,6 @@ import java.util.List;
  * The scan label activity.
  *
  *  @author Pete
- *  @todo Clean the code up
  */
 public class ScanActivity extends Activity implements View.OnClickListener, PictureTakenCallback, View.OnTouchListener {
 
@@ -52,6 +51,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
     protected NavDrawHelper navDraw;
 
     private static final String LOG_TAG="SCAN";
+    private static final String LOG_TAG_CAMERA="CAMERA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +70,6 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         // before calling connectPreviewFrame()
         // so view finder calculated correctly
         hideNavBar();
-        /*
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-        if(Build.VERSION.SDK_INT >= 16) {
-            RelativeLayout l = (RelativeLayout) findViewById(R.id.scan_layout);
-            l.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-            if(Build.VERSION.SDK_INT >= 19 ){
-                immerseMode();
-            }
-        }
-        */
-
 
         camera = CameraProvider.getCamera();
         if(camera == null) {
@@ -92,13 +80,12 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             camera.initalise();
             connectPreviewFrame();
         } catch (Exception e) {
-            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
+            Log.d(LOG_TAG_CAMERA, "Could not get camera: " + e.getMessage());
             showCameraErrorDialog(e.getMessage());
         }
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
-
 
         try{
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -114,7 +101,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         new PingTask(api).execute((Void[])null);
 
-        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
+        navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout), true );
     }
 
     @Override
@@ -144,7 +131,13 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                         dialog.dismiss();
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null)
+            titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
+
         return false;
     }
 
@@ -165,7 +158,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
             camera.initalise();
             connectPreviewFrame();
         } catch (Exception e) {
-            Log.e("CAMERA", "Could not get camera: " + e.getMessage());
+            Log.e(LOG_TAG_CAMERA, "Could not get camera: " + e.getMessage());
             showCameraErrorDialog(e.getMessage());
         }
     }
@@ -281,13 +274,17 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                             // got camera now, so dismiss dialog
                             dialog.cancel();
                         } catch (Exception e) {
-                            Log.d("CAMERA", "Could not get camera: " + e.getMessage());
-                            //Toast.makeText(getApplicationContext(), R.string.no_camera_title, Toast.LENGTH_SHORT).show();
+                            Log.d(LOG_TAG_CAMERA, "Could not get camera: " + e.getMessage());
                             showCameraErrorDialog(e.getMessage());
                         }
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null)
+            titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
     }
 
     /**
@@ -325,7 +322,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
      * @see #onClick(android.view.View)
      *
      */
-    public void onPictureTaken(byte[] image){
+    public void onPictureTaken(final byte[] image){
         Log.v(LOG_TAG, "Got photo!");
         //camera.release();
         //camera = null;
@@ -353,12 +350,16 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         builder.setPositiveButton(R.string.ok_btn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //reinitialiseCamera();
                         camera.startPreview();
                         scanButton.setEnabled(true);
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null)
+            titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
     }
 
     /**
@@ -395,6 +396,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
             return;
         }
+
         // more results
         Intent intent = new Intent (this, MultipleResultsActivity.class);
 
@@ -424,7 +426,12 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                         startActivity(intent);
                     }
                 });
-        builder.show();
+        AlertDialog dialog = builder.show();
+
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null)
+            titleDivider.setBackgroundColor(getResources().getColor(R.color.orange));
     }
 
     /* menu */
@@ -462,7 +469,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
                     camera.release();
                 }
                 catch (Exception e){
-                    Log.e("CAMERA", "Could not release camera [menu click]: "+e.getMessage());
+                    Log.e(LOG_TAG_CAMERA, "Could not release camera [menu click]: "+e.getMessage());
                 }
             }
             camera = null;
@@ -470,9 +477,6 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
         switch(id){
             case R.id.action_scan:
-                // even though we're already in the scan activity
-                // this menu item is active as a fallback
-                // to restart the activity e.g. camera crashed
                 intent = new Intent (this, ScanActivity.class);
                 startActivity(intent);
                 break;
@@ -494,27 +498,19 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
 
 
     public boolean onTouch(View v, MotionEvent event){
-        //Log.d(LOG_TAG, "screen touched");
         if( camera != null && camera.getIsInitialised() ){
-            //Log.d(LOG_TAG,"touch, camera ready");
             int action = event.getActionMasked();
-            //Log.d(LOG_TAG,"action is "+action);
             switch(action) {
                 case MotionEvent.ACTION_UP :
-                    //Log.d(LOG_TAG, "ACTION up at x "+event.getX()+", y "+event.getY() );
-
                     int x=(int) event.getX();
                     int y=(int) event.getY();
                     Rect finder=camera.getViewFramingRect();
                     if( (x>finder.left && x<finder.right) && (y>finder.top && y<finder.bottom)  ){
                         Log.v(LOG_TAG, "Finder touched");
                         startScan();
-                        //hideNavBar();
                     }
                     break;
-
             }
-
         }
         return true;
     }
@@ -577,26 +573,38 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         protected List<ShortSiegelInfo>  doInBackground(Void... params) {
             Log.d("ScanPictureTask", "running...");
             List<ShortSiegelInfo> result;
-            try{
+            // we try twice...
+            try {
                 result = api.identifySiegel(image);
-                // if(true) {throw new Exception("test foobar");}
             }
-            catch(Exception e){
-                if(e != null ) {
-                    String msg;
-                    if(e!=null && e.getMessage()!=null){
-                        msg = "ScanPictureTask: " + e.getMessage();
-                        Log.e("API", msg,  e);
-
-                    }
-                    else {
-                        msg="[unknown in ScanPictureTask]";
-                        Log.wtf("API", msg);
-                    }
-                    error = e;
+            catch (Exception e) {
+                if(e!=null && e.getMessage()!=null){
+                    Log.e("API", "ScanPictureTask: "+e.getMessage());
                 }
-                return null;
+                else {
+                    Log.wtf("API", "ScanPictureTask: [unknown in ScanPictureTask]");
+                }
+
+                try {
+                    result = api.identifySiegel(image);
+                    // if(true) {throw new Exception("test foobar");}
+                } catch (Exception e2) {
+                    if (e2 != null) {
+                        String msg;
+                        if (e2 != null && e2.getMessage() != null) {
+                            msg = "ScanPictureTask 2nd try: " + e2.getMessage();
+                            Log.e("API", msg, e2);
+
+                        } else {
+                            msg = "[unknown in ScanPictureTask] 2nd try";
+                            Log.wtf("API", msg);
+                        }
+                        error = e2;
+                    }
+                    return null;
+                }
             }
+
             return result;
         }
 
