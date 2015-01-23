@@ -146,6 +146,7 @@ public class MultipleResultsActivity extends Activity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        	
             Intent intent = new Intent (context, DetailsActivity.class);
             SiegelklarheitApplication.setCurrentSiegel(siegel_array[position]);
             startActivity(intent);

@@ -17,8 +17,7 @@
     <string name="navdraw_info_text">Gefördert vom Bundesministerium für wirtschaftliche Zusammenarbeit und Entwicklung\n\n
 
 Diese App bewertet und vergleicht Umwelt- und Sozialsiegel. Sie stützt sich dabei auf die Anforderungen der Bundesregierung an leistungsfähige und glaubwürdige Siegel.
-Mehr erfahren Sie auf unserer Webseite:\n
-www.siegelklarheit.de </string>
+Mehr erfahren Sie auf unserer Webseite:</string>
 
 
     <string name="title_imprint">Impressum</string>
@@ -37,8 +36,8 @@ www.siegelklarheit.de </string>
 
     <string name="button_scan">Jetzt scannen</string>
 
-    <string name="no_camera_title">Fehler: Kann nicht Kamera zugreiffen</string>
-    <string name="no_camera_message">Bitte überpruffen Sie, ob das Kamera schon von ein andere Applikation benutzt ist.<br /></string>
+    <string name="no_camera_title">Kein Zugriff auf die Kamera</string>
+    <string name="no_camera_message">Bitte überprüfen Sie, ob die Kamera von einer anderen aktiven Anwendung genutzt wird<br /></string>
     <string name="no_camera_retry_btn">Noch mal versuchen</string>
     <string name="scanning">Scannen in Bearbeitung</string>
 

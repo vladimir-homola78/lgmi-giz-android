@@ -389,6 +389,8 @@ public class SearchActivity extends  android.support.v4.app.FragmentActivity imp
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        	
+        	Log.e("Item Clicked", currentList[position]+"");
             Intent intent = new Intent (context, DetailsActivity.class);
             if(! amFiltering){
                 SiegelklarheitApplication.setCurrentSiegel(currentList[position]);

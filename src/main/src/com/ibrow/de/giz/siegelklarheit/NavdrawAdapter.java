@@ -1,15 +1,17 @@
 package com.ibrow.de.giz.siegelklarheit;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 /**
  * List adapter for the navigation draw.
@@ -22,8 +24,9 @@ public final class NavdrawAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<NavDrawItem> items;
     private final LayoutInflater inflater;
+    private LinkItemClickListener clistener;
 
-
+    
     public NavdrawAdapter(Context context, ArrayList<NavDrawItem> items){
         super();
         this.context = context;
@@ -31,6 +34,10 @@ public final class NavdrawAdapter extends BaseAdapter {
         this.inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
     }
 
+	public void setLisetener (LinkItemClickListener listener){
+		this.clistener = listener;
+	}
+	
     @Override
     public int getCount() {
         return items.size();
@@ -64,11 +71,23 @@ public final class NavdrawAdapter extends BaseAdapter {
             TextView label = (TextView) rootview.findViewById(R.id.navdraw_text);
             label.setText( item.getName() );
             icon.setImageResource( item.getIconResourceId() );
+            
         }
         else { // special infos item at bottom
             rootview = inflater.inflate(R.layout.fragment_navdraw_infos, null);
+            Button linkBtn = (Button) rootview.findViewById(R.id.linkBtn);
+            linkBtn.setOnClickListener(new OnClickListener() {
+    			
+    			@Override
+    			public void onClick(View v) {
+    				// TODO Auto-generated method stub
+    				Button btn = (Button)v;
+    				clistener.linkSelected(btn.getText().toString());
+    			}
+    		});
         }
 
         return rootview;
     }
+
 }

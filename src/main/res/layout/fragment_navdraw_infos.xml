@@ -43,4 +43,15 @@
         android:text="@string/navdraw_info_text"
      />
 
+    <Button
+        android:id="@+id/linkBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="www.siegelklarheit.de"
+        android:background="@android:color/transparent"
+        android:textSize="14dp"
+        android:textColor="#0000ff"
+        
+         />
+
 </LinearLayout>

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import com.crashlytics.android.Crashlytics;
 
 /**
  * This class starts Scan activity,
@@ -24,13 +26,21 @@ public class StartActivity extends Activity{
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-
-        SharedPreferences settings = getPreferences( Context.MODE_PRIVATE );
+		Crashlytics.start(this);
+    }
+    
+    @Override
+    public void onStart() {
+    	super.onStart();
+    	
+    	SharedPreferences settings = getPreferences( Context.MODE_PRIVATE );
         boolean alreadyRun = settings.getBoolean( ALREADY_RUN_ONCE, false );
+    	//boolean alreadyRun = false;
 
         if( alreadyRun  ){
-            //intent = new Intent( this, ScanActivity.class );
             intent = new Intent( this, SplashActivity.class );
+            startActivity(intent);
+            finish();
         }
         else {
             intent = new Intent( this, TourActivity.class );
@@ -38,10 +48,30 @@ public class StartActivity extends Activity{
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean( ALREADY_RUN_ONCE, true );
             editor.commit();
+            startActivityForResult(intent, 100);
         }
-
-        startActivity(intent);
-        finish();
     }
-
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	
+        // Check which request we're responding to
+        if (requestCode == 100) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+            	
+            	Log.e("Tour is finished", "Tour is finished");
+            	intent = new Intent( this, SplashActivity.class);
+            	startActivity(intent);
+            	finish();
+            }
+        }
+    }
+    
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	Log.e("StartActivity", "onDestroy");
+    }
+    
 }

@@ -34,14 +34,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
          (such as screen margins) for screens with more than 820dp of available width. This
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). 
          */
-        public static final int activity_horizontal_margin=0x7f050000;
-        public static final int activity_vertical_margin=0x7f050001;
+        public static final int activity_horizontal_margin=0x7f060000;
+        public static final int activity_vertical_margin=0x7f060001;
         /**  image size + 3 + small padding (3) 
          */
-        public static final int button_radius=0x7f050005;
-        public static final int criteria_height=0x7f050004;
-        public static final int large_margin=0x7f050003;
-        public static final int pad=0x7f050002;
+        public static final int button_radius=0x7f060005;
+        public static final int criteria_height=0x7f060004;
+        public static final int large_margin=0x7f060003;
+        public static final int pad=0x7f060002;
     }
     public static final class drawable {
         public static final int apptheme_textfield_activated_holo_light=0x7f020000;
@@ -86,23 +86,23 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int tour3=0x7f020027;
     }
     public static final class id {
-        public static final int action_imprint=0x7f090047;
-        public static final int action_info=0x7f090046;
-        public static final int action_scan=0x7f090045;
-        public static final int action_search=0x7f090044;
-        public static final int action_share=0x7f090043;
+        public static final int action_imprint=0x7f090048;
+        public static final int action_info=0x7f090047;
+        public static final int action_scan=0x7f090046;
+        public static final int action_search=0x7f090045;
+        public static final int action_share=0x7f090044;
         public static final int button_scan=0x7f090015;
-        public static final int button_search=0x7f090032;
+        public static final int button_search=0x7f090033;
         public static final int camera_preview=0x7f090014;
-        public static final int criteria_holder=0x7f090037;
-        public static final int criteria_icon_holder=0x7f09003c;
-        public static final int criteria_image_1=0x7f09003d;
-        public static final int criteria_image_2=0x7f09003e;
-        public static final int criteria_image_3=0x7f09003f;
-        public static final int criteria_text_1=0x7f090039;
-        public static final int criteria_text_2=0x7f09003a;
-        public static final int criteria_text_3=0x7f09003b;
-        public static final int criteria_text_holder=0x7f090038;
+        public static final int criteria_holder=0x7f090038;
+        public static final int criteria_icon_holder=0x7f09003d;
+        public static final int criteria_image_1=0x7f09003e;
+        public static final int criteria_image_2=0x7f09003f;
+        public static final int criteria_image_3=0x7f090040;
+        public static final int criteria_text_1=0x7f09003a;
+        public static final int criteria_text_2=0x7f09003b;
+        public static final int criteria_text_3=0x7f09003c;
+        public static final int criteria_text_holder=0x7f090039;
         public static final int details_scroll_container=0x7f090002;
         public static final int details_scroll_view=0x7f090001;
         public static final int details_webview=0x7f090008;
@@ -112,10 +112,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int end_tour_btn=0x7f090023;
         public static final int filter=0x7f090017;
         public static final int imprint_webview=0x7f09000d;
-        public static final int info_and_rating_holder=0x7f090034;
-        public static final int info_holder=0x7f090035;
+        public static final int info_and_rating_holder=0x7f090035;
+        public static final int info_holder=0x7f090036;
         public static final int info_webview=0x7f09000e;
-        public static final int list_multi_footer=0x7f090031;
+        public static final int linkBtn=0x7f09002e;
+        public static final int list_multi_footer=0x7f090032;
         public static final int list_view=0x7f090011;
         public static final int logo_view=0x7f090004;
         public static final int logo_view_container=0x7f090003;
@@ -132,15 +133,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int no_infos_holder=0x7f090009;
         public static final int no_infos_show_list_btn=0x7f09000b;
         public static final int no_infos_text=0x7f09000a;
-        public static final int rating_color=0x7f090042;
-        public static final int rating_holder=0x7f090041;
+        public static final int rating_color=0x7f090043;
+        public static final int rating_holder=0x7f090042;
         public static final int rating_symbol_image=0x7f090006;
         public static final int rating_symbol_text=0x7f090007;
         public static final int rating_view=0x7f090005;
         public static final int scan_layout=0x7f090013;
-        public static final int siegel_name_text=0x7f090036;
-        public static final int siegel_no_criteria_text=0x7f090040;
-        public static final int siegel_row=0x7f090033;
+        public static final int siegel_name_text=0x7f090037;
+        public static final int siegel_no_criteria_text=0x7f090041;
+        public static final int siegel_row=0x7f090034;
         public static final int splash_button_holder=0x7f09001a;
         public static final int splash_holder=0x7f090018;
         public static final int splash_image=0x7f090019;
@@ -149,14 +150,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int splash_search_btn=0x7f09001b;
         public static final int start_tour_btn=0x7f09000f;
         public static final int tour_buttons_holder=0x7f090024;
-        public static final int tour_desc=0x7f090030;
-        public static final int tour_image=0x7f09002f;
+        public static final int tour_desc=0x7f090031;
+        public static final int tour_image=0x7f090030;
         public static final int tour_nav_btn_1=0x7f090020;
         public static final int tour_nav_btn_2=0x7f090021;
         public static final int tour_nav_btn_3=0x7f090022;
         public static final int tour_nav_btn_holder=0x7f09001f;
         public static final int tour_pager=0x7f09001e;
-        public static final int tour_title=0x7f09002e;
+        public static final int tour_title=0x7f09002f;
         public static final int webView1=0x7f090012;
     }
     public static final class layout {
@@ -182,64 +183,72 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int menu_search=0x7f080002;
     }
     public static final class string {
-        public static final int app_name=0x7f060000;
-        public static final int button_list_all=0x7f06001e;
-        public static final int button_scan=0x7f060012;
-        public static final int category_all=0x7f06002c;
-        public static final int close=0x7f060006;
-        public static final int criterion_none=0x7f060027;
-        public static final int criterion_type_environment=0x7f060025;
-        public static final int criterion_type_socioeconomic=0x7f060026;
-        public static final int criterion_type_system=0x7f060024;
-        public static final int criterion_unknown=0x7f060028;
-        public static final int details_no_info=0x7f060029;
-        public static final int details_no_info_list_btn=0x7f06002a;
-        public static final int end_tour_btn=0x7f06002f;
-        public static final int error=0x7f06000f;
-        public static final int federal_government=0x7f060007;
-        public static final int filter_hint=0x7f06002b;
-        public static final int menu_imprint=0x7f060004;
-        public static final int menu_info=0x7f060003;
-        public static final int menu_scan=0x7f060002;
+        public static final int app_name=0x7f050001;
+        public static final int button_list_all=0x7f05001f;
+        public static final int button_scan=0x7f050013;
+        public static final int category_all=0x7f05002d;
+        public static final int close=0x7f050007;
+        /** 
+  This file is automatically generated by Crashlytics to uniquely 
+  identify individual builds of your Android application.
+
+  Do NOT modify, delete, or commit to source control!
+
+         */
+        public static final int com_crashlytics_android_build_id=0x7f050000;
+        public static final int criterion_none=0x7f050028;
+        public static final int criterion_type_environment=0x7f050026;
+        public static final int criterion_type_socioeconomic=0x7f050027;
+        public static final int criterion_type_system=0x7f050025;
+        public static final int criterion_unknown=0x7f050029;
+        public static final int details_no_info=0x7f05002a;
+        public static final int details_no_info_list_btn=0x7f05002b;
+        public static final int end_tour_btn=0x7f050030;
+        public static final int error=0x7f050010;
+        public static final int federal_government=0x7f050008;
+        public static final int filter_hint=0x7f05002c;
+        public static final int menu_imprint=0x7f050005;
+        public static final int menu_info=0x7f050004;
+        public static final int menu_scan=0x7f050003;
         /**  <string name="action_settings">Einstellungen</string>
          */
-        public static final int menu_search=0x7f060001;
-        public static final int navdraw_info_text=0x7f060008;
-        public static final int no_camera_message=0x7f060014;
-        public static final int no_camera_retry_btn=0x7f060015;
-        public static final int no_camera_title=0x7f060013;
-        public static final int no_connection_msg=0x7f060011;
-        public static final int ok_btn=0x7f060010;
-        public static final int open=0x7f060005;
-        public static final int rating_bad=0x7f060021;
-        public static final int rating_good=0x7f060020;
-        public static final int rating_none=0x7f060022;
-        public static final int rating_unknown=0x7f060023;
-        public static final int rating_verygood=0x7f06001f;
-        public static final int scan_error=0x7f060017;
-        public static final int scan_not_recognised_msg=0x7f060019;
-        public static final int scan_not_recognised_search_btn=0x7f06001a;
-        public static final int scan_not_recognised_title=0x7f060018;
-        public static final int scan_not_recognised_tryagain_btn=0x7f06001b;
-        public static final int scanning=0x7f060016;
-        public static final int skip_tour_btn=0x7f06002e;
-        public static final int start_tour_btn=0x7f06002d;
-        public static final int text_multiple_results=0x7f06001c;
-        public static final int text_multiple_results_list_all=0x7f06001d;
-        public static final int title_activity_search=0x7f06000c;
-        public static final int title_activity_tour=0x7f06000d;
-        public static final int title_imprint=0x7f060009;
+        public static final int menu_search=0x7f050002;
+        public static final int navdraw_info_text=0x7f050009;
+        public static final int no_camera_message=0x7f050015;
+        public static final int no_camera_retry_btn=0x7f050016;
+        public static final int no_camera_title=0x7f050014;
+        public static final int no_connection_msg=0x7f050012;
+        public static final int ok_btn=0x7f050011;
+        public static final int open=0x7f050006;
+        public static final int rating_bad=0x7f050022;
+        public static final int rating_good=0x7f050021;
+        public static final int rating_none=0x7f050023;
+        public static final int rating_unknown=0x7f050024;
+        public static final int rating_verygood=0x7f050020;
+        public static final int scan_error=0x7f050018;
+        public static final int scan_not_recognised_msg=0x7f05001a;
+        public static final int scan_not_recognised_search_btn=0x7f05001b;
+        public static final int scan_not_recognised_title=0x7f050019;
+        public static final int scan_not_recognised_tryagain_btn=0x7f05001c;
+        public static final int scanning=0x7f050017;
+        public static final int skip_tour_btn=0x7f05002f;
+        public static final int start_tour_btn=0x7f05002e;
+        public static final int text_multiple_results=0x7f05001d;
+        public static final int text_multiple_results_list_all=0x7f05001e;
+        public static final int title_activity_search=0x7f05000d;
+        public static final int title_activity_tour=0x7f05000e;
+        public static final int title_imprint=0x7f05000a;
         /** <string name="title_infos">Weitere Infos</string>
          */
-        public static final int title_infos=0x7f06000a;
-        public static final int title_multipleresults=0x7f06000b;
-        public static final int tour_desc_1=0x7f060033;
-        public static final int tour_desc_2=0x7f060034;
-        public static final int tour_desc_3=0x7f060035;
-        public static final int tour_title_1=0x7f060030;
-        public static final int tour_title_2=0x7f060031;
-        public static final int tour_title_3=0x7f060032;
-        public static final int warning=0x7f06000e;
+        public static final int title_infos=0x7f05000b;
+        public static final int title_multipleresults=0x7f05000c;
+        public static final int tour_desc_1=0x7f050034;
+        public static final int tour_desc_2=0x7f050035;
+        public static final int tour_desc_3=0x7f050036;
+        public static final int tour_title_1=0x7f050031;
+        public static final int tour_title_2=0x7f050032;
+        public static final int tour_title_3=0x7f050033;
+        public static final int warning=0x7f05000f;
     }
     public static final class style {
         public static final int ActionBar=0x7f070005;

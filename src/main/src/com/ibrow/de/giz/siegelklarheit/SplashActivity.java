@@ -42,19 +42,16 @@ public class SplashActivity extends Activity implements View.OnClickListener{
             case R.id.splash_search_btn:
                 intent = new Intent(this, SearchActivity.class);
                 startActivity(intent);
-                finish();
                 break;
 
             case R.id.splash_scan_btn:
                 intent = new Intent(this, ScanActivity.class);
                 startActivity(intent);
-                finish();
                 break;
 
             case R.id.splash_infos_btn:
                 intent = new Intent(this, InfosActivity.class);
                 startActivity(intent);
-                finish();
                 break;
         }
     }

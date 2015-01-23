@@ -1,5 +1,6 @@
 package com.ibrow.de.giz.siegelklarheit;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +59,7 @@ public class TourActivity extends FragmentActivity  implements View.OnClickListe
         }
 
         skipTourBtn = (Button) findViewById(R.id.end_tour_btn);
-        skipTourBtn.setOnClickListener(this);
+		skipTourBtn.setOnClickListener(this);
         skipTourBtn.setMinimumWidth(skipTourBtn.getWidth());
 
         // navigation circle buttons
@@ -82,11 +84,16 @@ public class TourActivity extends FragmentActivity  implements View.OnClickListe
         Intent intent;
         if( ! returnToScanActivity ){
             intent = new Intent( this, InfosActivity.class);
+            startActivity(intent);
+            Log.e("Action", "0");
         }
         else {
-            intent = new Intent( this, ScanActivity.class);
+//            intent = new Intent( this, SplashActivity.class);
+        	Log.e("Action", "1");
+        	setResult(Activity.RESULT_OK);
+        	finish();
         }
-        startActivity(intent);
+        
     }
 
     /* menu stuff */
