@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
+//import com.crashlytics.android.Crashlytics;
 
 /**
  * This class starts Scan activity,
@@ -26,7 +26,7 @@ public class StartActivity extends Activity{
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-		Crashlytics.start(this);
+//		Crashlytics.start(this);
     }
     
     @Override

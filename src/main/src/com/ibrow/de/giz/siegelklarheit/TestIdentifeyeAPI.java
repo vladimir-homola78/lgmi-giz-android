@@ -7,9 +7,9 @@ package com.ibrow.de.giz.siegelklarheit;
 class TestIdentifeyeAPI extends IdentifeyeAPI{
 
 
-    protected final String testEndPoint="http://identifeye.ibrow.com:5001/";
+    protected final String testEndPoint="http://api.siegelklarheit.de/";
 
-    protected final String testImageBase="http://identifeye.ibrow.com:5001";
+    protected final String testImageBase="http://api.siegelklarheit.de/";
 
     @Override
     protected String getEndPoint(){
