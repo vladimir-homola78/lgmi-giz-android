@@ -468,7 +468,7 @@ import android.widget.Toast;
 
         	String originTitle = SiegelklarheitApplication
 			.getCurrentSiegel().getName();
-        	currentNavTitle = title+" "+originTitle;
+        	currentNavTitle = title;
 
         }
     }
