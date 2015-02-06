@@ -124,7 +124,7 @@ public class ScanActivity extends Activity implements View.OnClickListener, Pict
         }
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         builder.setMessage(getString(R.string.no_connection_msg) );
-        builder.setTitle(R.string.warning);
+        builder.setTitle(R.string.no_connection_title);
         builder.setPositiveButton(R.string.ok_btn ,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

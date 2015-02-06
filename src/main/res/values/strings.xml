@@ -32,7 +32,8 @@ Mehr erfahren Sie auf unserer Webseite:</string>
     <string name="error">Fehler</string>
     <string name="ok_btn">Ok</string>
 
-    <string name="no_connection_msg">Sie sind nicht Online - bitte mit das Internet verbinden</string>
+    <string name="no_connection_title">Keine Internetverbindung</string>
+    <string name="no_connection_msg">Diese Funktion steht nicht zur Verfügung ohne eine Verbindung zum Internet. Bitte überprüfen Sie Ihre Datenverbindung.</string>
 
     <string name="button_scan">Jetzt scannen</string>
 
