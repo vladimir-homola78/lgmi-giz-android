@@ -18,21 +18,6 @@
             android:orientation="vertical"
             tools:context=".DetailsActivity" >
 
-            <LinearLayout
-                android:id="@+id/logo_view_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp" >
-
-                <ImageView
-                    android:id="@+id/logo_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:src="@drawable/loading" /> <!-- unfortunately animation not supported -->
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/rating_view"

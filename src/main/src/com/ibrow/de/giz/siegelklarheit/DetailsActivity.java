@@ -44,16 +44,16 @@ import android.widget.Toast;
 	private static final String DRAWABLE = "@drawable/";
 	private static final String STRING = "@string/";
 
-	protected Drawable blankLogo;
+    //protected Drawable blankLogo;
 
 	protected SiegelInfo siegel;
 
 	protected DrawerLayout mainLayout;
 	protected ScrollView scrollView;
 	protected LinearLayout scrollContainer;
-	protected LinearLayout logoViewContainer;
+    //protected LinearLayout logoViewContainer;
 	protected LinearLayout ratingView;
-	protected ImageView logoImageView;
+    //protected ImageView logoImageView;
 	protected WebView htmlView;
 
 	private ShareActionProvider shareActionProvider;
@@ -74,8 +74,8 @@ import android.widget.Toast;
 		api = app.getAPI();
 		api.initDiskCache(this);
 
-		LogoHelper.initDiskCachePath(this);
-		blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
+		// LogoHelper.initDiskCachePath(this);
+		// blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
 
 		ShortSiegelInfo siegel_short_info = SiegelklarheitApplication
 				.getCurrentSiegel();
@@ -103,9 +103,9 @@ import android.widget.Toast;
 		mainLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		scrollView = (ScrollView) findViewById(R.id.details_scroll_view);
 		scrollContainer = (LinearLayout) findViewById(R.id.details_scroll_container);
-		logoViewContainer = (LinearLayout) findViewById(R.id.logo_view_container);
+		//logoViewContainer = (LinearLayout) findViewById(R.id.logo_view_container);
 		ratingView = (LinearLayout) findViewById(R.id.rating_view);
-		logoImageView = (ImageView) findViewById(R.id.logo_view);
+		//logoImageView = (ImageView) findViewById(R.id.logo_view);
 
 		setMainDisplay(siegel_short_info);
 
@@ -169,14 +169,15 @@ import android.widget.Toast;
 				getResources().getIdentifier(
 						STRING + rating.getDescriptionIdentifier(), null,
 						getPackageName())));
-
+/*
 		Bitmap image = LogoHelper.getFromMemoryCache(siegel);
 		if (image != null) {
-			logoImageView.setImageBitmap(image);
+                    //logoImageView.setImageBitmap(image);
 		} else {
 			LoadSiegelLogoTask logo_task = new LoadSiegelLogoTask();
 			logo_task.execute(siegel);
 		}
+*/
 	}
 
 	/* menu */
@@ -292,26 +293,6 @@ import android.widget.Toast;
 	}
 
 	/* internal classes */
-
-	private class LoadSiegelLogoTask extends LogoLoaderTask {
-
-		private boolean gotImage = false;
-
-		@Override
-		protected void onProgressUpdate(Bitmap... progress) {
-			logoImageView.setImageBitmap(progress[0]);
-			gotImage = true;
-		}
-
-		protected void onPostExecute(Void result) {
-			if (isCancelled()) {
-				return;
-			}
-			if (!gotImage) {
-				logoImageView.setImageDrawable(blankLogo);
-			}
-		}
-	}
 
 	private class LoadFullInfoTask extends AsyncTask<Integer, Void, SiegelInfo> {
 
