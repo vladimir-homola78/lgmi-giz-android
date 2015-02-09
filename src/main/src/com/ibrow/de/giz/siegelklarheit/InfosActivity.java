@@ -11,7 +11,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 
-import android.util.Log;
 
 /**
  * Activity that shows "weiter infos".
@@ -23,33 +22,19 @@ public class InfosActivity extends Activity {
     protected Button startTourBtn;
 
     protected NavDrawHelper navDraw;
-
-    private IdentifeyeAPIInterface api;
+    private IdentifeyeAPIInterface api;    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_infos);
 
         SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
         api = app.getAPI();
-        api.initDiskCache(this);
-
-                
+        api.initDiskCache(this);        
         
-        setContentView(R.layout.activity_infos);
-
         WebView html_view=(WebView) findViewById(R.id.info_webview);
-        // WebView.setWebContentsDebuggingEnabled(true); <- needs API 19
-
-        // @todo Should be converted to a helper class 
-        html_view.getSettings().setJavaScriptEnabled(true);
-        html_view.getSettings().setDomStorageEnabled(true);
-        html_view.getSettings().setAppCacheMaxSize(1024*1024*8);
-        html_view.getSettings().setAppCachePath("/data/data/"+ getPackageName() +"/cache");        
-        html_view.getSettings().setAllowFileAccess(true);
-        html_view.getSettings().setAppCacheEnabled(true);        
-        html_view.loadUrl(api.getWebviewBaseURL()+"webviews/weitere-infos");
-        //html_view.loadUrl("file:///android_asset/html/weitere-infos.html");
+        html_view.loadUrl(api.getWebviewBaseURL()+"webviews/weitere-infos");        
 
         startTourBtn = (Button) findViewById(R.id.start_tour_btn);
         startTourBtn.setOnClickListener( new ButtonListener() );

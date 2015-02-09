@@ -87,4 +87,7 @@ Mehr erfahren Sie auf unserer Webseite:</string>
 
     <string name="crash_toast_text">Crashed! Report Sent</string>
 
+
+    <string name="directory">/data/data/</string>
+
 </resources>

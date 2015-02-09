@@ -8,14 +8,14 @@ import android.util.Log;
 
 import java.util.List;
 
-import org.acra.*;
-import org.acra.annotation.*;
+//import org.acra.*;
+//import org.acra.annotation.*;
 import android.widget.Toast;
 
-@ReportsCrashes(formKey = "", // will not be used
-                mailTo = "rob@ibrow.com",
-                mode = ReportingInteractionMode.TOAST,
-                resToastText = R.string.crash_toast_text)
+//@ReportsCrashes(formKey = "", // will not be used
+//                mailTo = "rob@ibrow.com",
+//                mode = ReportingInteractionMode.TOAST,
+//                resToastText = R.string.crash_toast_text)
 
                 
 /**
@@ -30,7 +30,7 @@ public class SiegelklarheitApplication extends Application {
       super.onCreate();
       
       // The following line triggers the initialization of ACRA
-      ACRA.init(this);
+//      ACRA.init(this);
     }
   
     private static IdentifeyeAPIInterface identifyAPI;
