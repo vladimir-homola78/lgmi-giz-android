@@ -52,7 +52,7 @@ import android.widget.Toast;
 	protected ScrollView scrollView;
 	protected LinearLayout scrollContainer;
     //protected LinearLayout logoViewContainer;
-	protected LinearLayout ratingView;
+    //protected LinearLayout ratingView;
     //protected ImageView logoImageView;
 	protected WebView htmlView;
 
@@ -104,19 +104,24 @@ import android.widget.Toast;
 		scrollView = (ScrollView) findViewById(R.id.details_scroll_view);
 		scrollContainer = (LinearLayout) findViewById(R.id.details_scroll_container);
 		//logoViewContainer = (LinearLayout) findViewById(R.id.logo_view_container);
-		ratingView = (LinearLayout) findViewById(R.id.rating_view);
+		//ratingView = (LinearLayout) findViewById(R.id.rating_view);
 		//logoImageView = (ImageView) findViewById(R.id.logo_view);
 
 		setMainDisplay(siegel_short_info);
 
 		// htmlView.loadUrl("file:///android_asset/loading.html");
 
+                new LoadFullInfoTask(api).execute(new Integer(siegel_short_info
+                                                              .getId()));
+
+                /*
 		if (siegel_short_info.getRating() != SiegelRating.UNKNOWN
 				&& siegel_short_info.getRating() != SiegelRating.NONE) {
 			// only load full infos if there's more infos to fetch!
 			new LoadFullInfoTask(api).execute(new Integer(siegel_short_info
 					.getId()));
 		}
+                */
 
 		((Button) findViewById(R.id.no_infos_show_list_btn))
 				.setOnClickListener(new ButtonListener());
@@ -144,10 +149,12 @@ import android.widget.Toast;
 		currentNavTitle = siegel.getName();
 
 		SiegelRating rating = siegel.getRating();
+                /*
 		View rating_holder = (View) findViewById(R.id.rating_view);
 
 		rating_holder.setBackgroundColor(rating.getColor());
-
+                */
+                /*
 		if (rating == SiegelRating.UNKNOWN || rating == SiegelRating.NONE) {
 			htmlView.setVisibility(View.GONE);
 			((LinearLayout) findViewById(R.id.no_infos_holder))
@@ -157,18 +164,19 @@ import android.widget.Toast;
 						.setVisibility(View.GONE);
 			}
 		}
+                */
 
-		ImageView rating_image_view = (ImageView) findViewById(R.id.rating_symbol_image);
-		rating_image_view.setImageDrawable(getResources().getDrawable(
-				getResources().getIdentifier(
-						DRAWABLE + rating.getImageIdentifier(), null,
-						getPackageName())));
+		// ImageView rating_image_view = (ImageView) findViewById(R.id.rating_symbol_image);
+		// rating_image_view.setImageDrawable(getResources().getDrawable(
+		// 		getResources().getIdentifier(
+		// 				DRAWABLE + rating.getImageIdentifier(), null,
+		// 				getPackageName())));
 
-		TextView rating_text_view = (TextView) findViewById(R.id.rating_symbol_text);
-		rating_text_view.setText(getResources().getText(
-				getResources().getIdentifier(
-						STRING + rating.getDescriptionIdentifier(), null,
-						getPackageName())));
+		// TextView rating_text_view = (TextView) findViewById(R.id.rating_symbol_text);
+		// rating_text_view.setText(getResources().getText(
+		// 		getResources().getIdentifier(
+		// 				STRING + rating.getDescriptionIdentifier(), null,
+		// 				getPackageName())));
 /*
 		Bitmap image = LogoHelper.getFromMemoryCache(siegel);
 		if (image != null) {
@@ -252,13 +260,15 @@ import android.widget.Toast;
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null)
 				&& htmlView.canGoBack() && linkClicked) {
+		Log.v("Webview", "On Key Down pressed");
+                
 			htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(),
 					siegel.getDetails(), "text/html", "UTF-8", null);
 			linkClicked = false;
 			mainLayout.removeView(htmlView);
-			mainLayout.addView(scrollView, 0, new DrawerLayout.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-			scrollContainer.addView(htmlView, 2, new LinearLayout.LayoutParams(
+			//mainLayout.addView(scrollView, 0, new DrawerLayout.LayoutParams(
+			//		LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			scrollContainer.addView(htmlView, 0, new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			currentNavTitle = SiegelklarheitApplication
 					.getCurrentSiegel().getName();

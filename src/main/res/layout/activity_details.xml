@@ -19,35 +19,6 @@
             tools:context=".DetailsActivity" >
 
 
-            <LinearLayout
-                android:id="@+id/rating_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#888888"
-                android:minHeight="96dp"
-                android:orientation="horizontal"
-                android:paddingBottom="3dp"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="3dp" >
-
-                <ImageView
-                    android:id="@+id/rating_symbol_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:src="@drawable/blank_rating_symbol" />
-
-                <TextView
-                    android:id="@+id/rating_symbol_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingTop="3dp"
-                    android:text="[Unknown]"
-                    android:textColor="#ffffff"
-                    android:textSize="16dp" />
-            </LinearLayout>
-
             <WebView
                 android:id="@+id/details_webview"
                 android:layout_width="match_parent"
