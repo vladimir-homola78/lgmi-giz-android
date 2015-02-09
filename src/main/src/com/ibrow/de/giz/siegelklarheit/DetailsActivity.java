@@ -52,9 +52,6 @@ public class DetailsActivity extends Activity {
 	protected DrawerLayout mainLayout;
 	protected ScrollView scrollView;
 	protected LinearLayout scrollContainer;
-    //protected LinearLayout logoViewContainer;
-    //protected LinearLayout ratingView;
-    //protected ImageView logoImageView;
 	protected WebView htmlView;
 
 	private ShareActionProvider shareActionProvider;
@@ -75,9 +72,6 @@ public class DetailsActivity extends Activity {
 		SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
 		api = app.getAPI();
 		api.initDiskCache(this);
-
-		// LogoHelper.initDiskCachePath(this);
-		// blankLogo = getResources().getDrawable(R.drawable.blank_label_logo);
 
 		ShortSiegelInfo siegel_short_info = SiegelklarheitApplication
 				.getCurrentSiegel();
@@ -105,28 +99,8 @@ public class DetailsActivity extends Activity {
 		mainLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		scrollView = (ScrollView) findViewById(R.id.details_scroll_view);
 		scrollContainer = (LinearLayout) findViewById(R.id.details_scroll_container);
-		//logoViewContainer = (LinearLayout) findViewById(R.id.logo_view_container);
-		//ratingView = (LinearLayout) findViewById(R.id.rating_view);
-		//logoImageView = (ImageView) findViewById(R.id.logo_view);
 
 		setMainDisplay(siegel_short_info);
-
-		// htmlView.loadUrl("file:///android_asset/loading.html");
-
-                new LoadFullInfoTask(api).execute(new Integer(siegel_short_info
-                                                              .getId()));
-
-                /*
-		if (siegel_short_info.getRating() != SiegelRating.UNKNOWN
-				&& siegel_short_info.getRating() != SiegelRating.NONE) {
-			// only load full infos if there's more infos to fetch!
-			new LoadFullInfoTask(api).execute(new Integer(siegel_short_info
-					.getId()));
-		}
-                */
-
-		((Button) findViewById(R.id.no_infos_show_list_btn))
-				.setOnClickListener(new ButtonListener());
 
 		navDraw = new NavDrawHelper(this,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
@@ -146,48 +120,55 @@ public class DetailsActivity extends Activity {
 	}
 
 	private void setMainDisplay(final Siegel siegel) {
+            String detailsUrl = api.getWebviewBaseURL()+"webviews/details/"+siegel.getId();
 
-		setTitle(siegel.getName());
-		currentNavTitle = siegel.getName();
+            htmlView.loadUrl(detailsUrl);
+            htmlView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view,
+                                                            String url) {
+                        Log.e("WEB_PAGE_URL", url);
+                        if (url.startsWith(api.getWebviewBaseURL())) {
+                            Log.v("DETAILS PAGE URL", url);
+                            view.loadUrl(url);
+                            return false;
+                        }
+                        return true;
+                    }
 
-		SiegelRating rating = siegel.getRating();
-                /*
-		View rating_holder = (View) findViewById(R.id.rating_view);
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        Log.e("DETAILS PAGE TITLE", view.getTitle());                        
+                        scrollView.scrollTo(0, 0);
+                        view.scrollTo(0, 0);
 
-		rating_holder.setBackgroundColor(rating.getColor());
-                */
-                /*
-		if (rating == SiegelRating.UNKNOWN || rating == SiegelRating.NONE) {
-			htmlView.setVisibility(View.GONE);
-			((LinearLayout) findViewById(R.id.no_infos_holder))
-					.setVisibility(View.VISIBLE);
-			if (rating == SiegelRating.UNKNOWN) {
-				((ImageView) findViewById(R.id.rating_symbol_image))
-						.setVisibility(View.GONE);
-			}
-		}
-                */
+                        // Note: we are now setting the title using the webview page title
+                        setTitle(view.getTitle());
+                    }
+                });
 
-		// ImageView rating_image_view = (ImageView) findViewById(R.id.rating_symbol_image);
-		// rating_image_view.setImageDrawable(getResources().getDrawable(
-		// 		getResources().getIdentifier(
-		// 				DRAWABLE + rating.getImageIdentifier(), null,
-		// 				getPackageName())));
-
-		// TextView rating_text_view = (TextView) findViewById(R.id.rating_symbol_text);
-		// rating_text_view.setText(getResources().getText(
-		// 		getResources().getIdentifier(
-		// 				STRING + rating.getDescriptionIdentifier(), null,
-		// 				getPackageName())));
-/*
-		Bitmap image = LogoHelper.getFromMemoryCache(siegel);
-		if (image != null) {
-                    //logoImageView.setImageBitmap(image);
-		} else {
-			LoadSiegelLogoTask logo_task = new LoadSiegelLogoTask();
-			logo_task.execute(siegel);
-		}
-*/
+            // @TODO - we need to set the "have share" boolean here
+            // this is what it was in the previous version
+            /*
+            String url = result.getShareURL();
+				if (!url.isEmpty()) {
+					Intent intent = new Intent(Intent.ACTION_SEND);
+					intent.setType("text/plain");
+					intent.putExtra(Intent.EXTRA_SUBJECT, result.getName());
+					intent.putExtra(Intent.EXTRA_TEXT, url);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+					// race condition!
+					if (shareActionProvider != null) { // avoid race condition
+														// if we reach this
+														// point before menu
+														// created
+						shareActionProvider.setShareIntent(intent);
+					}
+					haveShareURL = true;
+				} else {
+					invalidateOptionsMenu();
+				}
+            */
 	}
 
 	/* menu */
@@ -251,51 +232,18 @@ public class DetailsActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * We trap the back key here for the web view.
-	 * 
-	 * @param keyCode
-	 * @param event
-	 * @return
-	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null)
-                    && linkClicked) {
-
-			if (htmlView.canGoBack()) {
-				
-				htmlView.goBack();
-				return true;
-				
-			} else {
-				htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(),
-						siegel.getDetails(), "text/html", "UTF-8", null);
-				linkClicked = false;
-				mainLayout.removeView(htmlView);
-				mainLayout.addView(scrollView, 0,
-						new DrawerLayout.LayoutParams(
-								LayoutParams.MATCH_PARENT,
-								LayoutParams.MATCH_PARENT));
-				scrollContainer.addView(htmlView, 2,
-						new LinearLayout.LayoutParams(
-								LayoutParams.MATCH_PARENT,
-								LayoutParams.WRAP_CONTENT));
-				currentNavTitle = SiegelklarheitApplication.getCurrentSiegel()
-						.getName();
-				new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						scrollView.scrollTo(0, 0);
-						htmlView.scrollTo(0, 0);
-						setTitle(currentNavTitle);
-					}
-				}, 100);
-				return true;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    /**
+     * Handles the back button
+     **/
+    @Override
+    public void onBackPressed() {
+        Log.v("DETAILS", "back pressed");         
+        if(htmlView.canGoBack()) {
+            htmlView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 	/**
 	 * Starts the search activity.
@@ -313,102 +261,10 @@ public class DetailsActivity extends Activity {
 		startActivity(intent);
 		finish();
 	}
-
 	/* internal classes */
 
-	private class LoadFullInfoTask extends AsyncTask<Integer, Void, SiegelInfo> {
-
-		IdentifeyeAPIInterface api;
-		Exception error;
-
-		LoadFullInfoTask(final IdentifeyeAPIInterface api) {
-			this.api = api;
-		}
-
-		protected SiegelInfo doInBackground(Integer... siegel_id) {
-			SiegelInfo siegel = null;
-			try {
-				siegel = api.getInfo(siegel_id[0].intValue());
-			} catch (Exception e) {
-				Log.e("LoadFullInfoTask-API", e.getMessage());
-				error = e;
-			}
-			return siegel;
-		}
-
-		protected void onPostExecute(SiegelInfo result) {
-			if (isCancelled()) {
-				Log.v("LoadFullInfoTask", "Task cancelled");
-				return;
-			}
-			if (result != null) {
-				Log.v("LoadFullInfoTask", "got result for id " + result.getId());
-				siegel = result;
-				Log.e("WEB_PAGE_URL", api.getWebviewBaseURL());
-				htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(),
-						result.getDetails(), "text/html", "UTF-8", null);
-				htmlView.setWebViewClient(new WebViewClient() {
-					@Override
-					public boolean shouldOverrideUrlLoading(WebView view,
-							String url) {
-						Log.e("WEB_PAGE_URL", url);
-						if (url.startsWith(api.getWebviewBaseURL())) { // internal
-																		// url,
-																		// eg.
-																		// score
-							view.loadUrl(url);
-							if (linkClicked == false) {
-								linkClicked = true;
-								scrollContainer.removeView(htmlView);
-								mainLayout.removeView(scrollView);
-								mainLayout.addView(htmlView, 0,
-										new DrawerLayout.LayoutParams(
-												LayoutParams.MATCH_PARENT,
-												LayoutParams.MATCH_PARENT));
-								new Handler().postDelayed(new Runnable() {
-									@Override
-									public void run() {
-										scrollView.scrollTo(0, 0);
-										htmlView.scrollTo(0, 0);
-									}
-								}, 100);
-							}
-							return false;
-						}
-						return true; // external url, open in browser
-					}
-
-					@Override
-					public void onPageFinished(WebView view, String url) {
-						scrollView.scrollTo(0, 0);
-						view.scrollTo(0, 0);
-						setTitle(currentNavTitle);
-					}
-				});
-				// Log.d("LoadFullInfoTask", "Html:"+result.getDetails());
-				String url = result.getShareURL();
-				if (!url.isEmpty()) {
-					Intent intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("text/plain");
-					intent.putExtra(Intent.EXTRA_SUBJECT, result.getName());
-					intent.putExtra(Intent.EXTRA_TEXT, url);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-					// race condition!
-					if (shareActionProvider != null) { // avoid race condition
-														// if we reach this
-														// point before menu
-														// created
-						shareActionProvider.setShareIntent(intent);
-					}
-					haveShareURL = true;
-				} else {
-					invalidateOptionsMenu();
-				}
-				return;
-			}
-			Log.e("LoadFullInfoTask", "Got null result");
-		}
-	}
+            
+        
 
 	private final class ButtonListener implements View.OnClickListener {
 
@@ -448,17 +304,25 @@ public class DetailsActivity extends Activity {
 
 		@JavascriptInterface
 		public void onTapScoreButton(String title) {
-			currentNavTitle = title; // re-set current nav title in order to
-										// update nav title when loading is
-										// finished.
-			//
+                    currentNavTitle = title;
+
+                    /* This isn't working
+                       The idea behind this is to open the webview as a new activity. 
+                       but I am getting a NullPointerException
+                    */
+                    Log.v("DETAILS", "ON TAP SCORE VERSION");
+                    /*
+                    Intent intent = new Intent (mContext, WebViewActivity.class);
+                    intent.putExtra("url", "http://api.siegelklarheit.de/webviews/details/10/score/System");                  
+                    startActivity(intent);
+                    */
 		}
 
 		@JavascriptInterface
 		public void onTapCompareButton(String title) {
-			String originTitle = SiegelklarheitApplication.getCurrentSiegel()
-					.getName();
-			currentNavTitle = title + " " + originTitle;
+                    //String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+                    //			.getName();
+                    //	currentNavTitle = title + " " + originTitle;
 		}
 
 		@JavascriptInterface
@@ -471,9 +335,9 @@ public class DetailsActivity extends Activity {
 		@JavascriptInterface
 		public void onTapItemInCompareList(String title) {
 
-			String originTitle = SiegelklarheitApplication.getCurrentSiegel()
-					.getName();
-			currentNavTitle = title;
+                    //String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+                            //		.getName();
+			//currentNavTitle = title;
 
 		}
 	}

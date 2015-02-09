@@ -4,9 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.WebView;
+import android.util.Log;
 
 @SuppressLint({ "NewApi", "SetJavaScriptEnabled" }) public class SiegelWebView extends WebView {
-
+    
 	@SuppressWarnings("deprecation")
 	public SiegelWebView(Context context) {
 		super(context);
@@ -31,12 +32,12 @@ import android.webkit.WebView;
 	
 	@SuppressWarnings("deprecation")
 	private void init(Context context) {
-		getSettings().setJavaScriptEnabled(true);
-        getSettings().setDomStorageEnabled(true);
-        getSettings().setAppCacheMaxSize(1024*1024*8);
-        getSettings().setAppCachePath(context.getString(R.string.directory)+context.getPackageName()+"/cache");        
-        getSettings().setAllowFileAccess(true);
-        getSettings().setAppCacheEnabled(true);  
-	}
-
+            Log.v("WEBVIEW", "Loading subclassed webview");
+            getSettings().setJavaScriptEnabled(true);
+            getSettings().setDomStorageEnabled(true);
+            getSettings().setAppCacheMaxSize(1024*1024*8);
+            getSettings().setAppCachePath(context.getString(R.string.directory)+context.getPackageName()+"/cache");        
+            getSettings().setAllowFileAccess(true);
+            getSettings().setAppCacheEnabled(true);  
+	}    
 }
