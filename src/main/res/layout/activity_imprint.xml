@@ -11,12 +11,12 @@
     tools:context="com.ibrow.de.giz.siegelklarheit.InfosActivity">
 
 
-    <WebView
+    <com.ibrow.de.giz.siegelklarheit.SiegelWebView
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:id="@+id/imprint_webview"
     >
-    </WebView>
+    </com.ibrow.de.giz.siegelklarheit.SiegelWebView>
 
 
 </FrameLayout>

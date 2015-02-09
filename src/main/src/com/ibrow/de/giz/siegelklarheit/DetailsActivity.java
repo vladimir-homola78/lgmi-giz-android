@@ -37,7 +37,8 @@ import android.widget.Toast;
  * 
  * @author Pete
  */
-@SuppressLint("SetJavaScriptEnabled") public class DetailsActivity extends Activity {
+@SuppressLint("SetJavaScriptEnabled")
+public class DetailsActivity extends Activity {
 
 	private IdentifeyeAPIInterface api;
 
@@ -63,6 +64,7 @@ import android.widget.Toast;
 
 	protected boolean linkClicked = false;
 	protected String currentNavTitle = "";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -139,7 +141,7 @@ import android.widget.Toast;
 	}
 
 	private void setMainDisplay(final Siegel siegel) {
-		
+
 		setTitle(siegel.getName());
 		currentNavTitle = siegel.getName();
 
@@ -250,26 +252,39 @@ import android.widget.Toast;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK) && (htmlView != null)
-				&& htmlView.canGoBack() && linkClicked) {
-			htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(),
-					siegel.getDetails(), "text/html", "UTF-8", null);
-			linkClicked = false;
-			mainLayout.removeView(htmlView);
-			mainLayout.addView(scrollView, 0, new DrawerLayout.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-			scrollContainer.addView(htmlView, 2, new LinearLayout.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-			currentNavTitle = SiegelklarheitApplication
-					.getCurrentSiegel().getName();
-			new Handler().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					scrollView.scrollTo(0, 0);
-					htmlView.scrollTo(0, 0);
-					setTitle(currentNavTitle);
-				}
-			}, 100);
-			return true;
+				&& linkClicked) {
+
+			if (htmlView.canGoBack()) {
+				
+				htmlView.goBack();
+				return true;
+				
+			} else {
+				htmlView.loadDataWithBaseURL(api.getWebviewBaseURL(),
+						siegel.getDetails(), "text/html", "UTF-8", null);
+				linkClicked = false;
+				mainLayout.removeView(htmlView);
+				mainLayout.addView(scrollView, 0,
+						new DrawerLayout.LayoutParams(
+								LayoutParams.MATCH_PARENT,
+								LayoutParams.MATCH_PARENT));
+				scrollContainer.addView(htmlView, 2,
+						new LinearLayout.LayoutParams(
+								LayoutParams.MATCH_PARENT,
+								LayoutParams.WRAP_CONTENT));
+				currentNavTitle = SiegelklarheitApplication.getCurrentSiegel()
+						.getName();
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						scrollView.scrollTo(0, 0);
+						htmlView.scrollTo(0, 0);
+						setTitle(currentNavTitle);
+					}
+				}, 100);
+				return true;
+			}
+
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -407,69 +422,71 @@ import android.widget.Toast;
 		}
 	}
 
-    private final class ButtonListener implements View.OnClickListener{
+	private final class ButtonListener implements View.OnClickListener {
 
-        /**
-         * Starts the tour by calling showList()
-         * @see #showList()
-         * @param v
-         */
-        public void onClick(View v) {
-            showList();
-        }
+		/**
+		 * Starts the tour by calling showList()
+		 * 
+		 * @see #showList()
+		 * @param v
+		 */
+		public void onClick(View v) {
+			showList();
+		}
 
-    }
-    private class WebAppInterface {
-    	 private final Context mContext;
+	}
 
-        /** Instantiate the interface and set the context */
-        WebAppInterface(Context c) {
-            mContext = c;
-        }
+	private class WebAppInterface {
+		private final Context mContext;
 
-        /** Show a toast from the web page */
-        @JavascriptInterface
-        public void showToast(String toast) {
-        	
-            Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
-            setTitle(toast);
-            
-        }
-        @JavascriptInterface
-        public void onTapTabItem(String title)
-        {
-        	setTitle(title);
-        }
-        @JavascriptInterface
-        public void onTapScoreButton(String title)
-        {
-        	currentNavTitle = title; // re-set current nav title in order to update nav title when loading is finished.
-//  
-        }
-        @JavascriptInterface
-        public void onTapCompareButton(String title)
-        {
-        	String originTitle = SiegelklarheitApplication
-			.getCurrentSiegel().getName();
-        	currentNavTitle = title+" "+originTitle;
-        }
-        
-        @JavascriptInterface
-        public void onTapExternalLink(String link)
-        {
+		/** Instantiate the interface and set the context */
+		WebAppInterface(Context c) {
+			mContext = c;
+		}
+
+		/** Show a toast from the web page */
+		@JavascriptInterface
+		public void showToast(String toast) {
+
+			Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+			setTitle(toast);
+
+		}
+
+		@JavascriptInterface
+		public void onTapTabItem(String title) {
+			setTitle(title);
+		}
+
+		@JavascriptInterface
+		public void onTapScoreButton(String title) {
+			currentNavTitle = title; // re-set current nav title in order to
+										// update nav title when loading is
+										// finished.
+			//
+		}
+
+		@JavascriptInterface
+		public void onTapCompareButton(String title) {
+			String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+					.getName();
+			currentNavTitle = title + " " + originTitle;
+		}
+
+		@JavascriptInterface
+		public void onTapExternalLink(String link) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setData(Uri.parse(link));
 			startActivity(intent);
-        }
-        
-        @JavascriptInterface
-        public void onTapItemInCompareList(String title)
-        {
+		}
 
-        	String originTitle = SiegelklarheitApplication
-			.getCurrentSiegel().getName();
-        	currentNavTitle = title;
+		@JavascriptInterface
+		public void onTapItemInCompareList(String title) {
 
-        }
-    }
+			String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+					.getName();
+			currentNavTitle = title;
+
+		}
+	}
 }
