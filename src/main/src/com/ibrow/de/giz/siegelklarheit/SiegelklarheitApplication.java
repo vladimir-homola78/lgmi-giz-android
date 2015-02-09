@@ -8,6 +8,16 @@ import android.util.Log;
 
 import java.util.List;
 
+import org.acra.*;
+import org.acra.annotation.*;
+import android.widget.Toast;
+
+@ReportsCrashes(formKey = "", // will not be used
+                mailTo = "rob@ibrow.com",
+                mode = ReportingInteractionMode.TOAST,
+                resToastText = R.string.crash_toast_text)
+
+                
 /**
  * Sub class of Application to provide static access to the API across activities.
  *
@@ -15,6 +25,14 @@ import java.util.List;
  */
 public class SiegelklarheitApplication extends Application {
 
+    @Override
+    public void onCreate() {
+      super.onCreate();
+      
+      // The following line triggers the initialization of ACRA
+      ACRA.init(this);
+    }
+  
     private static IdentifeyeAPIInterface identifyAPI;
 
     /**

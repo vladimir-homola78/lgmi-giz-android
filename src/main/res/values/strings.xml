@@ -85,4 +85,6 @@ Mehr erfahren Sie auf unserer Webseite:</string>
     <string name="tour_desc_3">Vergleichen Sie Siegel miteinander</string>
 
 
+    <string name="crash_toast_text">Crashed! Report Sent</string>
+
 </resources>
