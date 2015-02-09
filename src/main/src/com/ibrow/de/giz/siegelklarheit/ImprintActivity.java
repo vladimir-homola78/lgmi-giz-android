@@ -18,15 +18,19 @@ import android.webkit.WebView;
 public class ImprintActivity extends Activity {
 
     protected NavDrawHelper navDraw;
+    private IdentifeyeAPIInterface api;    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imprint);
-        
+
+        SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
+        api = app.getAPI();
+        api.initDiskCache(this);        
+
         WebView html_view=(WebView) findViewById(R.id.imprint_webview);
-//        html_view.getSettings().setJavaScriptEnabled(true);
-        html_view.loadUrl("file:///android_asset/html/impressum.html");
+        html_view.loadUrl(api.getWebviewBaseURL()+"webviews/impressum");        
         navDraw = new NavDrawHelper(this, (DrawerLayout) findViewById(R.id.drawer_layout) );
     }
 

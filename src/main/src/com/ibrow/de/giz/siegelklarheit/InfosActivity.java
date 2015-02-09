@@ -22,17 +22,20 @@ public class InfosActivity extends Activity {
     protected Button startTourBtn;
 
     protected NavDrawHelper navDraw;
+    private IdentifeyeAPIInterface api;    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_infos);
 
+        SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
+        api = app.getAPI();
+        api.initDiskCache(this);        
+        
         WebView html_view=(WebView) findViewById(R.id.info_webview);
-        // WebView.setWebContentsDebuggingEnabled(true); <- needs API 19
-//        html_view.getSettings().setJavaScriptEnabled(true);
+        html_view.loadUrl(api.getWebviewBaseURL()+"webviews/weitere-infos");        
 
-        html_view.loadUrl("file:///android_asset/html/weitere-infos.html");
         startTourBtn = (Button) findViewById(R.id.start_tour_btn);
         startTourBtn.setOnClickListener( new ButtonListener() );
 
