@@ -45,7 +45,7 @@ public class DetailsActivity extends Activity {
 	private static final String DRAWABLE = "@drawable/";
 	private static final String STRING = "@string/";
 
-    //protected Drawable blankLogo;
+	// protected Drawable blankLogo;
 
 	protected SiegelInfo siegel;
 
@@ -62,16 +62,17 @@ public class DetailsActivity extends Activity {
 	protected boolean linkClicked = false;
 	protected String currentNavTitle = "";
 
-    protected String shareUrl;
-    
+	protected String shareUrl = "";
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 
-                // when we first start - there is no share url
-                shareUrl = null;
-                
+		// when we first start - there is no share url
+		shareUrl = "";
+
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
@@ -125,59 +126,50 @@ public class DetailsActivity extends Activity {
 	}
 
 	private void setMainDisplay(final Siegel siegel) {
-            String detailsUrl = api.getWebviewBaseURL()+"webviews/details/"+siegel.getId();
+		String detailsUrl = api.getWebviewBaseURL() + "webviews/details/"
+				+ siegel.getId();
 
-            htmlView.loadUrl(detailsUrl);
-            htmlView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public boolean shouldOverrideUrlLoading(WebView view,
-                                                            String url) {
-                        Log.e("WEB_PAGE_URL", url);
-                        if (url.startsWith(api.getWebviewBaseURL())) {
-                            Log.v("DETAILS PAGE URL", url);
-                            view.loadUrl(url);
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        Log.e("DETAILS PAGE TITLE", view.getTitle());                        
-                        scrollView.scrollTo(0, 0);
-                        view.scrollTo(0, 0);
-
-                        // Note: we are now setting the title using the webview page title
-                        setTitle(view.getTitle());
-                        
-                        htmlView.loadUrl("javascript: window.Android.getShareUrl($(\"meta[property='og:url']\").attr(\"content\"))");                        
-                    }
-                });
-
-            
-
-            // @TODO - we need to set the "have share" boolean here
-            // this is what it was in the previous version
-            /*
-            String url = result.getShareURL();
-				if (!url.isEmpty()) {
-					Intent intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("text/plain");
-					intent.putExtra(Intent.EXTRA_SUBJECT, result.getName());
-					intent.putExtra(Intent.EXTRA_TEXT, url);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-					// race condition!
-					if (shareActionProvider != null) { // avoid race condition
-														// if we reach this
-														// point before menu
-														// created
-						shareActionProvider.setShareIntent(intent);
-					}
-					haveShareURL = true;
-				} else {
-					invalidateOptionsMenu();
+		htmlView.loadUrl(detailsUrl);
+		htmlView.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				Log.e("WEB_PAGE_URL", url);
+				if (url.startsWith(api.getWebviewBaseURL())) {
+					Log.v("DETAILS PAGE URL", url);
+					view.loadUrl(url);
+					return false;
 				}
-            */
+				return true;
+			}
+
+			@Override
+			public void onPageFinished(WebView view, String url) {
+
+				Log.e("DETAILS PAGE TITLE", view.getTitle());
+				scrollView.scrollTo(0, 0);
+				view.scrollTo(0, 0);
+				
+				// Note: we are now setting the title using the webview page
+				// title
+				currentNavTitle = view.getTitle();
+				setTitle(currentNavTitle);
+				htmlView.loadUrl("javascript: window.Android.getShareUrl($(\"meta[property='og:url']\").attr(\"content\"))");
+			}
+		});
+
+		// @TODO - we need to set the "have share" boolean here
+		// this is what it was in the previous version
+		/*
+		 * String url = result.getShareURL(); if (!url.isEmpty()) { Intent
+		 * intent = new Intent(Intent.ACTION_SEND);
+		 * intent.setType("text/plain"); intent.putExtra(Intent.EXTRA_SUBJECT,
+		 * result.getName()); intent.putExtra(Intent.EXTRA_TEXT, url);
+		 * intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET); // race
+		 * condition! if (shareActionProvider != null) { // avoid race condition
+		 * // if we reach this // point before menu // created
+		 * shareActionProvider.setShareIntent(intent); } haveShareURL = true; }
+		 * else { invalidateOptionsMenu(); }
+		 */
 	}
 
 	/* menu */
@@ -191,11 +183,11 @@ public class DetailsActivity extends Activity {
 				.getActionProvider();
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		if (haveShareURL && siegel != null) { // already fetched (e.g. memory
+		if (haveShareURL) { // already fetched (e.g. memory
 												// cache) before menu created
 												// here
-			intent.putExtra(Intent.EXTRA_SUBJECT, siegel.getName());
-			intent.putExtra(Intent.EXTRA_TEXT, siegel.getShareURL());
+			intent.putExtra(Intent.EXTRA_SUBJECT, currentNavTitle);
+			intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		}
 
@@ -241,18 +233,18 @@ public class DetailsActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-    /**
-     * Handles the back button
-     **/
-    @Override
-    public void onBackPressed() {
-        Log.v("DETAILS", "back pressed");         
-        if(htmlView.canGoBack()) {
-            htmlView.goBack();
-        } else {
-            super.onBackPressed();
-        }
-    }
+	/**
+	 * Handles the back button
+	 **/
+	@Override
+	public void onBackPressed() {
+		Log.v("DETAILS", "back pressed");
+		if (htmlView.canGoBack()) {
+			htmlView.goBack();
+		} else {
+			super.onBackPressed();
+		}
+	}
 
 	/**
 	 * Starts the search activity.
@@ -265,15 +257,12 @@ public class DetailsActivity extends Activity {
 	 */
 	protected final void showList() {
 
-		Log.e("Button", "Button");
 		Intent intent = new Intent(this, SearchActivity.class);
 		startActivity(intent);
 		finish();
 	}
-	/* internal classes */
 
-            
-        
+	/* internal classes */
 
 	private final class ButtonListener implements View.OnClickListener {
 
@@ -292,7 +281,7 @@ public class DetailsActivity extends Activity {
 	private class WebAppInterface {
 		private final Context mContext;
 
-            private String shareUrl;
+		private String shareUrl;
 
 		/** Instantiate the interface and set the context */
 		WebAppInterface(Context c) {
@@ -315,25 +304,26 @@ public class DetailsActivity extends Activity {
 
 		@JavascriptInterface
 		public void onTapScoreButton(String title) {
-                    currentNavTitle = title;
+//			currentNavTitle = title;
 
-                    /* This isn't working
-                       The idea behind this is to open the webview as a new activity. 
-                       but I am getting a NullPointerException
-                    */
-                    Log.v("DETAILS", "ON TAP SCORE VERSION");
-                    /*
-                    Intent intent = new Intent (mContext, WebViewActivity.class);
-                    intent.putExtra("url", "http://api.siegelklarheit.de/webviews/details/10/score/System");                  
-                    startActivity(intent);
-                    */
+			/*
+			 * This isn't working The idea behind this is to open the webview as
+			 * a new activity. but I am getting a NullPointerException
+			 */
+			Log.v("DETAILS", "ON TAP SCORE VERSION");
+			/*
+			 * Intent intent = new Intent (mContext, WebViewActivity.class);
+			 * intent.putExtra("url",
+			 * "http://api.siegelklarheit.de/webviews/details/10/score/System");
+			 * startActivity(intent);
+			 */
 		}
 
 		@JavascriptInterface
 		public void onTapCompareButton(String title) {
-                    //String originTitle = SiegelklarheitApplication.getCurrentSiegel()
-                    //			.getName();
-                    //	currentNavTitle = title + " " + originTitle;
+			// String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+			// .getName();
+			// currentNavTitle = title + " " + originTitle;
 		}
 
 		@JavascriptInterface
@@ -346,26 +336,39 @@ public class DetailsActivity extends Activity {
 		@JavascriptInterface
 		public void onTapItemInCompareList(String title) {
 
-                    //String originTitle = SiegelklarheitApplication.getCurrentSiegel()
-                            //		.getName();
-			//currentNavTitle = title;
+			// String originTitle = SiegelklarheitApplication.getCurrentSiegel()
+			// .getName();
+			// currentNavTitle = title;
 
 		}
 
-            /**
-             * Share URL 
-             * functions This is called within the webview onPageFinished(), 
-             * passing the share URL of the page - if there is one.
-             **/
-            @JavascriptInterface
-            public void getShareUrl(String url) {
-                if(!url.equals("undefined")) {
-                    shareUrl = url;
-                }
-                else {
-                    shareUrl = null;                        
-                }
-                Log.v("ROB", "share url = "+shareUrl);                
-            }
- 	}
+		/**
+		 * Share URL functions This is called within the webview
+		 * onPageFinished(), passing the share URL of the page - if there is
+		 * one.
+		 **/
+		@JavascriptInterface
+		public void getShareUrl(String url) {
+			if (!url.equals("undefined")) {
+				shareUrl = url;
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_SUBJECT, currentNavTitle);
+				intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+				// race condition!
+				if (shareActionProvider != null) { // avoid race condition
+													// if we reach this
+													// point before menu
+													// created
+					shareActionProvider.setShareIntent(intent);
+				}
+				haveShareURL = true;
+			} else {
+				shareUrl = "";
+				invalidateOptionsMenu();
+			}
+			Log.e("ROB", "share url = " + shareUrl);
+		}
+	}
 }
