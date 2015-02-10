@@ -144,8 +144,12 @@ public class DetailsActivity extends Activity {
 
                         // Note: we are now setting the title using the webview page title
                         setTitle(view.getTitle());
+                        
+                        htmlView.loadUrl("javascript: window.Android.setShareUrl($(\"meta[property='og:url']\").attr(\"content\"))");                        
                     }
                 });
+
+            
 
             // @TODO - we need to set the "have share" boolean here
             // this is what it was in the previous version
@@ -283,6 +287,8 @@ public class DetailsActivity extends Activity {
 	private class WebAppInterface {
 		private final Context mContext;
 
+            private String shareUrl;
+
 		/** Instantiate the interface and set the context */
 		WebAppInterface(Context c) {
 			mContext = c;
@@ -340,5 +346,25 @@ public class DetailsActivity extends Activity {
 			//currentNavTitle = title;
 
 		}
+
+            /**
+             * Share URL 
+             * functions This is called within the webview onPageFinished(), 
+             * passing the share URL of the page - if there is one.
+             **/
+            @JavascriptInterface
+            public void getShareUrl(String url) {
+                if(!url.equals("undefined")) {
+                    this.shareUrl = url;
+                }
+                else {
+                    this.shareUrl = null;                        
+                }
+            }
+            // actually I have no idea how to get this data now.
+            // I need some way of the shareUrl being set so we can use it for the share functi
+            public String getShareUrl() {
+                return this.shareUrl;
+            }
 	}
 }
