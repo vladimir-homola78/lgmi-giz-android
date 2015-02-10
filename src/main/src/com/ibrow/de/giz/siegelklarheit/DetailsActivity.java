@@ -62,11 +62,16 @@ public class DetailsActivity extends Activity {
 	protected boolean linkClicked = false;
 	protected String currentNavTitle = "";
 
+    protected String shareUrl;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 
+                // when we first start - there is no share url
+                shareUrl = null;
+                
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		SiegelklarheitApplication app = (SiegelklarheitApplication) getApplicationContext();
@@ -145,7 +150,7 @@ public class DetailsActivity extends Activity {
                         // Note: we are now setting the title using the webview page title
                         setTitle(view.getTitle());
                         
-                        htmlView.loadUrl("javascript: window.Android.setShareUrl($(\"meta[property='og:url']\").attr(\"content\"))");                        
+                        htmlView.loadUrl("javascript: window.Android.getShareUrl($(\"meta[property='og:url']\").attr(\"content\"))");                        
                     }
                 });
 
@@ -355,16 +360,12 @@ public class DetailsActivity extends Activity {
             @JavascriptInterface
             public void getShareUrl(String url) {
                 if(!url.equals("undefined")) {
-                    this.shareUrl = url;
+                    shareUrl = url;
                 }
                 else {
-                    this.shareUrl = null;                        
+                    shareUrl = null;                        
                 }
+                Log.v("ROB", "share url = "+shareUrl);                
             }
-            // actually I have no idea how to get this data now.
-            // I need some way of the shareUrl being set so we can use it for the share functi
-            public String getShareUrl() {
-                return this.shareUrl;
-            }
-	}
+ 	}
 }
