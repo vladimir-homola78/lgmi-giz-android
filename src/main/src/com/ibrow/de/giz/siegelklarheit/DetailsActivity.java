@@ -62,7 +62,7 @@ public class DetailsActivity extends Activity {
 	protected boolean linkClicked = false;
 	protected String currentNavTitle = "";
 
-	protected String shareUrl = "";
+	protected String willSharedUrl = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class DetailsActivity extends Activity {
 		setContentView(R.layout.activity_details);
 
 		// when we first start - there is no share url
-		shareUrl = "";
+		willSharedUrl = "";
 
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -178,15 +178,19 @@ public class DetailsActivity extends Activity {
 		getMenuInflater().inflate(R.menu.menu_details, menu);
 
 		MenuItem shareItem = menu.findItem(R.id.action_share);
+		shareItem.setVisible(haveShareURL);
+
 		shareActionProvider = (ShareActionProvider) shareItem
 				.getActionProvider();
+
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		if (haveShareURL) { // already fetched (e.g. memory
 							// cache) before menu created
 							// here
 			intent.putExtra(Intent.EXTRA_SUBJECT, currentNavTitle);
-			intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+			Log.e("CREATE MENU", "share url = " + willSharedUrl);
+			intent.putExtra(Intent.EXTRA_TEXT, willSharedUrl);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		}
 
@@ -197,8 +201,6 @@ public class DetailsActivity extends Activity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem share = menu.findItem(R.id.action_share);
-		share.setEnabled(haveShareURL);
 		super.onPrepareOptionsMenu(menu);
 		return true;
 	}
@@ -280,8 +282,6 @@ public class DetailsActivity extends Activity {
 	private class WebAppInterface {
 		private final Context mContext;
 
-		private String shareUrl;
-
 		/** Instantiate the interface and set the context */
 		WebAppInterface(Context c) {
 			mContext = c;
@@ -349,11 +349,11 @@ public class DetailsActivity extends Activity {
 		@JavascriptInterface
 		public void getShareUrl(String url) {
 			if (!url.equals("undefined")) {
-				shareUrl = url;
+				willSharedUrl = url;
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_SUBJECT, currentNavTitle);
-				intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+				intent.putExtra(Intent.EXTRA_TEXT, willSharedUrl);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 				// race condition!
 				if (shareActionProvider != null) { // avoid race condition
@@ -364,18 +364,20 @@ public class DetailsActivity extends Activity {
 				}
 				haveShareURL = true;
 			} else {
-				shareUrl = "";
+				willSharedUrl = "";
 				haveShareURL = false;
 
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						DetailsActivity.this.invalidateOptionsMenu();
-
-					}
-				});
 			}
-			Log.e("ROB", "share url = " + shareUrl);
+			
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					DetailsActivity.this.invalidateOptionsMenu();
+
+				}
+			});
+			
+			Log.e("ROB", "share url = " + willSharedUrl);
 			Log.e("Vladimir", " have share url = " + haveShareURL);
 			Log.e("Vladimir", " current nav title = " + currentNavTitle);
 		}
