@@ -64,7 +64,6 @@ public class DetailsActivity extends Activity {
 
 	protected String shareUrl = "";
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -148,7 +147,7 @@ public class DetailsActivity extends Activity {
 				Log.e("DETAILS PAGE TITLE", view.getTitle());
 				scrollView.scrollTo(0, 0);
 				view.scrollTo(0, 0);
-				
+
 				// Note: we are now setting the title using the webview page
 				// title
 				currentNavTitle = view.getTitle();
@@ -184,8 +183,8 @@ public class DetailsActivity extends Activity {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		if (haveShareURL) { // already fetched (e.g. memory
-												// cache) before menu created
-												// here
+							// cache) before menu created
+							// here
 			intent.putExtra(Intent.EXTRA_SUBJECT, currentNavTitle);
 			intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -304,7 +303,7 @@ public class DetailsActivity extends Activity {
 
 		@JavascriptInterface
 		public void onTapScoreButton(String title) {
-//			currentNavTitle = title;
+			// currentNavTitle = title;
 
 			/*
 			 * This isn't working The idea behind this is to open the webview as
@@ -366,9 +365,19 @@ public class DetailsActivity extends Activity {
 				haveShareURL = true;
 			} else {
 				shareUrl = "";
-				invalidateOptionsMenu();
+				haveShareURL = false;
+
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						DetailsActivity.this.invalidateOptionsMenu();
+
+					}
+				});
 			}
 			Log.e("ROB", "share url = " + shareUrl);
+			Log.e("Vladimir", " have share url = " + haveShareURL);
+			Log.e("Vladimir", " current nav title = " + currentNavTitle);
 		}
 	}
 }
